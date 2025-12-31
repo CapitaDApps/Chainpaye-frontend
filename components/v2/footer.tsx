@@ -51,7 +51,6 @@ export function Footer() {
   return (
     <footer className="bg-gradient-to-b from-[#EFEFF1] dark:from-[#202024] dark:to-[#0B1837] to-[#CCD9F8] pt-20 pb-8 px-4 overflow-hidden text-[#111528] dark:text-white">
       <div className="container mx-auto">
-        {/* Top: CTA Section */}
         <div className="flex flex-col lg:flex-row justify-between items-start gap-12 mb-24">
           <div className="lg:w-1/2">
             <h2 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
@@ -66,7 +65,7 @@ export function Footer() {
               liquidity, and infrastructure so you can focus on growth.
             </p>
             <Link
-              href="/contact"
+              href="#"
               className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full font-bold text-sm transition-colors whitespace-nowrap flex items-center gap-2"
             >
               Get in touch with us →

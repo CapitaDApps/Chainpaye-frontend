@@ -16,19 +16,19 @@ export function Features() {
     let timeout: NodeJS.Timeout;
 
     const runSequence = () => {
-      setStep(1); // BG
+      setStep(1);
       timeout = setTimeout(() => {
-        setStep(2); // Bubble
+        setStep(2);
         timeout = setTimeout(() => {
-          setStep(3); // Avatar
+          setStep(3);
           timeout = setTimeout(() => {
-            setStep(0); // Vanish
+            setStep(0);
             timeout = setTimeout(() => {
-              runSequence(); // Loop
-            }, 500); // Short blank state
-          }, 2000); // Hold final state for 2s
-        }, 1000); // 1s delay
-      }, 1000); // 1s delay
+              runSequence();
+            }, 500);
+          }, 2000);
+        }, 1000);
+      }, 1000);
     };
 
     runSequence();
@@ -41,22 +41,22 @@ export function Features() {
     let timeout: NodeJS.Timeout;
 
     const runSupportSequence = () => {
-      setSupportStep(1); // Headset
+      setSupportStep(1);
       timeout = setTimeout(() => {
-        setSupportStep(2); // Line 1
+        setSupportStep(2);
         timeout = setTimeout(() => {
-          setSupportStep(3); // Line 2
+          setSupportStep(3);
           timeout = setTimeout(() => {
-            setSupportStep(4); // Line 3
+            setSupportStep(4);
             timeout = setTimeout(() => {
-              setSupportStep(0); // Vanish
+              setSupportStep(0);
               timeout = setTimeout(() => {
-                runSupportSequence(); // Loop
+                runSupportSequence();
               }, 500);
-            }, 2000); // Hold
-          }, 500); // 0.5s delay
-        }, 500); // 0.5s delay
-      }, 500); // 0.5s delay
+            }, 2000);
+          }, 500);
+        }, 500);
+      }, 500);
     };
 
     runSupportSequence();
@@ -69,19 +69,19 @@ export function Features() {
     let timeout: NodeJS.Timeout;
 
     const runApiSequence = () => {
-      setApiStep(1); // USD
+      setApiStep(1);
       timeout = setTimeout(() => {
-        setApiStep(2); // GBP
+        setApiStep(2);
         timeout = setTimeout(() => {
-          setApiStep(3); // EUR
+          setApiStep(3);
           timeout = setTimeout(() => {
-            setApiStep(0); // Vanish
+            setApiStep(0);
             timeout = setTimeout(() => {
-              runApiSequence(); // Loop
+              runApiSequence();
             }, 500);
-          }, 2000); // Hold
-        }, 1200); // 1.2s delay
-      }, 1200); // 1.2s delay
+          }, 2000);
+        }, 1200);
+      }, 1200);
     };
 
     runApiSequence();
@@ -94,20 +94,19 @@ export function Features() {
     let timeout: NodeJS.Timeout;
 
     const runGlobalApiSequence = () => {
-      setGlobalApiStep(0); // Masked
+      setGlobalApiStep(0);
       timeout = setTimeout(() => {
-        setGlobalApiStep(1); // Unmasked
+        setGlobalApiStep(1);
         timeout = setTimeout(() => {
-          setGlobalApiStep(2); // Deposit 1
+          setGlobalApiStep(2);
           timeout = setTimeout(() => {
-            setGlobalApiStep(3); // Deposit 2
+            setGlobalApiStep(3);
             timeout = setTimeout(() => {
-              // Fade out/Reset handled by rendering logic, just loop back
               runGlobalApiSequence();
-            }, 3000); // Hold final state
-          }, 1000); // Delay for Dep 2
-        }, 1500); // Delay for Dep 1
-      }, 1500); // Delay for Unmask
+            }, 3000);
+          }, 1000);
+        }, 1500);
+      }, 1500);
     };
 
     runGlobalApiSequence();
@@ -213,7 +212,6 @@ export function Features() {
           <div className="lg:col-span-2 grid md:grid-cols-2 gap-6">
             <div className=" p-8 rounded-[32px] flex flex-col justify-between">
               <div className="h-44 bg-[#F5F7FA] dark:bg-zinc-800 rounded-xl mb-6 relative overflow-hidden flex items-center justify-center">
-                {/* BG */}
                 <div
                   className={`absolute inset-0 transition-opacity duration-500 ${
                     step >= 1 ? "opacity-100" : "opacity-0"

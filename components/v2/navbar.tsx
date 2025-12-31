@@ -15,14 +15,13 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
   return (
     <header className="fixed top-0 z-50 w-full bg-[#EFEFF1]/80 backdrop-blur-md dark:bg-[#202024]/80">
       <div className="container mx-auto flex h-20 items-center justify-between px-4 md:px-6">
-        <Link href="/v2" className="flex items-center gap-2">
+        <Link href="#" className="flex items-center gap-2">
           <Image
             src="/assets/chainpaye.png"
             alt="Chainpaye"
@@ -35,19 +34,19 @@ export function Navbar() {
 
         <nav className="hidden md:flex items-center gap-8">
           <Link
-            href="#businesses"
+            href="#"
             className="text-sm font-medium text-[#111528]/80 hover:text-[#111528] dark:text-white/80 dark:hover:text-white"
           >
             For Businesses
           </Link>
           <Link
-            href="#use-cases"
+            href="#"
             className="text-sm font-medium text-[#111528]/80 hover:text-[#111528] dark:text-white/80 dark:hover:text-white"
           >
             Use cases
           </Link>
           <Link
-            href="#about"
+            href="#"
             className="text-sm font-medium text-[#111528]/80 hover:text-[#111528] dark:text-white/80 dark:hover:text-white"
           >
             About
@@ -92,21 +91,21 @@ export function Navbar() {
         <div className="md:hidden border-t border-black/10 bg-[#EFEFF1] px-4 py-6 dark:border-white/10 dark:bg-[#202024]">
           <div className="flex flex-col space-y-4">
             <Link
-              href="#businesses"
+              href="#"
               className="text-base font-medium text-[#111528] dark:text-white"
               onClick={() => setMobileMenuOpen(false)}
             >
               For Businesses
             </Link>
             <Link
-              href="#use-cases"
+              href="#"
               className="text-base font-medium text-[#111528] dark:text-white"
               onClick={() => setMobileMenuOpen(false)}
             >
               Use cases
             </Link>
             <Link
-              href="#about"
+              href="#"
               className="text-base font-medium text-[#111528] dark:text-white"
               onClick={() => setMobileMenuOpen(false)}
             >

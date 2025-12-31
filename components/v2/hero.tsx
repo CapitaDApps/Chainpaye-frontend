@@ -16,11 +16,11 @@ export function Hero() {
   useEffect(() => {
     const fadeOutTimeout = setTimeout(() => {
       setFadeProp("opacity-0 translate-y-4");
-    }, 1300); // Disappear after 1.3 sec
+    }, 1300);
 
     const switchTimeout = setTimeout(() => {
       setIndex((prev) => (prev + 1) % WORDS.length);
-      setFadeProp("opacity-0 translate-y-8"); // Start from bottom
+      setFadeProp("opacity-0 translate-y-8");
 
       // Small delay to allow render then animate in
       setTimeout(() => {

@@ -68,7 +68,7 @@ const CARDS = [
 ];
 
 export function RealWorld() {
-  const [activeIndex, setActiveIndex] = useState(1); // Start with Businesses (index 1) or as desired
+  const [activeIndex, setActiveIndex] = useState(1);
 
   const nextCard = () => {
     setActiveIndex((prev) => (prev + 1) % CARDS.length);
@@ -79,25 +79,19 @@ export function RealWorld() {
   };
 
   const getCardStyle = (index: number) => {
-    // Calculate relative position in circle
     const len = CARDS.length;
     const diff = (index - activeIndex + len) % len;
 
-    // Common shadow class for all cards - strong shadow
     const shadowClass = "shadow-[0_-20px_60px_-15px_rgba(0,0,0,0.3)]";
 
     if (diff === 0) {
-      // CENTER
-      // Position: Lower (y+), Larger scale, Front z-index
       return clsx(
         "z-30 scale-110 translate-x-0 translate-y-8 rotate-0 opacity-100",
         "bg-white dark:bg-[#1A1A1E] border-gray-200 dark:border-gray-700",
-        "w-[340px] md:w-[420px] h-[280px]", // Increased size
+        "w-[340px] md:w-[420px] h-[280px]",
         shadowClass
       );
     } else if (diff === 1) {
-      // RIGHT
-      // Position: Higher (y-), Rotated CW, Side z-index
       return clsx(
         "z-20 scale-95 translate-x-[10%] md:translate-x-[105%] translate-y-4 -rotate-12 opacity-100",
         "bg-gray-50 dark:bg-[#151518] border-gray-100 dark:border-gray-800",
@@ -105,8 +99,6 @@ export function RealWorld() {
         shadowClass
       );
     } else if (diff === len - 1) {
-      // LEFT
-      // Position: Higher (y-), Rotated CCW, Side z-index
       return clsx(
         "z-20 scale-95 -translate-x-[10%] md:-translate-x-[105%] translate-y-4 rotate-12 opacity-100",
         "bg-gray-50 dark:bg-[#151518] border-gray-100 dark:border-gray-800",
@@ -114,12 +106,10 @@ export function RealWorld() {
         shadowClass
       );
     } else {
-      // HIDDEN / BACK
       return "z-10 scale-75 opacity-0 pointer-events-none translate-y-10 w-[300px]";
     }
   };
 
-  // Helper to allow clicking side cards to navigate
   const handleCardClick = (index: number) => {
     const len = CARDS.length;
     const diff = (index - activeIndex + len) % len;
