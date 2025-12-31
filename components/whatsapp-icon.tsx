@@ -13,6 +13,7 @@ export default function WhatsappIcon() {
           stroke-width="1.5"
           stroke-linecap="round"
           stroke-linejoin="round"
+          className="dark:stroke-[#00174F]"
         />
         <path
           d="M10.8004 11.5566L12.5333 11.2183L14.1667 11.8454V13.3651C14.1667 13.8705 13.7319 14.2557 13.2418 14.1482C11.9726 13.87 9.66644 13.1699 8.06526 11.5566C6.54054 10.0204 6.01893 7.88079 5.84203 6.70074C5.77117 6.22806 6.14479 5.83301 6.61925 5.83301H8.1976L8.81003 7.47374L8.48604 9.22478"
@@ -20,6 +21,7 @@ export default function WhatsappIcon() {
           stroke-width="1.5"
           stroke-linecap="round"
           stroke-linejoin="round"
+          className="dark:stroke-[#00174F]"
         />
       </svg>
     );

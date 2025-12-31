@@ -48,10 +48,10 @@ export function VisaCard() {
   const theme = THEMES[currentIndex];
 
   return (
-    <section className="flex justify-center">
+    <section className="flex justify-center mb-20">
       <div
         className={clsx(
-          "relative container mx-auto rounded-[48px] overflow-hidden transition-colors duration-700 ease-in-out  flex flex-col md:flex-row items-center justify-evenly gap-12",
+          "relative container mx-auto p-4 md:rounded-[48px] overflow-hidden transition-colors duration-700 ease-in-out  flex flex-col md:flex-row items-center justify-evenly gap-12",
           theme.bg
         )}
       >
@@ -98,7 +98,7 @@ export function VisaCard() {
             </h2>
             <p
               className={clsx(
-                "text-lg mb-3 font-medium transition-colors duration-700",
+                "text-base md:text-lg mb-3 font-medium transition-colors duration-700",
                 theme.subTextColor
               )}
             >
@@ -115,7 +115,7 @@ export function VisaCard() {
               No need for Offramps
             </p>
 
-            <button className="bg-[#003DFF] hover:bg-[#00174F] text-white px-8 py-4 rounded-xl font-bold text-base transition-all flex items-center gap-2 shadow-lg">
+            <button className="bg-[#003DFF] text-white px-8 py-4 rounded-xl font-bold text-base transition-all flex items-center gap-2 shadow-lg">
               Request a visa card <ArrowRight className="h-5 w-5" />
             </button>
           </div>

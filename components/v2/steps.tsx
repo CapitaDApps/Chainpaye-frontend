@@ -4,7 +4,7 @@ import Image from "next/image";
 
 export function Steps() {
   return (
-    <section className="py-24 px-4 bg-[#EFEFF1] dark:bg-[#202024]">
+    <section className="py-24 px-4 bg-[#EFEFF1] dark:bg-[#25262C]">
       <div className="container mx-auto">
         <div className="text-left md:text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold text-[#111528] dark:text-white mb-4">
@@ -56,14 +56,14 @@ export function Steps() {
               </div>
             </div>
 
-            <div className="w-full md:w-1/2 bg-[#F5F7FA] dark:bg-zinc-800 relative min-h-[400px] rounded-[30px]">
-              <div className="absolute inset-0 flex items-center justify-center p-8">
-                <div className="relative w-full h-100">
+            <div className="w-full md:w-1/2 bg-[#F5F7FA] dark:bg-none relative min-h-[400px] rounded-[30px]">
+              <div className="absolute inset-0 flex items-end justify-center pt-8 px-8 pb-0">
+                <div className="relative w-full h-[90%]">
                   <Image
                     src="/assets/f1.png"
                     alt="Start WhatsApp Chat"
                     fill
-                    className="object-contain"
+                    className="object-fill"
                   />
                 </div>
               </div>
@@ -71,14 +71,14 @@ export function Steps() {
           </div>
 
           <div className="bg-white dark:bg-[#1A1A1E] rounded-[30px] shadow-sm flex flex-col-reverse md:flex-row items-stretch overflow-hidden p-2">
-            <div className="w-full md:w-1/2 bg-[#F5F7FA] dark:bg-zinc-800 relative min-h-[400px] rounded-[30px]">
-              <div className="absolute inset-0 flex items-center justify-center p-8">
-                <div className="relative w-full h-full">
+            <div className="w-full md:w-1/2 bg-[#F5F7FA] dark:bg-none relative min-h-[400px] rounded-[30px]">
+              <div className="absolute inset-0 flex items-end justify-center pt-8 px-8 pb-0">
+                <div className="relative w-full h-[90%]">
                   <Image
                     src="/assets/f2.png"
                     alt="Create Wallet"
                     fill
-                    className="object-contain"
+                    className="object-fill"
                   />
                 </div>
               </div>
@@ -159,14 +159,14 @@ export function Steps() {
               </div>
             </div>
 
-            <div className="w-full md:w-1/2 bg-[#F5F7FA] dark:bg-zinc-800 relative min-h-100 rounded-[30px]">
-              <div className="absolute inset-0 flex items-center justify-center p-8">
-                <div className="relative w-full h-full">
+            <div className="w-full md:w-1/2 bg-[#F5F7FA] dark:bg-none relative min-h-100 rounded-[30px]">
+              <div className="absolute inset-0 flex items-end justify-center pt-8 px-8 pb-0">
+                <div className="relative w-full h-[90%]">
                   <Image
                     src="/assets/f3.png"
                     alt="Global Payments"
                     fill
-                    className="object-contain"
+                    className="object-fill"
                   />
                 </div>
               </div>

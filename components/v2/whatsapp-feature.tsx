@@ -4,29 +4,30 @@ import Image from "next/image";
 import Link from "next/link";
 import { MessageCircle } from "lucide-react";
 import WhatsappIcon from "../whatsapp-icon";
+import { FadeIn } from "../animations/fade-in";
 
 export function WhatsappFeature() {
   return (
     <section>
-      <div className="mx-auto container bg-[#E8EDFF]">
-        <div className="flex flex-col md:flex-row max-h-[524px] items-center justify-evenly gap-12 md:gap-24">
-          <div className="w-full md:w-fit flex justify-start md:justify-end">
-            <div className="relative w-70 md:w-110 h-137.5 md:h-[600px] bottom-[40px]">
+      <div className="mx-auto px-4 pt-4 container bg-[#E8EDFF] dark:bg-[#2A2A33] rounded-2xl ">
+        <FadeIn className="flex flex-col-reverse md:flex-row max-h-none md:max-h-[524px] items-center justify-evenly gap-12 md:gap-24 overflow-hidden md:overflow-visible">
+          <div className="w-full md:w-fit flex justify-start md:justify-end items-end h-full mt-auto relative md:bottom-[40px]">
+            <div className="relative w-full max-w-[280px] md:max-w-none md:w-110 h-[400px] sm:h-[500px] md:h-[600px] md:bottom-[40px] md:mx-auto translate-y-8 md:translate-y-0">
               <Image
                 src="/assets/Group 7.png"
                 alt="WhatsApp Interface"
                 fill
-                className="object-fill"
+                className="object-contain md:object-fill"
               />
             </div>
           </div>
 
           <div className="w-full md:w-fit text-left">
-            <h2 className="text-[40px] md:text-5xl font-bold leading-tight text-[#111528] dark:text-white mb-6">
+            <h2 className="text-[38px] md:text-[40px] font-bold leading-tight text-[#111528] dark:text-white mb-6">
               Send and receive Money <br />
               instantly on <span className="font-extrabold">Whatsapp</span>
             </h2>
-            <p className="text-lg text-[#5A5F73] font-medium  dark:text-zinc-400 mb-8 max-w-md leading-relaxed">
+            <p className="text-base md:text-lg text-[#5A5F73] font-medium  dark:text-zinc-400 mb-8 max-w-md leading-relaxed">
               With Chainpaye, anyone can send or receive money globally and
               withdraw to their local bank or mobile money — all inside a
               WhatsApp chat.
@@ -34,13 +35,13 @@ export function WhatsappFeature() {
 
             <Link
               href="#"
-              className="inline-flex items-center gap-2 rounded-lg bg-[#003DFF] px-6 py-3 text-base font-bold text-white hover:bg-[#00174F]  transition-colors shadow-lg shadow-blue-500/20"
+              className="inline-flex items-center gap-2 rounded-lg bg-[#003DFF] dark:bg-[#7DA2FF] dark:text-[#00174F] px-6 py-3 text-base font-bold text-white transition-colors shadow-lg shadow-blue-500/20"
             >
               <WhatsappIcon />
               Start on WhatsApp
             </Link>
           </div>
-        </div>
+        </FadeIn>
       </div>
     </section>
   );
