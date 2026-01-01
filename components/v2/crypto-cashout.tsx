@@ -8,7 +8,7 @@ import { FadeIn } from "../animations/fade-in";
 
 export function CryptoCashout() {
   return (
-    <section className="mb-20 md:my-20">
+    <section className="mb-20 md:my-20" id="off-ramp">
       <div className="px-4 pt-16 mx-auto container dark:bg-[#2A2A33] md:rounded-2xl bg-[#E8EDFF]">
         <FadeIn className="flex flex-col md:flex-row md:max-h-[524px] items-center justify-evenly  xl:gap-24">
           <div className="w-full md:w-fit text-left">

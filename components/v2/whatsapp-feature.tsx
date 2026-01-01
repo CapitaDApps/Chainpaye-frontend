@@ -8,7 +8,7 @@ import { FadeIn } from "../animations/fade-in";
 
 export function WhatsappFeature() {
   return (
-    <section id="off-ramp">
+    <section>
       <div className="mx-auto px-4 pt-12  container bg-[#E8EDFF] dark:bg-[#2A2A33] md:rounded-2xl ">
         <FadeIn className="flex flex-col-reverse md:flex-row max-h-none md:max-h-[524px] items-center justify-evenly gap-12 xl:gap-24 overflow-hidden md:overflow-visible">
           <div className="w-full md:w-fit flex justify-start md:justify-end items-end h-full mt-auto relative md:bottom-[40px]">
