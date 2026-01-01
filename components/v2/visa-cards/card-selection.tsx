@@ -20,6 +20,8 @@ const TIERS = [
     gridBorder: "border-black/10",
     checkColor: "text-blue-600",
     popular: false,
+    headline: "Start simple, spend globally.",
+    features: ["Works anywhere Visa is accepted", "Earn 2% on unused balance"],
   },
   {
     id: "gold",
@@ -27,12 +29,19 @@ const TIERS = [
     price: 125,
     description: "For power users & professionals",
     cardImage: "/assets/GOLD V1.png",
-    bg: "bg-[#C68744]",
+    bg: "bg-[#BB7836]",
     textColor: "text-white",
     subTextColor: "text-white/80",
     gridBorder: "border-white/20",
     checkColor: "text-white",
     popular: true,
+    headline: "Higher limits, more control.",
+    features: [
+      "No spending limits",
+      "Earn up to 4% APY",
+      "No Bespoke card design",
+      "Priority top-up assistance",
+    ],
   },
   {
     id: "platinum",
@@ -46,6 +55,13 @@ const TIERS = [
     gridBorder: "border-white/20",
     checkColor: "text-white",
     popular: false,
+    headline: "Higher limits, more control.",
+    features: [
+      "No spending limits",
+      "Earn up to 6% APY",
+      "Bespoke card design",
+      "Priority top-up assistance",
+    ],
   },
 ];
 
@@ -103,34 +119,24 @@ export function CardSelection() {
                   selectedTier.textColor
                 )}
               >
-                Start simple, spend globally.
+                {selectedTier.headline}
               </h3>
 
               <div className="space-y-4">
-                <div
-                  className={clsx(
-                    "flex items-center gap-3",
-                    selectedTier.subTextColor
-                  )}
-                >
-                  <span className={selectedTier.checkColor}>
-                    <Check className="w-5 h-5" />
-                  </span>
-                  <span className="font-medium">
-                    Works anywhere Visa is accepted
-                  </span>
-                </div>
-                <div
-                  className={clsx(
-                    "flex items-center gap-3",
-                    selectedTier.subTextColor
-                  )}
-                >
-                  <span className={selectedTier.checkColor}>
-                    <Check className="w-5 h-5" />
-                  </span>
-                  <span className="font-medium">Earn 2% on unused balance</span>
-                </div>
+                {selectedTier.features.map((feature, i) => (
+                  <div
+                    key={i}
+                    className={clsx(
+                      "flex items-center gap-3",
+                      selectedTier.subTextColor
+                    )}
+                  >
+                    <span className={selectedTier.checkColor}>
+                      <Check className="w-5 h-5" />
+                    </span>
+                    <span className="font-medium">{feature}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
