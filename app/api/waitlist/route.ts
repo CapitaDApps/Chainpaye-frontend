@@ -126,10 +126,10 @@ export async function POST(request: Request) {
     const adminEmail =
       process.env.ADMIN_EMAIL || process.env.NEXT_PUBLIC_ADMIN_EMAIL || "";
     console.log("Sending email to admin:", adminEmail);
-    console.log(
-      "Using API Key:",
-      apiKey ? `...${apiKey.slice(-4)}` : "MISSING"
-    );
+    // console.log(
+    //   "Using API Key:",
+    //   apiKey ? `...${apiKey.slice(-4)}` : "MISSING"
+    // );
 
     const { data: adminData, error: adminError } = await resend.emails.send({
       from: "Chainpaye Admin <onboarding@resend.dev>",
@@ -149,20 +149,20 @@ export async function POST(request: Request) {
     // Send email to User
     // Note: In Resend Test Mode, this will FAIL if 'email' is not the registered account email.
     // We will log this error but treat the request as successful since the admin was notified.
-    const { error: userError } = await resend.emails.send({
-      from: "Chainpaye <onboarding@resend.dev>",
-      to: [email],
-      subject: "We've received your Chainpaye Card Request",
-      html: userHtmlContent,
-    });
+    // const { error: userError } = await resend.emails.send({
+    //   from: "Chainpaye <onboarding@resend.dev>",
+    //   to: [email],
+    //   subject: "We've received your Chainpaye Card Request",
+    //   html: userHtmlContent,
+    // });
 
-    if (userError) {
-      console.warn(
-        "User Confirmation Email Failed (likely Test Mode restriction):",
-        userError
-      );
-      // We do NOT return an error here, so the user sees a success screen.
-    }
+    // if (userError) {
+    //   console.warn(
+    //     "User Confirmation Email Failed (likely Test Mode restriction):",
+    //     userError
+    //   );
+    //   // We do NOT return an error here, so the user sees a success screen.
+    // }
 
     return NextResponse.json({ success: true, data: adminData });
   } catch (error) {
