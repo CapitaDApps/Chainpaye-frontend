@@ -26,7 +26,7 @@ const TIERS = [
     name: "Gold",
     price: 125,
     description: "For power users & professionals",
-    cardImage: "/assets/Gold V1.png",
+    cardImage: "/assets/GOLD V1.png",
     bg: "bg-[#C68744]",
     textColor: "text-white",
     subTextColor: "text-white/80",
