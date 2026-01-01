@@ -115,8 +115,8 @@ export function Features() {
   }, []);
 
   return (
-    <section className="py-24 px-4 bg-[#EFEFF1] dark:bg-[#202024]">
-      <div className="container mx-auto max-w-7xl">
+    <section className="pt-24 pb-8 md:py-24 px-4 bg-[#EFEFF1] dark:bg-[#202024]">
+      <div className="container mx-auto max-w-112.5  md:max-w-7xl">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold mb-4 text-[#111528] dark:text-white">
             Transforming cross-border <br /> payments in Africa
@@ -125,7 +125,7 @@ export function Features() {
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-1 bg-gradient-to-b from-[#003DEF] to-[#101980] rounded-[40px] p-8 relative overflow-hidden min-h-[500px] flex flex-col justify-center items-center">
+          <div className="lg:col-span-1 bg-gradient-to-b from-[#003DEF] to-[#101980] rounded-xl md:rounded-[40px] p-8 relative overflow-hidden min-h-[500px] flex flex-col justify-center items-center ">
             <motion.div
               initial={{ opacity: 0, y: -100 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -210,8 +210,8 @@ export function Features() {
           </div>
 
           <div className="lg:col-span-2 grid md:grid-cols-2 gap-6">
-            <div className=" p-8 rounded-[32px] flex flex-col justify-between">
-              <div className="h-44 bg-[#F5F7FA] dark:bg-zinc-800 rounded-xl mb-6 relative overflow-hidden flex items-center justify-center">
+            <div className=" md:p-8 rounded-[32px] flex flex-col justify-between">
+              <div className="h-44 bg-[#F5F7FA] dark:bg-zinc-800 rounded-t-xl mb-6 relative overflow-hidden flex items-center justify-center">
                 <div
                   className={`absolute inset-0 transition-opacity duration-500 ${
                     step >= 1 ? "opacity-100" : "opacity-0"
@@ -263,14 +263,14 @@ export function Features() {
                 <h3 className="font-bold text-lg mb-2 text-[#111528] dark:text-white">
                   Seamless WhatsApp Payments
                 </h3>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-[#5A5F73] dark:text-[#BDBFC7]">
                   Send and receive payments inside WhatsApp — chat, tap, done.
                 </p>
               </div>
             </div>
 
-            <div className="p-8 rounded-[32px] flex flex-col justify-between">
-              <div className="h-44 bg-[#F5F7FA] dark:bg-zinc-800 rounded-xl mb-6 relative overflow-hidden flex flex-col justify-center items-center p-6">
+            <div className="md:p-8 rounded-[32px] flex flex-col justify-between">
+              <div className="h-44 bg-[#F5F7FA] dark:bg-zinc-800 rounded-t-xl mb-6 relative overflow-hidden flex flex-col justify-center items-center p-6">
                 {/* API Key View */}
                 <div
                   className={`w-full p-5 transition-all duration-500 absolute ${
@@ -366,15 +366,15 @@ export function Features() {
                 <h3 className="font-bold text-lg mb-2 text-[#111528] dark:text-white">
                   Global Payment API
                 </h3>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-[#5A5F73] dark:text-[#BDBFC7]">
                   Accept global payments easily and focus on growth with quick
                   Chainpaye integration.
                 </p>
               </div>
             </div>
 
-            <div className="p-8 rounded-[32px] flex flex-col justify-between">
-              <div className="h-44 bg-[#F5F7FA] dark:bg-zinc-800 rounded-xl mb-6 p-4 relative overflow-hidden flex justify-center">
+            <div className="md:p-8 rounded-[32px] flex flex-col justify-between">
+              <div className="h-44 bg-[#F5F7FA] dark:bg-zinc-800 rounded-t-xl mb-6 p-4 relative overflow-hidden flex justify-center">
                 {/* iPhone Mockup */}
                 <div className="absolute bottom-[-40px] left-1/2 -translate-x-1/2 w-40 h-full">
                   <Image
@@ -468,15 +468,15 @@ export function Features() {
                 <h3 className="font-bold text-lg mb-2 text-[#111528] dark:text-white">
                   Multi-Currency Support
                 </h3>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-[#5A5F73] dark:text-[#BDBFC7]">
                   Receive funds in NGN, GHS, ZAR, KES, USD and convert
                   seamlessly.
                 </p>
               </div>
             </div>
 
-            <div className="p-8 rounded-[32px] flex flex-col justify-between">
-              <div className="h-44 bg-[#F5F7FA] dark:bg-zinc-800 rounded-xl mb-6 flex items-center justify-center">
+            <div className="md:p-8 rounded-[32px] flex flex-col justify-between">
+              <div className="h-44 bg-[#F5F7FA] dark:bg-zinc-800 rounded-t-xl mb-6 flex items-center justify-center">
                 <div className="flex items-center gap-6">
                   {/* Headset in Circle */}
                   <div
@@ -492,21 +492,21 @@ export function Features() {
                   {/* Lines */}
                   <div className="space-y-3">
                     <div
-                      className={`h-2 w-24 bg-gray-200 dark:bg-zinc-600 rounded-full transition-all duration-500 ${
+                      className={`h-1 w-24 bg-gray-200 dark:bg-zinc-600 rounded-full transition-all duration-500 ${
                         supportStep >= 2
                           ? "opacity-100 translate-x-0"
                           : "opacity-0 -translate-x-4"
                       }`}
                     ></div>
                     <div
-                      className={`h-2 w-32 bg-gray-200 dark:bg-zinc-600 rounded-full transition-all duration-500 ${
+                      className={`h-1 w-32 bg-gray-200 dark:bg-zinc-600 rounded-full transition-all duration-500 ${
                         supportStep >= 3
                           ? "opacity-100 translate-x-0"
                           : "opacity-0 -translate-x-4"
                       }`}
                     ></div>
                     <div
-                      className={`h-2 w-20 bg-gray-200 dark:bg-zinc-600 rounded-full transition-all duration-500 ${
+                      className={`h-1 w-20 bg-gray-200 dark:bg-zinc-600 rounded-full transition-all duration-500 ${
                         supportStep >= 4
                           ? "opacity-100 translate-x-0"
                           : "opacity-0 -translate-x-4"
@@ -519,7 +519,7 @@ export function Features() {
                 <h3 className="font-bold text-lg mb-2 text-[#111528] dark:text-white">
                   24/7 customer support
                 </h3>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-[#5A5F73] dark:text-[#BDBFC7]">
                   Our customer support team is readily available to assist you
                   whenever needed.
                 </p>

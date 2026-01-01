@@ -9,12 +9,12 @@ import { FadeIn } from "../animations/fade-in";
 export function WhatsappFeature() {
   return (
     <section>
-      <div className="mx-auto px-4 pt-4 container bg-[#E8EDFF] dark:bg-[#2A2A33] rounded-2xl ">
-        <FadeIn className="flex flex-col-reverse md:flex-row max-h-none md:max-h-[524px] items-center justify-evenly gap-12 md:gap-24 overflow-hidden md:overflow-visible">
+      <div className="mx-auto px-4 pt-12  container bg-[#E8EDFF] dark:bg-[#2A2A33] md:rounded-2xl ">
+        <FadeIn className="flex flex-col-reverse md:flex-row max-h-none md:max-h-[524px] items-center justify-evenly gap-12 xl:gap-24 overflow-hidden md:overflow-visible">
           <div className="w-full md:w-fit flex justify-start md:justify-end items-end h-full mt-auto relative md:bottom-[40px]">
-            <div className="relative w-full max-w-[280px] md:max-w-none md:w-110 h-[400px] sm:h-[500px] md:h-[600px] md:bottom-[40px] md:mx-auto translate-y-8 md:translate-y-0">
+            <div className="relative w-full max-w-[280px] md:max-w-none md:w-110 h-[400px] sm:h-[500px] md:h-[700px] md:bottom-[140px] md:mx-auto translate-y-8 md:translate-y-0">
               <Image
-                src="/assets/Group 7.png"
+                src="/assets/Group 7.svg"
                 alt="WhatsApp Interface"
                 fill
                 className="object-contain md:object-fill"
@@ -23,7 +23,7 @@ export function WhatsappFeature() {
           </div>
 
           <div className="w-full md:w-fit text-left">
-            <h2 className="text-[38px] md:text-[40px] font-bold leading-tight text-[#111528] dark:text-white mb-6">
+            <h2 className="text-[30px] xl:text-[40px] font-bold leading-tight text-[#111528] dark:text-white mb-6">
               Send and receive Money <br />
               instantly on <span className="font-extrabold">Whatsapp</span>
             </h2>

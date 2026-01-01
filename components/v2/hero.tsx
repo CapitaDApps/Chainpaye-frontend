@@ -35,14 +35,14 @@ export function Hero() {
   }, [index]);
 
   return (
-    <section className="mb-10 relative flex min-h-screen flex-col items-center pt-32 pb-16 px-4 overflow-hidden dark:bg-[#202024]">
-      <div className="absolute top-20 inset-0 z-0 opacity-40 mt-60 dark:opacity-50 pointer-events-none flex items-center justify-center">
+    <section className="relative flex min-h-screen flex-col items-center pt-32 pb-16 px-4 overflow-hidden dark:bg-[#202024]">
+      <div className="absolute top-72 md:top-25 inset-0 z-0 opacity-40 mt-60 dark:opacity-50 pointer-events-none flex items-center justify-center">
         <div className="relative w-[1200px] h-[600px]">
           <Image
             src="/assets/world-map.png"
             alt="World Map"
             fill
-            className="object-cover rounded-2xl"
+            className="object-cover md:rounded-2xl"
           />
         </div>
       </div>
@@ -80,12 +80,12 @@ export function Hero() {
           delay={0.2}
           className="relative mx-auto w-full max-w-[1000px] h-[500px] sm:h-[600px] md:h-[800px]"
         >
-          <div className="absolute left-1/2 top-0 sm:top-4 -translate-x-1/2 w-[280px] sm:w-[300px] md:w-[350px] h-[500px] sm:h-[600px] md:h-[700px] z-20">
+          <div className="absolute left-1/2 top-0 sm:top-4 xl:-top-28 -translate-x-1/2 w-[280px] sm:w-[300px] md:w-[350px] h-[500px] sm:h-[600px] md:h-[800px] z-20">
             <Image
-              src="/assets/phone1.png"
+              src="/assets/Group 9.svg"
               alt="Chainpaye App Interface"
               fill
-              className="object-contain drop-shadow-2xl"
+              className="object-contain xl:object-fill"
               priority
             />
           </div>

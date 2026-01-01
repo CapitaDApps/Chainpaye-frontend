@@ -118,18 +118,18 @@ export function RealWorld() {
   };
 
   return (
-    <section className="py-24 px-4 overflow-hidden bg-[#F8F9FA] dark:bg-[#202024]">
-      <div className="container mx-auto max-w-6xl text-center mb-16">
+    <section className="pt-24 md:pt-10 px-4 overflow-hidden bg-[#F8F9FA] dark:bg-[#202024]">
+      <div className="container mx-auto max-w-6xl text-center">
         <h2 className="text-3xl font-bold mb-4 text-[#111528] dark:text-white">
           Real world application
         </h2>
-        <p className="text-gray-500">
+        <p className="dark:text-[#BDBFC7] text-[#5A5F73]">
           Discover how people and businesses use Chainpaye
         </p>
       </div>
 
       <div className="container mx-auto max-w-7xl mb-12 relative">
-        <div className="relative h-[450px] md:h-[500px] flex justify-center items-center perspective-1000">
+        <div className="relative h-[450px] md:h-[400px] flex justify-center items-center perspective-1000">
           {CARDS.map((card, index) => (
             <div
               key={card.id}

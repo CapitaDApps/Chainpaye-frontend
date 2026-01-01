@@ -46,7 +46,7 @@ export function Footer() {
         </div>
 
         {/* Middle: Links & Socials */}
-        <div className="flex flex-col-reverse md:flex-row justify-between md:items-center mb-12 gap-4 md:gap-8 pt-4  md:dark:border-[#4C4C4C] md:dark:border-t ">
+        <div className="flex flex-col-reverse md:flex-row justify-between md:items-center mb-2 gap-4 md:gap-8 pt-4  md:dark:border-[#4C4C4C] md:dark:border-t ">
           <div className="flex gap-8 text-sm font-medium text-gray-[#5A5F73] dark:text-[#BDBFC7] flex-col md:flex-row md:border-none pt-3 md:pt-0 dark:border-[#4C4C4C] dark:border-t">
             <a href="#" className=" transition-colors">
               Solutions
@@ -111,7 +111,7 @@ export function Footer() {
 
           <div className="h-24 md:h-48"></div>
 
-          <div className="flex justify-between text-[10px] md:text-xs text-gray-500 font-medium px-2 py-4 relative z-10 ">
+          <div className="flex justify-between text-base text-[#5A5F73] dark:text-[#BDBFC7] font-medium px-2 py-4 relative z-10 flex-col md:flex-row items-start">
             <span>© 2025 Chainpaye</span>
             <span>All Rights Reserved.</span>
           </div>

@@ -8,11 +8,11 @@ import { FadeIn } from "../animations/fade-in";
 
 export function CryptoCashout() {
   return (
-    <section className="my-52">
-      <div className="px-4 pt-4 md:mx-auto container dark:bg-[#2A2A33] rounded-2xl bg-[#E8EDFF]">
-        <FadeIn className="flex flex-col md:flex-row md:max-h-[524px] items-center justify-evenly  md:gap-24">
+    <section className="mb-20 md:my-20">
+      <div className="px-4 pt-16 mx-auto container dark:bg-[#2A2A33] md:rounded-2xl bg-[#E8EDFF]">
+        <FadeIn className="flex flex-col md:flex-row md:max-h-[524px] items-center justify-evenly  xl:gap-24">
           <div className="w-full md:w-fit text-left">
-            <h2 className="text-[38px] md:text-[40px] font-bold leading-tight text-[#111528] dark:text-white mb-6">
+            <h2 className="text-[30px] xl:text-[40px] font-bold leading-tight text-[#111528] dark:text-white mb-6">
               <span className="font-extrabold">Cash out</span> crypto directly{" "}
               <br />
               from WhatsApp.
@@ -29,10 +29,10 @@ export function CryptoCashout() {
             </Link>
           </div>
 
-          <div className="w-full md:w-fit flex justify-start md:justify-end">
-            <div className="relative w-70 md:w-110 h-137.5 md:h-[600px] -bottom-14 md:bottom-[40px]">
+          <div className="w-full md:w-fit flex justify-start md:justify-end h-125 md:h-auto">
+            <div className="relative w-70 md:w-110 h-137.5 md:h-[700px] md:bottom-[50px]">
               <Image
-                src="/assets/phone1.png"
+                src="/assets/Group 8.svg"
                 alt="Crypto Cashout Interface"
                 fill
                 className="object-contain drop-shadow-2xl"

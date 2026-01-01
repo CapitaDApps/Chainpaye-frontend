@@ -8,7 +8,7 @@ import clsx from "clsx";
 const THEMES = [
   {
     id: "purple",
-    bg: "bg-[#F2F2F2]",
+    bg: "bg-[#30002]",
     cardImage: "/assets/purple.png",
     textColor: "text-[#111528]",
     subTextColor: "text-[#5A5F73]",
@@ -48,10 +48,10 @@ export function VisaCard() {
   const theme = THEMES[currentIndex];
 
   return (
-    <section className="flex justify-center mb-20">
+    <section className="flex justify-center">
       <div
         className={clsx(
-          "relative container mx-auto p-4 md:rounded-[48px] overflow-hidden transition-colors duration-700 ease-in-out  flex flex-col md:flex-row items-center justify-evenly gap-12",
+          "relative xl:container mx-auto p-4 md:rounded-2xl md:max-h-[528px] overflow-hidden transition-colors duration-700 ease-in-out  flex flex-col md:flex-row items-center justify-evenly gap-12",
           theme.bg
         )}
       >

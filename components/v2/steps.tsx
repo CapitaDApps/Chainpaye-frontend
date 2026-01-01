@@ -4,9 +4,9 @@ import Image from "next/image";
 
 export function Steps() {
   return (
-    <section className="py-24 px-4 bg-[#EFEFF1] dark:bg-[#25262C]">
+    <section className="py-24 px-4 ">
       <div className="container mx-auto">
-        <div className="text-left md:text-center mb-16">
+        <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold text-[#111528] dark:text-white mb-4">
             Get started with Chainpaye in <br /> Three Simple Steps
           </h2>
@@ -16,9 +16,9 @@ export function Steps() {
         </div>
 
         <div className="space-y-8">
-          <div className="bg-white dark:bg-[#1A1A1E] p-2 rounded-[30px] shadow-sm flex flex-col md:flex-row items-stretch overflow-hidden">
-            <div className="w-full md:w-1/2 p-8 md:p-16 flex flex-col justify-center">
-              <div className="text-[#003DFF] font-medium text-base mb-2">
+          <div className="bg-white dark:bg-[#1A1A1E] p-2 rounded-[30px] gap-8 md:gap-0 shadow-sm flex flex-col md:flex-row md:items-center items-stretch overflow-hidden">
+            <div className="w-full md:w-1/2 p-8 py-8 px-4 md:p-16 flex flex-col justify-center">
+              <div className="text-[#7DA2FF] font-medium text-base mb-2">
                 Step 1
               </div>
               <h3 className="text-2xl font-medium text-[#111528] dark:text-white mb-8">
@@ -31,7 +31,7 @@ export function Steps() {
                   </span>
                   <p className="text-base text-[#5A5F73] font-medium dark:text-gray-400">
                     Click{" "}
-                    <span className="text-[#003DFF] font-bold cursor-pointer">
+                    <span className="text-[#7DA2FF] font-bold cursor-pointer">
                       here
                     </span>{" "}
                     to get directed to our WhatsApp AI agent
@@ -56,36 +56,36 @@ export function Steps() {
               </div>
             </div>
 
-            <div className="w-full md:w-1/2 bg-[#F5F7FA] dark:bg-none relative min-h-[400px] rounded-[30px]">
-              <div className="absolute inset-0 flex items-end justify-center pt-8 px-8 pb-0">
-                <div className="relative w-full h-[90%]">
+            <div className="w-full  md:w-1/2 bg-[#F5F7FA] dark:bg-none relative h-1/2 min-h-52 md:min-h-100  rounded-xl">
+              <div className="absolute inset-0 flex items-end justify-center pt-8 md:px-8 pb-0">
+                <div className="relative w-full h-full">
                   <Image
-                    src="/assets/f1.png"
+                    src="/assets/mini8.svg"
                     alt="Start WhatsApp Chat"
                     fill
-                    className="object-fill"
+                    className="object-contain md:object-fill"
                   />
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-[#1A1A1E] rounded-[30px] shadow-sm flex flex-col-reverse md:flex-row items-stretch overflow-hidden p-2">
-            <div className="w-full md:w-1/2 bg-[#F5F7FA] dark:bg-none relative min-h-[400px] rounded-[30px]">
-              <div className="absolute inset-0 flex items-end justify-center pt-8 px-8 pb-0">
-                <div className="relative w-full h-[90%]">
+          <div className="bg-white dark:bg-[#1A1A1E] rounded-[30px] shadow-sm flex flex-col-reverse md:flex-row md:items-center items-stretch overflow-hidden p-2 gap-8 md:gap-0">
+            <div className="w-full  md:w-1/2 bg-[#F5F7FA] dark:bg-none relative h-1/2 min-h-52 md:min-h-100  rounded-xl">
+              <div className="absolute inset-0 flex items-end justify-center pt-8 md:px-8 pb-0">
+                <div className="relative w-full h-full">
                   <Image
-                    src="/assets/f2.png"
+                    src="/assets/mini2.svg"
                     alt="Create Wallet"
                     fill
-                    className="object-fill"
+                    className="object-contain md:object-fill"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="w-full md:w-1/2 p-8 md:p-16 flex flex-col justify-center">
-              <div className="text-[#003DFF] font-medium text-base mb-2">
+            <div className="w-full md:w-1/2 p-8 py-8 px-4 md:p-16 flex flex-col justify-center">
+              <div className="text-[#7DA2FF] font-medium text-base mb-2">
                 Step 2
               </div>
               <h3 className="text-2xl font-medium text-[#111528] dark:text-white mb-8">
@@ -121,9 +121,9 @@ export function Steps() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-[#1A1A1E] rounded-[30px] shadow-sm flex flex-col md:flex-row items-stretch overflow-hidden p-2">
-            <div className="w-full md:w-1/2 p-8 md:p-16 flex flex-col justify-center">
-              <div className="text-[#003DFF] font-medium text-base mb-2">
+          <div className="bg-white dark:bg-[#1A1A1E] gap-8 md:gap-0 rounded-[30px] shadow-sm flex flex-col md:flex-row md:items-center items-stretch overflow-hidden p-2">
+            <div className="w-full md:w-1/2 py-8 px-4 md:p-16 flex flex-col justify-center">
+              <div className="text-[#7DA2FF] font-medium text-base mb-2">
                 Step 3
               </div>
               <h3 className="text-2xl font-medium text-[#111528] dark:text-white mb-8">
@@ -159,14 +159,14 @@ export function Steps() {
               </div>
             </div>
 
-            <div className="w-full md:w-1/2 bg-[#F5F7FA] dark:bg-none relative min-h-100 rounded-[30px]">
-              <div className="absolute inset-0 flex items-end justify-center pt-8 px-8 pb-0">
-                <div className="relative w-full h-[90%]">
+            <div className="w-full  md:w-1/2 bg-[#F5F7FA] dark:bg-none relative h-1/2  min-h-52 md:min-h-100  rounded-xl">
+              <div className="absolute inset-0 flex items-end justify-center pt-8 md:px-8 pb-0">
+                <div className="relative w-full h-full">
                   <Image
-                    src="/assets/f3.png"
+                    src="/assets/mini3.svg"
                     alt="Global Payments"
                     fill
-                    className="object-fill"
+                    className="object-contain md:object-fill"
                   />
                 </div>
               </div>
