@@ -24,12 +24,11 @@ export function SuccessModal({ isOpen, onClose }: SuccessModalProps) {
 
         <div className="flex flex-col items-center justify-center py-8">
           <h3 className="text-xl font-bold text-[#111528] dark:text-white mb-2">
-            <span className="text-4xl mb-6">🎉</span>You{`'`}re on the list!
+            <span className="text-4xl mb-6">🎉</span>Request Received!
           </h3>
 
           <p className="text-xl font-medium text-[#5A5F73] dark:text-[#BDBFC7] mb-8">
-            You{`'`}ve successfully joined the Chainpaye Stablecoin Card
-            waitlist.
+            We have received your request. Check your email for next steps.
           </p>
 
           <Link

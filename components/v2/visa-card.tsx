@@ -6,6 +6,8 @@ import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import clsx from "clsx";
 
+const HIGHLIGHTED_CELLS = [20, 21, 41,42, 13, 6];
+
 const THEMES = [
   {
     id: "purple",
@@ -23,7 +25,7 @@ const THEMES = [
     textColor: "text-white",
     subTextColor: "text-white/80",
     gridColor: "bg-[#BB7836]",
-    gridHighlight: "bg-[#BB7836]",
+    gridHighlight: "bg-[#96602B]",
   },
   {
     id: "blue",
@@ -56,15 +58,15 @@ export function VisaCard() {
           theme.bg
         )}
       >
-        <div className="absolute inset-0 grid grid-cols-12 grid-rows-6 pointer-events-none">
-          {Array.from({ length: 72 }).map((_, i) => (
+        <div className="absolute inset-0 grid grid-cols-[repeat(20,1fr)] grid-rows-6 pointer-events-none">
+          {Array.from({ length: 120 }).map((_, i) => (
             <div
               key={i}
               className={clsx(
                 "border-[0.5px] border-black/5 transition-colors duration-700",
-                theme.gridColor,
-
-                (i % 7 === 0 || i % 11 === 0 || i === 42) && theme.gridHighlight
+                HIGHLIGHTED_CELLS.includes(i)
+                  ? theme.gridHighlight
+                  : theme.gridColor
               )}
             />
           ))}

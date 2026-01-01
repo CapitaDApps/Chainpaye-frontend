@@ -189,7 +189,7 @@ export function CardSelection() {
                 onClick={() => setIsWaitlistOpen(true)}
                 className="w-fit px-20  bg-[#003DFF] dark:bg-[#7DA2FF] dark:text-[#00174F] text-white font-bold py-4 rounded-xl transition-all shadow-lg hover:shadow-xl active:scale-[0.99]"
               >
-                Join the Waitlist
+                Request Card
               </button>
             </div>
           </div>
@@ -200,6 +200,7 @@ export function CardSelection() {
         isOpen={isWaitlistOpen}
         onClose={() => setIsWaitlistOpen(false)}
         onSuccess={handleWaitlistSuccess}
+        selectedTier={selectedTier.name}
       />
 
       <SuccessModal
