@@ -3,7 +3,7 @@ import { Resend } from "resend";
 
 // Initialize Resend with API key from environment variables
 const apiKey =
-  process.env.RESEND_API_KEY || process.env.NEXT_PUBLIC_RESEND_API_KEY;
+  process.env.RESEND_API || process.env.NEXT_PUBLIC_RESEND_API;
 const resend = new Resend(apiKey);
 
 export async function POST(request: Request) {
