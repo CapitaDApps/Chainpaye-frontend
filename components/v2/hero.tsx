@@ -66,9 +66,11 @@ export function Hero() {
           Send and receive money worldwide 🇬🇧🇺🇸🇳🇬 — instantly on WhatsApp
         </p>
 
-        <div className="flex flex-col items-center justify-center gap-4 sm:flex-row mb-16">
+        <div className="flex flex-col items-center justify-center gap-4 sm:flex-row mb-16 relative z-30">
           <Link
-            href="#"
+            href="https://wa.link/m25oou"
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex items-center gap-2 rounded-lg bg-[#003DFF] dark:text-[#00174F] dark:bg-[#7DA2FF] px-8 py-3.5 text-base font-medium text-[#FFFFFF] transition-colors"
           >
             <WhatsappIcon />
@@ -142,9 +144,12 @@ export function Hero() {
             </div>
           </div>
 
-          <button className="fixed bottom-10 right-6 md:right-10 bg-[#003DFF] hover:bg-[#00174F] text-white p-3 rounded-full shadow-xl transition-transform hover:scale-110 z-50">
+          <a
+            href="mailto:Inquiry@chainpaye.com"
+            className="fixed bottom-10 right-6 md:right-10 bg-[#003DFF] hover:bg-[#00174F] text-white p-3 rounded-full shadow-xl transition-transform hover:scale-110 z-50"
+          >
             <HelpCircle className="h-6 w-6" />
-          </button>
+          </a>
         </FadeIn>
       </div>
     </section>

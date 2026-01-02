@@ -44,7 +44,7 @@ export function VisaCard() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % THEMES.length);
-    }, 2000);
+    }, 4000);
     return () => clearInterval(interval);
   }, []);
 

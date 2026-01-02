@@ -74,7 +74,9 @@ export function Navbar() {
           </button>
 
           <Link
-            href="#"
+            href="https://wa.link/m25oou"
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex items-center gap-2 rounded-lg bg-[#003DFF] dark:text-[#00174F] dark:bg-[#7DA2FF] px-8 py-3.5 text-base font-medium text-[#FFFFFF] transition-colors"
           >
             <WhatsappIcon />
@@ -126,7 +128,9 @@ export function Navbar() {
               About
             </Link>
             <Link
-              href="#"
+              href="https://wa.link/m25oou"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-2 rounded-lg bg-[#003DFF] dark:text-[#00174F] dark:bg-[#7DA2FF] px-8 py-3.5 text-base font-medium text-[#FFFFFF] transition-colors"
             >
               <WhatsappIcon />

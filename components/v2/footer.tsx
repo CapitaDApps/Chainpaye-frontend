@@ -4,12 +4,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-import WhatsappV2Icon from "../whatsappV2-icon";
+import InstagramIcon from "../instagram";
 import XIcon from "../x";
 import TictokIcon from "../tictok";
-import DiscordIcon from "../discord";
 import GmailIcon from "../gmail";
-
 
 export function Footer() {
   const { theme, setTheme } = useTheme();
@@ -78,19 +76,29 @@ export function Footer() {
           </div>
 
           <div className="flex gap-6 text-gray-600 dark:text-gray-400">
-            <a href="#" className="hover:text-green-600 transition-colors">
-              <WhatsappV2Icon />
+            <a
+              href="https://www.instagram.com/chainpaye?igsh=djQxM2x4eTRmMGx0&utm_source=qr"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors"
+            >
+              <InstagramIcon />
             </a>
-            <a href="#" className="hover:text-black transition-colors">
+            <a
+              href="https://x.com/chainpaye?s=21"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-black transition-colors"
+            >
               <XIcon />
             </a>
             <a href="#" className="hover:text-black transition-colors">
               <TictokIcon />
             </a>
-            <a href="#" className="hover:text-purple-600 transition-colors">
-              <DiscordIcon />
-            </a>
-            <a href="#">
+            <a
+              href="mailto:support@chainpaye.com"
+              className="hover:text-red-600 transition-colors"
+            >
               <GmailIcon />
             </a>
           </div>

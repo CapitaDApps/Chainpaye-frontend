@@ -9,9 +9,67 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://chainpaye.com"),
   title: "Chainpaye - Global Payments for Africa",
   description:
-    "Empowering businesses and individuals to collect payments globally without complexity.",
+    "For Individuals. Send and receive money instantly via a simple WhatsApp message, just like chatting with a friend. No extra apps needed. Pay friends, family, or split bills with ChainPaye fast, secure, and easy.",
+  keywords: [
+    "cross-border payments",
+    "Chainpaye",
+    "WhatsApp payments",
+    "stablecoins",
+    "remittance",
+    "Africa payments",
+    "Web3 payment",
+    "crypto cashout",
+  ],
+  openGraph: {
+    title: "Chainpaye - Global Payments for Africa",
+    description:
+      "For Individuals. Send and receive money instantly via a simple WhatsApp message, just like chatting with a friend. No extra apps needed. Pay friends, family, or split bills with ChainPaye fast, secure, and easy.",
+    url: "https://chainpaye.com",
+    siteName: "Chainpaye",
+    images: [
+      {
+        url: "/assets/chainpaye.png",
+        width: 1200,
+        height: 630,
+        alt: "Chainpaye - Global Payments",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Chainpaye - Global Payments for Africa",
+    description:
+      "For Individuals. Send and receive money instantly via a simple WhatsApp message, just like chatting with a friend. No extra apps needed. Pay friends, family, or split bills with ChainPaye fast, secure, and easy.",
+    images: ["/assets/chainpaye.png"],
+    creator: "@chainpaye",
+  },
+  icons: {
+    icon: [
+      { url: "/assets/chainpaye.png" },
+      {
+        url: "/assets/chainpaye.png",
+        sizes: "192x192",
+        type: "image/png",
+      },
+      {
+        url: "/assets/chainpaye.png",
+        sizes: "512x512",
+        type: "image/png",
+      },
+    ],
+    apple: [
+      {
+        url: "/assets/chainpaye.png",
+        sizes: "180x180",
+        type: "image/png",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({
