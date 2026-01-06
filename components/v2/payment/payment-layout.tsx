@@ -43,7 +43,7 @@ export function PaymentLayout({ children, step, onBack }: PaymentLayoutProps) {
               </div>
             </div>
 
-            <div className="mt-8 md:mt-0 flex items-center gap-2 text-xs text-gray-400 md:relative absolute bottom-4 left-1/2 transform -translate-x-1/2">
+            <div className="mt-8 w-fit text-nowrap md:mt-0 flex items-center gap-2 text-xs text-gray-400 md:relative absolute bottom-4 left-1/2 transform -translate-x-1/2">
               <span>Powered by</span>
               <span className="font-bold text-[#111528] dark:text-white">
                 Chainpaye
