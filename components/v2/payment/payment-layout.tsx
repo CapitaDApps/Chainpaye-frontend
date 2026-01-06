@@ -70,7 +70,7 @@ export function PaymentLayout({ children, step, onBack }: PaymentLayoutProps) {
           </div>
 
           {/* Footer Outside */}
-          <div className=" flex items-start absolute left-14   bottom-6 gap-2 text-xs text-gray-400 ">
+          <div className=" flex items-start absolute md:left-14 left-1/2 transform -translate-x-1/2 md:translate-x-0   bottom-6 gap-2 text-xs text-gray-400 ">
             <span>Powered by</span>
             <span className="font-normal text-[#111528] dark:text-white">
               Chainpaye

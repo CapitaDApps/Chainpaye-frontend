@@ -2,7 +2,8 @@
 
 import { Download, Send } from "lucide-react";
 import Image from "next/image";
-import logo from "../../../public/assets/Favicon.png"
+import logo from "../../../public/assets/Favicon.png";
+
 export function Confirmation() {
   return (
     <div className="flex flex-col items-center justify-center h-full min-h-[400px]">
@@ -17,10 +18,28 @@ export function Confirmation() {
   );
 }
 
-export function SuccessReceipt() {
+interface SuccessReceiptProps {
+  amount: string;
+  refNumber: string;
+  date: string;
+  method: string;
+  senderName: string;
+}
+
+export function SuccessReceipt({
+  amount,
+  refNumber,
+  date,
+  method,
+  senderName,
+}: SuccessReceiptProps) {
+  const handleDownloadPDF = () => {
+    window.print();
+  };
+
   return (
     <div className="flex flex-col items-center shadow-2xl rounded-t-4xl mx-auto relative px-4 py-8 max-w-[400px]">
-      <div className="absolute -top-32 left-1/2 transform -translate-x-1/2">
+      <div className="absolute -top-28 left-1/2 transform -translate-x-1/2">
         <div className="w-36 h-36 bg-white rounded-full flex items-center justify-center shadow-[0_4px_20px_rgba(0,0,0,0.08)]">
           <div className="w-16 h-16 bg-[#23A26D] rounded-full flex items-center justify-center">
             <Send className="w-5 h-5 text-white -ml-0.5 mt-0.5 transform -rotate-12" />
@@ -45,7 +64,7 @@ export function SuccessReceipt() {
           Total Payment
         </div>
         <div className="text-2xl font-semibold text-[#121212] dark:text-white">
-          $250
+          {amount}
         </div>
       </div>
 
@@ -54,30 +73,33 @@ export function SuccessReceipt() {
         <div className="p-3 border border-[#F3F4F6] dark:border-gray-800 rounded-lg">
           <div className="text-[11px] text-gray-400 mb-1">Ref Number</div>
           <div className="font-medium text-[#111528] dark:text-white text-sm">
-            000085752257
+            {refNumber}
           </div>
         </div>
         <div className="p-3 border border-[#F3F4F6] dark:border-gray-800 rounded-lg">
           <div className="text-[11px] text-gray-400 mb-1">Payment Time</div>
           <div className="font-medium text-[#111528] dark:text-white text-sm">
-            25 Feb 2025, 13:22
+            {date}
           </div>
         </div>
         <div className="p-3 border border-[#F3F4F6] dark:border-gray-800 rounded-lg">
           <div className="text-[11px] text-gray-400 mb-1">Payment Method</div>
           <div className="font-medium text-[#111528] dark:text-white text-sm">
-            Bank Transfer
+            {method}
           </div>
         </div>
         <div className="p-3 border border-[#F3F4F6] dark:border-gray-800 rounded-lg">
           <div className="text-[11px] text-gray-400 mb-1">Sender Name</div>
           <div className="font-medium text-[#111528] dark:text-white text-sm">
-            John Doe
+            {senderName}
           </div>
         </div>
       </div>
 
-      <button className="flex items-center gap-2 text-gray-500 hover:text-gray-900 dark:hover:text-white transition group">
+      <button
+        className="flex items-center gap-2 text-gray-500 hover:text-gray-900 dark:hover:text-white transition group"
+        onClick={handleDownloadPDF}
+      >
         <Download className="w-4 h-4 text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
         <span className="text-sm font-medium">Download PDF receipt</span>
       </button>

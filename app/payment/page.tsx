@@ -57,7 +57,15 @@ export default function PaymentPage() {
 
       {step === "confirming" && <Confirmation />}
 
-      {step === "success" && <SuccessReceipt />}
+      {step === "success" && (
+        <SuccessReceipt
+          amount="$250"
+          refNumber="000085752257"
+          date="25 Feb 2025, 13:22"
+          method={selectedMethod === "card" ? "Card Payment" : "Bank Transfer"}
+          senderName="John Doe"
+        />
+      )}
     </PaymentLayout>
   );
 }
