@@ -83,17 +83,17 @@ export function DeveloperSection() {
                 <span className="text-[#79c0ff]">ChainpayeWidget</span>({`{`}{" "}
                 <br />
                 &nbsp;&nbsp;<span className="text-[#79c0ff]">env</span>:{" "}
-                <span className="text-[#a5d6ff]">"production"</span>,<br />
+                <span className="text-[#a5d6ff]">&quot;production&quot;</span>,<br />
                 &nbsp;&nbsp;<span className="text-[#79c0ff]">action</span>:{" "}
-                <span className="text-[#a5d6ff]">"send_payment"</span>,<br />
+                <span className="text-[#a5d6ff]">&quot;send_payment&quot;</span>,<br />
                 &nbsp;&nbsp;<span className="text-[#79c0ff]">fromCurrency</span>
-                : <span className="text-[#a5d6ff]">"USD"</span>,<br />
+                : <span className="text-[#a5d6ff]">&quot;USD&quot;</span>,<br />
                 &nbsp;&nbsp;<span className="text-[#79c0ff]">
                   toCurrency
-                </span>: <span className="text-[#a5d6ff]">"NGN"</span>,<br />
+                </span>: <span className="text-[#a5d6ff]">&quot;NGN&quot;</span>,<br />
                 &nbsp;&nbsp;<span className="text-[#79c0ff]">apiKey</span>:{" "}
                 <span className="text-[#a5d6ff]">
-                  "ck_live_8911JK90sPqA00217x"
+                  &quot;ck_live_8911JK90sPqA00217x&quot;
                 </span>
                 ,<br />
                 {`}`});

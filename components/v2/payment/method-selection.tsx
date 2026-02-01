@@ -24,7 +24,7 @@ export function MethodSelection({
           <h3 className="text-xs font-bold text-[#111528] uppercase tracking-wider mb-2">
             CHAINPAYE CHECKOUT
           </h3>
-          <p className="text-gray-600 dark:text-gray-300 text-sm">
+          <p className="text-gray-600  text-sm">
             Use one of the payment methods below to pay $250 to Blessing Idowu
           </p>
         </div>
@@ -34,11 +34,11 @@ export function MethodSelection({
             Payment method
           </div>
 
-          <div className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+          <div className="border border-gray-200 rounded-xl overflow-hidden">
             <label
               onClick={() => onSelectMethod("card")}
-              className={`flex items-center p-4 cursor-pointer transition-all border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 ${
-                selectedMethod === "card" ? "bg-gray-50 dark:bg-gray-800" : ""
+              className={`flex items-center p-4 cursor-pointer transition-all border-b border-gray-100  hover:bg-gray-50 ${
+                selectedMethod === "card" ? "bg-gray-50 " : ""
               }`}
             >
               <div
@@ -53,8 +53,8 @@ export function MethodSelection({
                 )}
               </div>
 
-              <CreditCard className="w-5 h-5 text-gray-900 dark:text-gray-300 mr-3" />
-              <span className="font-medium text-gray-900 dark:text-white flex-1">
+              <CreditCard className="w-5 h-5 text-gray-900  mr-3" />
+              <span className="font-medium text-gray-900  flex-1">
                 Pay with card
               </span>
 
@@ -85,8 +85,8 @@ export function MethodSelection({
             {/* Bank Transfer Option */}
             <label
               onClick={() => onSelectMethod("bank")}
-              className={`flex items-center p-4 cursor-pointer transition-all hover:bg-gray-50 dark:hover:bg-gray-800 ${
-                selectedMethod === "bank" ? "bg-gray-50 dark:bg-gray-800" : ""
+              className={`flex items-center p-4 cursor-pointer transition-all hover:bg-gray-50 ${
+                selectedMethod === "bank" ? "bg-gray-50 " : ""
               }`}
             >
               <div
@@ -100,8 +100,8 @@ export function MethodSelection({
                   <div className="w-2.5 h-2.5 rounded-full bg-blue-600" />
                 )}
               </div>
-              <Landmark className="w-5 h-5 text-gray-900 dark:text-gray-300 mr-3" />
-              <span className="font-medium text-gray-900 dark:text-white">
+              <Landmark className="w-5 h-5 text-gray-900  mr-3" />
+              <span className="font-medium text-gray-900 ">
                 Pay with Bank Transfer
               </span>
             </label>
