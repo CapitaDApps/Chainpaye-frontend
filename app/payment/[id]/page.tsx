@@ -8,6 +8,7 @@ import {
   Confirmation,
   SuccessReceipt,
 } from "@/components/v2/payment/confirmation-success";
+import { useParams, usePathname, useRouter } from "next/navigation";
 
 export default function PaymentPage() {
   const [step, setStep] = useState<
@@ -16,7 +17,8 @@ export default function PaymentPage() {
   const [selectedMethod, setSelectedMethod] = useState<"card" | "bank" | null>(
     null
   );
-
+  const path = useParams()
+  console.log(path?.id)
   const handlePay = () => {
     if (selectedMethod === "bank") {
       setStep("bank-details");
