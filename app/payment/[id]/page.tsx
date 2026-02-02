@@ -8,7 +8,7 @@ import {
   Confirmation,
   SuccessReceipt,
 } from "@/components/v2/payment/confirmation-success";
-import { useParams, usePathname, useRouter } from "next/navigation";
+import { useParams,} from "next/navigation";
 
 export default function PaymentPage() {
   const [step, setStep] = useState<
