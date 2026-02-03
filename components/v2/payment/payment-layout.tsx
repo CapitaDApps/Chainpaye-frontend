@@ -12,7 +12,7 @@ export function PaymentLayout({ children, step, onBack }: PaymentLayoutProps) {
   return (
     <div className="min-h-screen bg-[#F5F5F5] flex items-center justify-center p-4 font-sans">
       {step === "method" ? (
-        <div className="bg-white dark:bg-[#1A1F36] rounded-[32px] w-full max-w-[1100px] min-h-[600px] flex justify-between flex-col md:flex-row p-8 md:p-12 gap-8 md:gap-20 shadow-sm relative pb-16">
+        <div className="bg-white  rounded-[32px] w-full max-w-[1100px] min-h-[600px] flex justify-between flex-col md:flex-row p-8 md:p-12 gap-8 md:gap-20 shadow-sm relative pb-16">
           {/* Left Column: Summary */}
           <div className="flex flex-col justify-between w-full md:max-w-[400px] shrink-0">
             <div>
