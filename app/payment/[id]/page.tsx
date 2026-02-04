@@ -13,6 +13,7 @@ import { usePaymentVerification } from "@/hooks/usePaymentVerification";
 
 interface PaymentData {
   id: string;
+  name:string;
   amount: string;
   currency: string;
   selectedCurrency: string;

@@ -22,8 +22,8 @@ const fetcher = async (url: string, params: PaymentVerificationParams): Promise<
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'admin': process.env.NEXT_PUBLIC_TORONET_ADMIN || '0x6b03eea493cfeab887f40969e40b069bb334f632',
-        'adminpwd': process.env.NEXT_PUBLIC_TORONET_ADMIN_PWD || 'Holland234$',
+        'admin': process.env.NEXT_PUBLIC_TORONET_ADMIN || '',
+        'adminpwd': process.env.NEXT_PUBLIC_TORONET_ADMIN_PWD || '',
       },
       body: JSON.stringify({
         op: "recordfiattransaction",
