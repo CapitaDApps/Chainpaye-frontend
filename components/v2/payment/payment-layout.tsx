@@ -4,11 +4,18 @@ import Image from "next/image";
 
 interface PaymentLayoutProps {
   children: React.ReactNode;
-  step: "method" | "bank-details" | "confirming" | "success";
+  step: "method" | "bank-details" | "confirming" | "success" | "loading" | "error";
   onBack?: () => void;
+  paymentData?: {
+    amount: string;
+    currency: string;
+    description: string;
+    paymentType: string;
+    name:string
+  } | null;
 }
 
-export function PaymentLayout({ children, step, onBack }: PaymentLayoutProps) {
+export function PaymentLayout({ children, step, onBack, paymentData }: PaymentLayoutProps) {
   return (
     <div className="min-h-screen bg-[#F5F5F5] flex items-center justify-center p-4 font-sans">
       {step === "method" ? (
@@ -20,20 +27,20 @@ export function PaymentLayout({ children, step, onBack }: PaymentLayoutProps) {
                 You&apos;re paying:
               </div>
               <h1 className="text-5xl font-bold text-[#111528] mb-10">
-                $250
+                {paymentData ? `${paymentData.currency} ${paymentData.amount}` : "$250"}
               </h1>
 
               <div className="rounded-xl border border-gray-100 p-0 overflow-hidden">
                 <div className="flex justify-between py-4 px-4 border-b border-gray-50  bg-white ">
                   <span className="text-gray-500 text-sm">Bill from</span>
                   <span className="font-medium text-[#111528] text-sm">
-                    Blessing Idowu
+                    `${paymentData?.name}`
                   </span>
                 </div>
                 <div className="flex justify-between py-4 px-4 bg-white">
                   <span className="text-gray-500 text-sm">Purpose</span>
                   <span className="font-medium text-[#111528] text-sm text-right">
-                    Payment for website design
+                    {paymentData?.description || "Payment for website design"}
                   </span>
                 </div>
               </div>
