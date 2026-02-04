@@ -44,6 +44,9 @@ export function MethodSelection({
         <div className="space-y-4 mb-8">
           <div className="text-sm font-medium text-gray-500 mb-2">
             Payment method
+            {Object.values(availableMethods).filter(Boolean).length === 1 && (
+              <span className="text-xs text-blue-600 ml-2">(Only available option)</span>
+            )}
           </div>
 
           <div className="border border-gray-200 rounded-xl overflow-hidden">
@@ -122,6 +125,11 @@ export function MethodSelection({
               <Landmark className={`w-5 h-5 mr-3 ${availableMethods.bank ? "text-gray-900" : "text-gray-400"}`} />
               <span className={`font-medium ${availableMethods.bank ? "text-gray-900" : "text-gray-400"}`}>
                 Pay with Bank Transfer
+                {!availableMethods.bank && (
+                  <span className="text-xs text-gray-400 block">
+                    Not available for {paymentData.currency} card payments
+                  </span>
+                )}
               </span>
             </label>
           </div>

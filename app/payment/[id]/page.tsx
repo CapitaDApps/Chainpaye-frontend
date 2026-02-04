@@ -13,7 +13,7 @@ import { usePaymentVerification } from "@/hooks/usePaymentVerification";
 
 interface PaymentData {
   id: string;
-  name:string;
+  name: string;
   amount: string;
   currency: string;
   selectedCurrency: string;
@@ -22,6 +22,7 @@ interface PaymentData {
   token: string;
   paymentType: string;
   successUrl: string;
+  redirectUrl?: string; // For card payments
   toronetReference: string;
   transactionId: string;
   paymentInitialization: {
@@ -36,6 +37,7 @@ interface PaymentData {
       newwallet?: boolean; // For NGN payments
       amount?: number; // For NGN payments
       instruction: string; // For both NGN and USD payments
+      redirectUrl?: string; // For card payments
     };
   };
 }
@@ -190,11 +192,26 @@ export default function PaymentPage() {
   }, [paymentId]);
 
   const handlePay = () => {
+    console.log("handlePay called with:", { selectedMethod, paymentData });
+    
     if (selectedMethod === "bank") {
       setStep("bank-details");
     } else if (selectedMethod === "card") {
-      // Logic for Card Payment - redirects or opens external provider
-      alert("Redirecting to Card Payment Provider...");
+      // Get redirect URL from payment data
+      const redirectUrl = paymentData?.redirectUrl || 
+                         paymentData?.paymentInitialization?.toronetResponse?.redirectUrl;
+      
+      console.log("Card payment redirect URL:", redirectUrl);
+      
+      if (redirectUrl) {
+        console.log("Redirecting to card payment provider:", redirectUrl);
+        // Redirect to external card payment provider
+        window.location.href = redirectUrl;
+      } else {
+        // Fallback if no redirect URL is provided
+        console.error("No redirect URL found for card payment");
+        alert("Card payment redirect URL not available. Please contact support.");
+      }
     }
   };
 
@@ -247,21 +264,38 @@ export default function PaymentPage() {
   // Determine available payment methods based on currency and payment type
   const isNGN = paymentData?.currency === "NGN";
   const isUSDBank = paymentData?.currency === "USD" && paymentData?.paymentType === "bank" && paymentData?.token === "USD";
+  const isCardPayment = paymentData?.paymentType === "card" && paymentData?.token && 
+    ["GBP", "EUR", "USD"].includes(paymentData?.currency || "");
   
   console.log("Payment method logic:", {
     currency: paymentData?.currency,
     paymentType: paymentData?.paymentType,
     token: paymentData?.token,
     isNGN,
-    isUSDBank
+    isUSDBank,
+    isCardPayment
   });
   
   const availableMethods = {
     card: !isNGN && !isUSDBank, // Card disabled for NGN or USD bank payments
-    bank: true, // Bank transfer always available
+    bank: !isCardPayment, // Bank transfer disabled for card payments (GBP/EUR/USD)
   };
   
   console.log("Available methods:", availableMethods);
+
+  // Auto-select payment method if only one is available
+  useEffect(() => {
+    if (paymentData && !selectedMethod) {
+      const availableCount = Object.values(availableMethods).filter(Boolean).length;
+      if (availableCount === 1) {
+        if (availableMethods.card) {
+          setSelectedMethod("card");
+        } else if (availableMethods.bank) {
+          setSelectedMethod("bank");
+        }
+      }
+    }
+  }, [paymentData, availableMethods, selectedMethod]);
 
   return (
     <PaymentLayout step={step} onBack={handleBack} paymentData={paymentData}>
