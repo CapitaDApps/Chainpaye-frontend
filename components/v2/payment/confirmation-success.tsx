@@ -4,16 +4,47 @@ import { Download, Send } from "lucide-react";
 import Image from "next/image";
 import logo from "../../../public/assets/Favicon.png";
 
-export function Confirmation() {
+interface ConfirmationProps {
+  isVerifying?: boolean;
+  verificationError?: any;
+}
+
+export function Confirmation({ isVerifying = true, verificationError }: ConfirmationProps = {}) {
   return (
     <div className="flex flex-col items-center justify-center h-full min-h-[400px]">
       <div className="relative mb-6">
         <Image src={logo} alt="Chainpaye" width={100} height={100} />
       </div>
       <h3 className="text-lg font-medium text-gray-600  mb-6 uppercase tracking-wide">
-        CONFIRMING PAYMENT
+        {isVerifying ? "CONFIRMING PAYMENT" : "PAYMENT VERIFICATION"}
       </h3>
-      <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+      
+      {isVerifying ? (
+        <div className="flex flex-col items-center">
+          <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+          <p className="text-sm text-gray-500 text-center max-w-md">
+            We're verifying your payment with our banking partner. This may take a few moments...
+          </p>
+        </div>
+      ) : (
+        <div className="text-center">
+          <p className="text-sm text-gray-500">Payment verification in progress</p>
+        </div>
+      )}
+      
+      {verificationError && (
+        <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <p className="text-sm text-yellow-800">
+            Still verifying... This may take a few minutes for the payment to be processed.
+          </p>
+          <details className="mt-2">
+            <summary className="text-xs text-yellow-600 cursor-pointer">Technical Details</summary>
+            <pre className="text-xs text-yellow-700 mt-1 whitespace-pre-wrap">
+              {JSON.stringify(verificationError, null, 2)}
+            </pre>
+          </details>
+        </div>
+      )}
     </div>
   );
 }
