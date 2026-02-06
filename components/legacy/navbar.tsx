@@ -68,7 +68,7 @@ export function Navbar() {
           </button>
 
           <Link
-            href="https://wa.me/message/5RK3UV25NBPGH1"
+            href="https://wa.me/message/RB4AEJEFPZE7G1"
             className="flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/20"
           >
             <WhatsappIcon />

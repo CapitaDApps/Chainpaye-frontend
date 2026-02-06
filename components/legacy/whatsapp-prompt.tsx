@@ -43,7 +43,7 @@ export function WhatsappPrompt() {
               WhatsApp chat.
             </p>
             <Link
-              href="https://wa.me/message/5RK3UV25NBPGH1"
+              href="https://wa.me/message/RB4AEJEFPZE7G1"
               className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-8 py-4 text-white font-semibold transition-colors hover:bg-blue-700"
             >
               <MessageCircle className="h-5 w-5" />

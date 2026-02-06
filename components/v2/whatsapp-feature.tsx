@@ -34,7 +34,7 @@ export function WhatsappFeature() {
             </p>
 
             <Link
-              href="https://wa.me/message/5RK3UV25NBPGH1"
+              href="https://wa.me/message/RB4AEJEFPZE7G1"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-lg bg-[#003DFF] dark:bg-[#7DA2FF] dark:text-[#00174F] px-6 py-3 text-base font-bold text-white transition-colors shadow-lg shadow-blue-500/20"

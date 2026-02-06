@@ -20,7 +20,7 @@ export function CryptoCashout() {
               Send crypto, confirm once, and receive money in your Bank account
             </p>
             <Link
-              href="https://wa.me/message/5RK3UV25NBPGH1"
+              href="https://wa.me/message/RB4AEJEFPZE7G1"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-lg bg-[#003DFF] dark:text-[#00174F] dark:bg-[#7DA2FF] px-6 py-3 text-base font-bold text-white  transition-colors shadow-lg shadow-blue-500/20"
