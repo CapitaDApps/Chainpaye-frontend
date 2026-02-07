@@ -27,10 +27,26 @@ interface BankTransferProps {
   setSenderName: (name: string) => void;
   senderPhone: string;
   setSenderPhone: (phone: string) => void;
+  validationErrors: Array<{ field: string; message: string }>;
+  isSubmitting: boolean;
 }
 
-export function BankTransfer({ onSent, onChangeMethod, paymentData, senderName, setSenderName, senderPhone, setSenderPhone }: BankTransferProps) {
+export function BankTransfer({ 
+  onSent, 
+  onChangeMethod, 
+  paymentData, 
+  senderName, 
+  setSenderName, 
+  senderPhone, 
+  setSenderPhone,
+  validationErrors,
+  isSubmitting
+}: BankTransferProps) {
   const [copiedField, setCopiedField] = useState<string | null>(null);
+
+  const getFieldError = (fieldName: string) => {
+    return validationErrors.find(error => error.field === fieldName)?.message;
+  };
 
   const copyToClipboard = (text: string, field: string) => {
     navigator.clipboard.writeText(text);
@@ -131,12 +147,25 @@ export function BankTransfer({ onSent, onChangeMethod, paymentData, senderName, 
             <div
               className="flex justify-between items-center group cursor-pointer"
               onClick={() => copyToClipboard(usdBankDetails.routingNumber, "routing")}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  copyToClipboard(usdBankDetails.routingNumber, "routing");
+                }
+              }}
+              aria-label="Copy routing number to clipboard"
             >
               <div>
                 <div className="text-xs text-gray-500 uppercase mb-1">ROUTING NUMBER</div>
                 <div className="font-medium text-gray-900">{usdBankDetails.routingNumber}</div>
               </div>
-              <button className="text-gray-400 hover:text-blue-500 transition">
+              <button 
+                className="text-gray-400 hover:text-blue-500 transition"
+                aria-label="Copy routing number"
+                tabIndex={-1}
+              >
                 {copiedField === "routing" ? (
                   <Check className="w-4 h-4 text-green-500" />
                 ) : (
@@ -148,12 +177,25 @@ export function BankTransfer({ onSent, onChangeMethod, paymentData, senderName, 
             <div
               className="flex justify-between items-center group cursor-pointer"
               onClick={() => copyToClipboard(usdBankDetails.accountNumber, "account")}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  copyToClipboard(usdBankDetails.accountNumber, "account");
+                }
+              }}
+              aria-label="Copy account number to clipboard"
             >
               <div>
                 <div className="text-xs text-gray-500 uppercase mb-1">ACCOUNT NUMBER</div>
                 <div className="font-medium text-gray-900">{usdBankDetails.accountNumber}</div>
               </div>
-              <button className="text-gray-400 hover:text-blue-500 transition">
+              <button 
+                className="text-gray-400 hover:text-blue-500 transition"
+                aria-label="Copy account number"
+                tabIndex={-1}
+              >
                 {copiedField === "account" ? (
                   <Check className="w-4 h-4 text-green-500" />
                 ) : (
@@ -165,14 +207,27 @@ export function BankTransfer({ onSent, onChangeMethod, paymentData, senderName, 
             <div
               className="flex justify-between items-center group cursor-pointer"
               onClick={() => copyToClipboard(usdBankDetails.amount, "amount")}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  copyToClipboard(usdBankDetails.amount, "amount");
+                }
+              }}
+              aria-label="Copy amount to clipboard"
             >
               <div>
                 <div className="text-xs text-gray-500 uppercase mb-1">AMOUNT</div>
                 <div className="font-medium text-gray-900">
-                  {paymentData.currency} {usdBankDetails.amount}
+                  {paymentData.currency} {Number(usdBankDetails.amount).toLocaleString()}
                 </div>
               </div>
-              <button className="text-gray-400 hover:text-blue-500 transition">
+              <button 
+                className="text-gray-400 hover:text-blue-500 transition"
+                aria-label="Copy amount"
+                tabIndex={-1}
+              >
                 {copiedField === "amount" ? (
                   <Check className="w-4 h-4 text-green-500" />
                 ) : (
@@ -209,12 +264,25 @@ export function BankTransfer({ onSent, onChangeMethod, paymentData, senderName, 
             <div
               className="flex justify-between items-center group cursor-pointer"
               onClick={() => copyToClipboard(ngnBankDetails.accountNumber, "account")}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  copyToClipboard(ngnBankDetails.accountNumber, "account");
+                }
+              }}
+              aria-label="Copy account number to clipboard"
             >
               <div>
                 <div className="text-xs text-gray-500 uppercase mb-1">ACCOUNT NUMBER</div>
                 <div className="font-medium text-gray-900">{ngnBankDetails.accountNumber}</div>
               </div>
-              <button className="text-gray-400 hover:text-blue-500 transition">
+              <button 
+                className="text-gray-400 hover:text-blue-500 transition"
+                aria-label="Copy account number"
+                tabIndex={-1}
+              >
                 {copiedField === "account" ? (
                   <Check className="w-4 h-4 text-green-500" />
                 ) : (
@@ -226,6 +294,15 @@ export function BankTransfer({ onSent, onChangeMethod, paymentData, senderName, 
             <div
               className="flex justify-between items-center group cursor-pointer"
               onClick={() => copyToClipboard(ngnBankDetails.amount.toString(), "amount")}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  copyToClipboard(ngnBankDetails.amount.toString(), "amount");
+                }
+              }}
+              aria-label="Copy amount to clipboard"
             >
               <div>
                 <div className="text-xs text-gray-500 uppercase mb-1">AMOUNT</div>
@@ -233,7 +310,11 @@ export function BankTransfer({ onSent, onChangeMethod, paymentData, senderName, 
                   {paymentData.currency} {ngnBankDetails.amount.toLocaleString()}
                 </div>
               </div>
-              <button className="text-gray-400 hover:text-blue-500 transition">
+              <button 
+                className="text-gray-400 hover:text-blue-500 transition"
+                aria-label="Copy amount"
+                tabIndex={-1}
+              >
                 {copiedField === "amount" ? (
                   <Check className="w-4 h-4 text-green-500" />
                 ) : (
@@ -259,9 +340,18 @@ export function BankTransfer({ onSent, onChangeMethod, paymentData, senderName, 
             value={senderName}
             onChange={(e) => setSenderName(e.target.value)}
             placeholder="Enter your full name"
-            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
+              getFieldError('name') ? 'border-red-300 bg-red-50' : 'border-gray-200'
+            }`}
             required
+            aria-describedby={getFieldError('name') ? "name-error" : undefined}
+            aria-invalid={!!getFieldError('name')}
           />
+          {getFieldError('name') && (
+            <p id="name-error" className="mt-1 text-sm text-red-600" role="alert">
+              {getFieldError('name')}
+            </p>
+          )}
         </div>
 
         <div>
@@ -274,17 +364,34 @@ export function BankTransfer({ onSent, onChangeMethod, paymentData, senderName, 
             value={senderPhone}
             onChange={(e) => setSenderPhone(e.target.value)}
             placeholder="+1-555-0123"
-            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
+              getFieldError('phone') ? 'border-red-300 bg-red-50' : 'border-gray-200'
+            }`}
+            aria-describedby={getFieldError('phone') ? "phone-error" : undefined}
+            aria-invalid={!!getFieldError('phone')}
           />
+          {getFieldError('phone') && (
+            <p id="phone-error" className="mt-1 text-sm text-red-600" role="alert">
+              {getFieldError('phone')}
+            </p>
+          )}
         </div>
       </div>
 
       <button
         onClick={onSent}
-        disabled={!senderName.trim()}
-        className="w-full py-4 rounded-xl font-medium text-white bg-[#003DFF] hover:bg-[#002dbf] shadow-lg shadow-blue-500/20 transition-all mb-4 disabled:opacity-50 disabled:cursor-not-allowed"
+        disabled={!senderName.trim() || isSubmitting}
+        className="w-full py-4 rounded-xl font-medium text-white bg-[#003DFF] hover:bg-[#002dbf] shadow-lg shadow-blue-500/20 transition-all mb-4 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        aria-label={isSubmitting ? "Processing payment..." : "Confirm payment sent"}
       >
-        I&apos;ve sent the money
+        {isSubmitting ? (
+          <>
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+            Processing...
+          </>
+        ) : (
+          "I've sent the money"
+        )}
       </button>
 
       <button

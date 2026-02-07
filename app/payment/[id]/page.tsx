@@ -10,6 +10,13 @@ import {
 } from "@/components/v2/payment/confirmation-success";
 import { useParams } from "next/navigation";
 import { usePaymentVerification } from "@/lib/hooks/usePaymentVerification";
+import { PaymentSkeleton } from "@/components/ui/skeleton";
+import { PaymentProgress } from "@/components/ui/progress-indicator";
+import { fetchWithRetry, handleApiError, trackEvent, reportError, createSession, validateSession, clearSession, checkRateLimit } from "@/lib/utils/api";
+import { validateSenderInfo, sanitizeName, sanitizePhoneNumber, ValidationError } from "@/lib/utils/validation";
+import { paymentCache, cachedFetch, CACHE_KEYS } from "@/lib/utils/cache";
+import { performanceMonitor, measureAsync } from "@/lib/utils/performance";
+import { registerServiceWorker, setupOnlineOfflineListeners, isOnline } from "@/lib/utils/service-worker";
 
 interface PaymentData {
   id: string;
@@ -55,8 +62,62 @@ export default function PaymentPage() {
   const [verificationTimeout, setVerificationTimeout] = useState<NodeJS.Timeout | null>(null);
   const [senderName, setSenderName] = useState<string>("");
   const [senderPhone, setSenderPhone] = useState<string>("");
+  const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [sessionId, setSessionId] = useState<string>("");
+  const [rateLimitExceeded, setRateLimitExceeded] = useState(false);
+  const [isOffline, setIsOffline] = useState(false);
   const params = useParams();
   const paymentId = params?.id as string;
+
+  // Initialize session, performance monitoring, and service worker
+  useEffect(() => {
+    if (paymentId) {
+      // Register service worker
+      registerServiceWorker();
+      
+      // Setup online/offline listeners
+      const cleanup = setupOnlineOfflineListeners(
+        () => setIsOffline(false),
+        () => setIsOffline(true)
+      );
+      
+      // Check initial online status
+      setIsOffline(!isOnline());
+      
+      // Check rate limiting
+      const rateLimit = checkRateLimit(`payment_access_${paymentId}`, 20, 60000); // 20 requests per minute
+      if (!rateLimit.allowed) {
+        setRateLimitExceeded(true);
+        setError("Too many requests. Please wait a moment and try again.");
+        setStep("error");
+        return cleanup;
+      }
+
+      // Create or validate session
+      if (!validateSession(paymentId)) {
+        const newSessionId = createSession(paymentId);
+        setSessionId(newSessionId);
+      }
+
+      // Track page view
+      trackEvent('payment_page_view', {
+        paymentId,
+        userAgent: navigator.userAgent,
+        timestamp: Date.now(),
+        isOnline: isOnline()
+      });
+
+      // Start performance monitoring
+      performanceMonitor.startTiming('payment_page_load', { paymentId });
+      
+      return cleanup;
+    }
+
+    return () => {
+      performanceMonitor.endTiming('payment_page_load');
+    };
+  }, [paymentId]);
 
   // Payment verification hook - must be called before early returns
   // Use safe access to avoid errors when paymentData is null
@@ -77,48 +138,94 @@ export default function PaymentPage() {
       if (!paymentId) {
         setError("Payment ID is required");
         setStep("error");
+        trackEvent('payment_error', { error: 'missing_payment_id' });
         return;
+      }
+
+      if (rateLimitExceeded) {
+        return; // Don't fetch if rate limited
       }
 
       try {
         console.log("Fetching payment data for ID:", paymentId);
-        const response = await fetch(`/api/v1/payment-links/${paymentId}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        console.log("Response status:", response.status);
         
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error("Response error:", errorText);
-          throw new Error(`HTTP ${response.status}: ${errorText}`);
-        }
-
-        const result = await response.json();
-        console.log("API Response:", result);
+        // Try to get from cache first
+        const cacheKey = CACHE_KEYS.PAYMENT_DATA(paymentId);
+        const cachedData = paymentCache.get<PaymentData>(cacheKey);
         
-        if (result.success) {
-          console.log("Payment data received:", result.data);
-          console.log("Currency:", result.data.currency);
-          console.log("Payment Type:", result.data.paymentType);
-          console.log("Token:", result.data.token);
-          setPaymentData(result.data);
+        if (cachedData) {
+          console.log("Using cached payment data");
+          setPaymentData(cachedData);
           setStep("method");
-        } else {
-          throw new Error(result.message || "Payment link is invalid");
+          trackEvent('payment_data_cached', { paymentId });
+          return;
         }
+
+        // Fetch with performance monitoring
+        const data = await measureAsync('fetch_payment_data', async () => {
+          const response = await fetchWithRetry(`/api/v1/payment-links/${paymentId}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }, 3);
+
+          console.log("Response status:", response.status);
+          
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error("Response error:", errorText);
+            throw new Error(`HTTP ${response.status}: ${errorText}`);
+          }
+
+          const result = await response.json();
+          console.log("API Response:", result);
+          
+          if (result.success) {
+            return result.data;
+          } else {
+            throw new Error(result.message || "Payment link is invalid");
+          }
+        }, { paymentId });
+
+        console.log("Payment data received:", data);
+        
+        // Cache the data
+        paymentCache.set(cacheKey, data, 5 * 60 * 1000); // Cache for 5 minutes
+        
+        setPaymentData(data);
+        setStep("method");
+        
+        trackEvent('payment_data_loaded', {
+          paymentId,
+          currency: data.currency,
+          amount: data.amount,
+          paymentType: data.paymentType
+        });
+        
       } catch (err) {
         console.error("Fetch error:", err);
-        setError(err instanceof Error ? err.message : "An error occurred");
+        const errorMessage = handleApiError(err, 'payment data fetch');
+        setError(errorMessage);
         setStep("error");
+        
+        // Report error
+        reportError(err as Error, {
+          context: 'payment_data_fetch',
+          paymentId,
+          timestamp: Date.now()
+        });
+        
+        trackEvent('payment_error', {
+          error: 'fetch_failed',
+          paymentId,
+          message: errorMessage
+        });
       }
     };
 
     fetchPaymentData();
-  }, [paymentId]);
+  }, [paymentId, rateLimitExceeded]);
 
   // Debug logging - must be before early returns
   useEffect(() => {
@@ -159,8 +266,16 @@ export default function PaymentPage() {
       if (verificationTimeout) {
         clearTimeout(verificationTimeout);
       }
+      
+      // Clear session on unmount (optional - you might want to keep it)
+      if (paymentId && step === "success") {
+        clearSession(paymentId);
+      }
+      
+      // Disconnect performance monitoring
+      performanceMonitor.endTiming('payment_page_session');
     };
-  }, [verificationTimeout]);
+  }, [verificationTimeout, paymentId, step]);
 
   // Auto-select payment method if only one is available - must be before early returns
   useEffect(() => {
@@ -192,6 +307,13 @@ export default function PaymentPage() {
     console.log("Processing payment success");
     setIsVerifying(false);
     
+    trackEvent('payment_verification_success', {
+      paymentId,
+      currency: paymentData?.currency,
+      amount: paymentData?.amount,
+      verificationData
+    });
+    
     // Clear timeout
     if (verificationTimeout) {
       clearTimeout(verificationTimeout);
@@ -207,6 +329,13 @@ export default function PaymentPage() {
   const handlePay = () => {
     console.log("handlePay called with:", { selectedMethod, paymentData });
     
+    trackEvent('payment_method_selected', {
+      method: selectedMethod,
+      paymentId,
+      currency: paymentData?.currency,
+      amount: paymentData?.amount
+    });
+    
     if (selectedMethod === "bank") {
       setStep("bank-details");
     } else if (selectedMethod === "card") {
@@ -218,18 +347,49 @@ export default function PaymentPage() {
       
       if (redirectUrl) {
         console.log("Redirecting to card payment provider:", redirectUrl);
+        trackEvent('card_payment_redirect', {
+          paymentId,
+          redirectUrl,
+          currency: paymentData?.currency
+        });
         // Redirect to external card payment provider
         window.location.href = redirectUrl;
       } else {
         // Fallback if no redirect URL is provided
         console.error("No redirect URL found for card payment");
-        alert("Card payment redirect URL not available. Please contact support.");
+        const errorMsg = "Card payment redirect URL not available. Please contact support.";
+        reportError(new Error(errorMsg), {
+          context: 'card_payment_redirect',
+          paymentId,
+          paymentData
+        });
+        alert(errorMsg);
       }
     }
   };
 
   const handleBankTransferSent = () => {
+    // Validate sender information
+    const errors = validateSenderInfo(senderName, senderPhone);
+    if (errors.length > 0) {
+      setValidationErrors(errors);
+      trackEvent('validation_error', {
+        paymentId,
+        errors: errors.map(e => e.field)
+      });
+      return;
+    }
+    
+    // Clear any previous validation errors
+    setValidationErrors([]);
+    
     console.log("Starting payment verification...");
+    trackEvent('payment_verification_started', {
+      paymentId,
+      currency: paymentData?.currency,
+      txid: paymentData?.paymentInitialization?.toronetResponse?.txid
+    });
+    
     setStep("confirming");
     setIsVerifying(true);
     
@@ -237,11 +397,39 @@ export default function PaymentPage() {
     const timeout = setTimeout(() => {
       console.log("Payment verification timeout reached");
       setIsVerifying(false);
-      setError("Payment verification timed out. Please contact support if your payment was successful.");
+      const errorMsg = "Payment verification timed out. Please contact support if your payment was successful.";
+      setError(errorMsg);
       setStep("error");
+      
+      trackEvent('payment_verification_timeout', {
+        paymentId,
+        duration: 15 * 60 * 1000
+      });
+      
+      reportError(new Error(errorMsg), {
+        context: 'payment_verification_timeout',
+        paymentId,
+        duration: 15 * 60 * 1000
+      });
     }, 15 * 60 * 1000); // 15 minutes
     
     setVerificationTimeout(timeout);
+  };
+
+  const handleSenderNameChange = (name: string) => {
+    const sanitized = sanitizeName(name);
+    setSenderName(sanitized);
+    
+    // Clear validation errors for this field
+    setValidationErrors(prev => prev.filter(error => error.field !== 'name'));
+  };
+
+  const handleSenderPhoneChange = (phone: string) => {
+    const sanitized = sanitizePhoneNumber(phone);
+    setSenderPhone(sanitized);
+    
+    // Clear validation errors for this field
+    setValidationErrors(prev => prev.filter(error => error.field !== 'phone'));
   };
 
   const handleBack = () => {
@@ -254,24 +442,30 @@ export default function PaymentPage() {
       return;
     }
 
+    setIsSubmitting(true);
+    
     try {
       console.log('Saving transaction result...');
       
-      const response = await fetch(`/api/v1/record-transaction/${paymentData.transactionId}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'admin': process.env.NEXT_PUBLIC_TORONET_ADMIN || '',
-          'adminpwd': process.env.NEXT_PUBLIC_TORONET_ADMIN_PWD || '',
-        },
-        body: JSON.stringify({
-          amount: paymentData.amount,
-          currency: paymentData.currency,
-          senderName: senderName || 'Anonymous',
-          senderPhone: senderPhone || '',
-          paidAt: new Date().toISOString(),
-        }),
-      });
+      const transactionData = {
+        amount: paymentData.amount,
+        currency: paymentData.currency,
+        senderName: sanitizeName(senderName) || 'Anonymous',
+        senderPhone: sanitizePhoneNumber(senderPhone) || '',
+        paidAt: new Date().toISOString(),
+      };
+      
+      const response = await measureAsync('save_transaction', async () => {
+        return await fetchWithRetry(`/api/v1/record-transaction/${paymentData.transactionId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'admin': process.env.NEXT_PUBLIC_TORONET_ADMIN || '',
+            'adminpwd': process.env.NEXT_PUBLIC_TORONET_ADMIN_PWD || '',
+          },
+          body: JSON.stringify(transactionData),
+        }, 2);
+      }, { paymentId, transactionId: paymentData.transactionId });
 
       const result = await response.json();
       console.log('Transaction save response:', result);
@@ -281,6 +475,12 @@ export default function PaymentPage() {
         if (result.message?.toLowerCase().includes('already recorded') || 
             result.error?.toLowerCase().includes('already recorded')) {
           console.log('Transaction already recorded, treating as success');
+          
+          trackEvent('transaction_already_recorded', {
+            paymentId,
+            transactionId: paymentData.transactionId
+          });
+          
           // Redirect to success URL
           if (paymentData.successUrl) {
             setTimeout(() => {
@@ -291,9 +491,23 @@ export default function PaymentPage() {
         }
         
         console.error('Failed to save transaction result:', result);
+        reportError(new Error(`Transaction save failed: ${result.message || result.error}`), {
+          context: 'save_transaction',
+          paymentId,
+          transactionId: paymentData.transactionId,
+          response: result
+        });
         // Don't block the success flow, just log the error
       } else {
         console.log('Transaction result saved successfully');
+        
+        trackEvent('transaction_saved', {
+          paymentId,
+          transactionId: paymentData.transactionId,
+          amount: paymentData.amount,
+          currency: paymentData.currency
+        });
+        
         // Redirect to success URL after showing success page
         if (paymentData.successUrl) {
           setTimeout(() => {
@@ -303,18 +517,25 @@ export default function PaymentPage() {
       }
     } catch (error) {
       console.error('Error saving transaction result:', error);
+      reportError(error as Error, {
+        context: 'save_transaction_error',
+        paymentId,
+        transactionId: paymentData?.transactionId
+      });
       // Don't block the success flow, just log the error
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   // Loading state - early return after all hooks
   if (step === "loading") {
-    return <LoadingState onBack={() => {}} />;
+    return <PaymentSkeleton />;
   }
 
   // Error state - early return after all hooks  
   if (step === "error") {
-    return <ErrorState error={error} onBack={() => {}} />;
+    return <ErrorState error={error} onBack={() => window.location.reload()} />;
   }
 
   // Determine available payment methods based on currency and payment type
@@ -340,7 +561,30 @@ export default function PaymentPage() {
   console.log("Available methods:", availableMethods);
 
   return (
-    <PaymentLayout step={step} onBack={handleBack} paymentData={paymentData}>
+    <PaymentLayout step={step} paymentData={paymentData}>
+      {/* Offline Indicator */}
+      {isOffline && (
+        <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm">
+                You're currently offline. Some features may not work properly.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Progress Indicator - only show for main flow steps */}
+      {["method", "bank-details", "confirming", "success"].includes(step) && (
+        <PaymentProgress step={step} />
+      )}
+
       {step === "method" && paymentData && (
         <MethodSelection
           selectedMethod={selectedMethod}
@@ -357,9 +601,11 @@ export default function PaymentPage() {
           onChangeMethod={() => setStep("method")}
           paymentData={paymentData}
           senderName={senderName}
-          setSenderName={setSenderName}
+          setSenderName={handleSenderNameChange}
           senderPhone={senderPhone}
-          setSenderPhone={setSenderPhone}
+          setSenderPhone={handleSenderPhoneChange}
+          validationErrors={validationErrors}
+          isSubmitting={isSubmitting}
         />
       )}
 
@@ -372,7 +618,7 @@ export default function PaymentPage() {
 
       {step === "success" && paymentData && (
         <SuccessReceipt
-          amount={`${paymentData.currency} ${paymentData.amount}`}
+          amount={`${paymentData.currency} ${Number(paymentData.amount).toLocaleString()}`}
           refNumber={paymentData.transactionId}
           date={new Date().toLocaleDateString("en-GB", {
             day: "2-digit",
@@ -389,22 +635,10 @@ export default function PaymentPage() {
   );
 }
 
-// Loading state component
-function LoadingState({ onBack }: { onBack: () => void }) {
-  return (
-    <PaymentLayout step="method" onBack={onBack} paymentData={null}>
-      <div className="flex flex-col items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
-        <p className="text-gray-600">Loading payment details...</p>
-      </div>
-    </PaymentLayout>
-  );
-}
-
 // Error state component
 function ErrorState({ error, onBack }: { error: string; onBack: () => void }) {
   return (
-    <PaymentLayout step="method" onBack={onBack} paymentData={null}>
+    <PaymentLayout step="method" paymentData={null}>
       <div className="flex flex-col items-center justify-center h-64">
         <div className="text-red-500 text-center">
           <h3 className="text-lg font-semibold mb-2">Payment Link Error</h3>
