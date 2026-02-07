@@ -72,7 +72,9 @@ export const escapeHtml = (text: string): string => {
 
 export const validateCSRFToken = (token: string): boolean => {
   // Basic CSRF token validation
-  return token && token.length >= 32 && /^[a-zA-Z0-9]+$/.test(token);
+  if (!token) return false;
+  if (token.length < 32) return false;
+  return /^[a-zA-Z0-9]+$/.test(token);
 };
 
 export const formatPhoneNumber = (phone: string): string => {

@@ -72,12 +72,14 @@ This document outlines the advanced features implemented in the Chainpaye paymen
   - Memory usage tracking
 
 ### Code Splitting & Lazy Loading
-- **Location**: `components/v2/payment/lazy-components.tsx`
+- **Location**: `lib/utils/performance.ts`
 - **Features**:
-  - Lazy-loaded payment components
-  - Bundle size optimization
-  - Performance monitoring for lazy loads
-  - Automatic component loading tracking
+  - Performance monitoring for component loading
+  - Bundle size optimization tracking
+  - Component loading performance metrics
+  - Ready for future lazy loading implementation
+
+**Note**: Lazy loading components were removed to avoid build complexity. The performance monitoring infrastructure remains in place for future implementation when needed.
 
 ### Caching Strategy
 - **Location**: `lib/utils/cache.ts`
@@ -132,7 +134,7 @@ lib/utils/
 components/
 ├── error-boundary.tsx # React error boundary component
 └── v2/payment/
-    └── lazy-components.tsx # Lazy-loaded payment components
+    └── (regular components - lazy loading removed for build stability)
 
 public/
 └── sw.js              # Service worker for offline support
