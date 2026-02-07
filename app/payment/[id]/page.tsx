@@ -233,7 +233,7 @@ export default function PaymentPage() {
       console.log('Verification status:', {
         isVerifying,
         verificationData,
-        verificationError ,
+        verificationError  ,
         isSuccess,
         paymentData: paymentData ? {
           currency: paymentData.currency,
