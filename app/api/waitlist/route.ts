@@ -1,13 +1,19 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
-// Initialize Resend with API key from environment variables
-const apiKey =
-  process.env.RESEND_API || process.env.NEXT_PUBLIC_RESEND_API;
-const resend = new Resend(apiKey);
-
 export async function POST(request: Request) {
   try {
+    // Initialize Resend with API key from environment variables
+    const apiKey = process.env.RESEND_API || process.env.NEXT_PUBLIC_RESEND_API;
+    
+    if (!apiKey) {
+      console.error("RESEND_API_KEY is missing");
+      return NextResponse.json(
+        { error: "Email service is not configured. Please contact support." },
+        { status: 503 }
+      );
+    }
+
     const body = await request.json();
     console.log("Waitlist submission received:", body);
     const { name, email, phone, tier } = body;
@@ -21,11 +27,14 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!apiKey) {
-      console.error("RESEND_API_KEY is missing");
+    let resend;
+    try {
+      resend = new Resend(apiKey);
+    } catch (initError) {
+      console.error("Failed to initialize Resend:", initError);
       return NextResponse.json(
-        { error: "Server configuration error" },
-        { status: 500 }
+        { error: "Email service initialization failed. Please contact support." },
+        { status: 503 }
       );
     }
 
@@ -123,8 +132,16 @@ export async function POST(request: Request) {
     `;
 
     // Send email to Admin
-    const adminEmail =
-      process.env.ADMIN_EMAIL || process.env.NEXT_PUBLIC_ADMIN_EMAIL || "";
+    const adminEmail = process.env.ADMIN_EMAIL || process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+    
+    if (!adminEmail) {
+      console.error("ADMIN_EMAIL is missing");
+      return NextResponse.json(
+        { error: "Admin email is not configured. Please contact support." },
+        { status: 503 }
+      );
+    }
+    
     console.log("Sending email to admin:", adminEmail);
     // console.log(
     //   "Using API Key:",
@@ -172,4 +189,11 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
+}
+
+// Add a GET handler to prevent build-time issues
+export async function GET() {
+  return NextResponse.json({ 
+    message: "Waitlist API endpoint. Use POST to submit waitlist requests." 
+  });
 }

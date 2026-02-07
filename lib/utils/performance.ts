@@ -1,8 +1,5 @@
 // Performance monitoring and optimization utilities
 
-// React import for lazy loading
-import React from 'react';
-
 interface PerformanceMetric {
   name: string;
   startTime: number;
@@ -165,21 +162,4 @@ export const logBundleSize = (componentName: string): void => {
   if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
     console.log(`Component loaded: ${componentName}`);
   }
-};
-
-// Lazy loading helper
-export const createLazyComponent = <T extends React.ComponentType<any>>(
-  importFn: () => Promise<{ default: T }>,
-  componentName: string
-) => {
-  return React.lazy(async () => {
-    performanceMonitor.startTiming(`lazy_load_${componentName}`);
-    try {
-      const module = await importFn();
-      logBundleSize(componentName);
-      return module;
-    } finally {
-      performanceMonitor.endTiming(`lazy_load_${componentName}`);
-    }
-  });
 };
