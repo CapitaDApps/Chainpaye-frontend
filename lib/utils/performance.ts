@@ -1,5 +1,8 @@
 // Performance monitoring and optimization utilities
 
+// React import for lazy loading
+import React from 'react';
+
 interface PerformanceMetric {
   name: string;
   startTime: number;
@@ -180,6 +183,3 @@ export const createLazyComponent = <T extends React.ComponentType<any>>(
     }
   });
 };
-
-// React import for lazy loading
-import React from 'react';

@@ -8,12 +8,12 @@ export const LazySuccessReceipt = createLazyComponent(
 );
 
 export const LazyBankTransfer = createLazyComponent(
-  () => import("./bank-transfer"),
+  () => import("./bank-transfer").then(module => ({ default: module.BankTransfer })),
   "BankTransfer"
 );
 
 export const LazyMethodSelection = createLazyComponent(
-  () => import("./method-selection"),
+  () => import("./method-selection").then(module => ({ default: module.MethodSelection })),
   "MethodSelection"
 );
 
