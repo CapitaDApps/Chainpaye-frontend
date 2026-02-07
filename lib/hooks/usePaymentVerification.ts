@@ -9,6 +9,7 @@ interface PaymentVerificationParams {
 interface PaymentVerificationResponse {
   success?: boolean;
   status?: string;
+  result?: boolean;
   error?: string;
   responseText?: string;
   // Add other response fields as needed
@@ -99,7 +100,11 @@ export function usePaymentVerification(
     }
   );
 
-  const isSuccess = data?.success === true || data?.status === 'success' || (data && !data.error && data.status !== 'failed');
+  // Check for success in multiple possible response formats
+  const isSuccess = data?.success === true || 
+                   data?.status === 'success' || 
+                   data?.result === true ||
+                   (data && !data.error && data.status !== 'failed');
 
   return {
     data,

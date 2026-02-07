@@ -23,9 +23,13 @@ interface BankTransferProps {
       };
     };
   };
+  senderName: string;
+  setSenderName: (name: string) => void;
+  senderPhone: string;
+  setSenderPhone: (phone: string) => void;
 }
 
-export function BankTransfer({ onSent, onChangeMethod, paymentData }: BankTransferProps) {
+export function BankTransfer({ onSent, onChangeMethod, paymentData, senderName, setSenderName, senderPhone, setSenderPhone }: BankTransferProps) {
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
   const copyToClipboard = (text: string, field: string) => {
@@ -241,9 +245,44 @@ export function BankTransfer({ onSent, onChangeMethod, paymentData }: BankTransf
         )}
       </div>
 
+      {/* Sender Information Form */}
+      <div className="mb-6 space-y-4">
+        <div className="text-sm font-medium text-gray-700 mb-3">Your Information</div>
+        
+        <div>
+          <label htmlFor="senderName" className="block text-xs text-gray-500 uppercase mb-1">
+            Full Name *
+          </label>
+          <input
+            type="text"
+            id="senderName"
+            value={senderName}
+            onChange={(e) => setSenderName(e.target.value)}
+            placeholder="Enter your full name"
+            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            required
+          />
+        </div>
+
+        <div>
+          <label htmlFor="senderPhone" className="block text-xs text-gray-500 uppercase mb-1">
+            Phone Number (Optional)
+          </label>
+          <input
+            type="tel"
+            id="senderPhone"
+            value={senderPhone}
+            onChange={(e) => setSenderPhone(e.target.value)}
+            placeholder="+1-555-0123"
+            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+      </div>
+
       <button
         onClick={onSent}
-        className="w-full py-4 rounded-xl font-medium text-white bg-[#003DFF] hover:bg-[#002dbf] shadow-lg shadow-blue-500/20 transition-all mb-4"
+        disabled={!senderName.trim()}
+        className="w-full py-4 rounded-xl font-medium text-white bg-[#003DFF] hover:bg-[#002dbf] shadow-lg shadow-blue-500/20 transition-all mb-4 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         I&apos;ve sent the money
       </button>

@@ -11,7 +11,8 @@ interface PaymentLayoutProps {
     currency: string;
     description: string;
     paymentType: string;
-    name:string
+    name: string;
+    address?: string;
   } | null;
 }
 
@@ -34,16 +35,45 @@ export function PaymentLayout({ children, step, onBack, paymentData }: PaymentLa
                 <div className="flex justify-between py-4 px-4 border-b border-gray-50  bg-white ">
                   <span className="text-gray-500 text-sm">Bill from</span>
                   <span className="font-medium text-[#111528] text-sm">
-                    `${paymentData?.name}`
+                    {paymentData?.name || "Merchant"}
                   </span>
                 </div>
-                <div className="flex justify-between py-4 px-4 bg-white">
+                <div className="flex justify-between py-4 px-4 border-b border-gray-50 bg-white">
                   <span className="text-gray-500 text-sm">Purpose</span>
                   <span className="font-medium text-[#111528] text-sm text-right">
                     {paymentData?.description || "Payment for website design"}
                   </span>
                 </div>
+                {paymentData?.address && (
+                  <div className="flex justify-between py-4 px-4 border-b border-gray-50 bg-white">
+                    <span className="text-gray-500 text-sm">Address</span>
+                    <span className="font-medium text-[#111528] text-sm text-right">
+                      {paymentData.address}
+                    </span>
+                  </div>
+                )}
+                <div className="flex justify-between py-4 px-4 bg-white">
+                  <span className="text-gray-500 text-sm">Payment Type</span>
+                  <span className="font-medium text-[#111528] text-sm">
+                    {paymentData?.paymentType === 'bank' ? 'Bank Transfer' : 'Card Payment'}
+                  </span>
+                </div>
               </div>
+
+              {/* Transaction Details */}
+              {paymentData && (
+                <div className="mt-6 rounded-xl border border-gray-100 p-0 overflow-hidden">
+                  <div className="flex justify-between py-3 px-4 border-b border-gray-50 bg-gray-50">
+                    <span className="text-gray-600 text-xs font-medium uppercase">Transaction Details</span>
+                  </div>
+                  <div className="flex justify-between py-3 px-4 bg-white">
+                    <span className="text-gray-500 text-xs">Currency</span>
+                    <span className="font-medium text-[#111528] text-xs">
+                      {paymentData.currency}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="mt-8 w-fit text-nowrap md:mt-0 flex items-center gap-2 text-xs text-gray-400 md:relative absolute bottom-4 left-1/2 transform -translate-x-1/2">

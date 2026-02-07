@@ -9,7 +9,7 @@ import {
   SuccessReceipt,
 } from "@/components/v2/payment/confirmation-success";
 import { useParams } from "next/navigation";
-import { usePaymentVerification } from "@/hooks/usePaymentVerification";
+import { usePaymentVerification } from "@/lib/hooks/usePaymentVerification";
 
 interface PaymentData {
   id: string;
@@ -53,96 +53,25 @@ export default function PaymentPage() {
   const [error, setError] = useState<string>("");
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationTimeout, setVerificationTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [senderName, setSenderName] = useState<string>("");
+  const [senderPhone, setSenderPhone] = useState<string>("");
   const params = useParams();
   const paymentId = params?.id as string;
 
-  // Payment verification hook
+  // Payment verification hook - must be called before early returns
+  // Use safe access to avoid errors when paymentData is null
+  const verificationParams = isVerifying && paymentData?.paymentInitialization?.toronetResponse ? {
+    currency: paymentData.currency,
+    txid: paymentData.paymentInitialization.toronetResponse.txid,
+    paymenttype: paymentData.paymentType
+  } : null;
+  
   const { data: verificationData, error: verificationError, isSuccess } = usePaymentVerification(
-    isVerifying && paymentData ? {
-      currency: paymentData.currency,
-      txid: paymentData.paymentInitialization.toronetResponse.txid,
-      paymenttype: paymentData.paymentType
-    } : null,
+    verificationParams,
     isVerifying
   );
 
-  // Debug logging
-  useEffect(() => {
-    if (isVerifying) {
-      console.log('Verification status:', {
-        isVerifying,
-        verificationData,
-        verificationError,
-        isSuccess,
-        paymentData: paymentData ? {
-          currency: paymentData.currency,
-          txid: paymentData.paymentInitialization.toronetResponse.txid,
-          paymentType: paymentData.paymentType
-        } : null
-      });
-    }
-  }, [isVerifying, verificationData, verificationError, isSuccess, paymentData]);
-
-  // Handle successful payment verification
-  useEffect(() => {
-    if (isSuccess && isVerifying) {
-      console.log("Payment verification successful:", verificationData);
-      setIsVerifying(false);
-      
-      // Clear timeout
-      if (verificationTimeout) {
-        clearTimeout(verificationTimeout);
-        setVerificationTimeout(null);
-      }
-      
-      // Save transaction result to backend
-      saveTransactionResult();
-      
-      setStep("success");
-    }
-  }, [isSuccess, isVerifying, verificationData, verificationTimeout]);
-
-  // Handle verification errors
-  useEffect(() => {
-    if (verificationError && isVerifying) {
-      console.error("Payment verification error:", verificationError);
-      // Continue polling for now, but you might want to add a timeout
-    }
-  }, [verificationError, isVerifying]);
-
-  const saveTransactionResult = async () => {
-    try {
-      const response = await fetch(`/api/v1/payment-links/${paymentId}/complete`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          verificationData,
-          paymentData,
-          selectedMethod,
-        }),
-      });
-
-      if (!response.ok) {
-        console.error('Failed to save transaction result');
-      } else {
-        console.log('Transaction result saved successfully');
-      }
-    } catch (error) {
-      console.error('Error saving transaction result:', error);
-    }
-  };
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (verificationTimeout) {
-        clearTimeout(verificationTimeout);
-      }
-    };
-  }, [verificationTimeout]);
-
+  // Fetch payment data on mount - must be before early returns
   useEffect(() => {
     const fetchPaymentData = async () => {
       if (!paymentId) {
@@ -191,6 +120,90 @@ export default function PaymentPage() {
     fetchPaymentData();
   }, [paymentId]);
 
+  // Debug logging - must be before early returns
+  useEffect(() => {
+    if (isVerifying) {
+      console.log('Verification status:', {
+        isVerifying,
+        verificationData,
+        verificationError,
+        isSuccess,
+        paymentData: paymentData ? {
+          currency: paymentData.currency,
+          txid: paymentData.paymentInitialization?.toronetResponse?.txid,
+          paymentType: paymentData.paymentType
+        } : null
+      });
+    }
+  }, [isVerifying, verificationData, verificationError, isSuccess, paymentData]);
+
+  // Handle successful payment verification - must be before early returns
+  useEffect(() => {
+    if (isSuccess && isVerifying) {
+      console.log("Payment verification successful:", verificationData);
+      handlePaymentSuccess();
+    }
+  }, [isSuccess, isVerifying, verificationData]);
+
+  // Handle verification errors - must be before early returns
+  useEffect(() => {
+    if (verificationError && isVerifying) {
+      console.error("Payment verification error:", verificationError);
+      // Continue polling - errors are handled in the fetcher
+    }
+  }, [verificationError, isVerifying]);
+
+  // Cleanup timeout on unmount - must be before early returns
+  useEffect(() => {
+    return () => {
+      if (verificationTimeout) {
+        clearTimeout(verificationTimeout);
+      }
+    };
+  }, [verificationTimeout]);
+
+  // Auto-select payment method if only one is available - must be before early returns
+  useEffect(() => {
+    if (paymentData && !selectedMethod) {
+      // Determine available payment methods
+      const isNGN = paymentData?.currency === "NGN";
+      const isUSDBank = paymentData?.currency === "USD" && paymentData?.paymentType === "bank" && paymentData?.token === "USD";
+      const isCardPayment = paymentData?.paymentType === "card" && paymentData?.token && 
+        ["GBP", "EUR", "USD"].includes(paymentData?.currency || "");
+      
+      const availableMethods = {
+        card: !isNGN && !isUSDBank,
+        bank: !isCardPayment,
+      };
+
+      const availableCount = Object.values(availableMethods).filter(Boolean).length;
+      if (availableCount === 1) {
+        if (availableMethods.card) {
+          setSelectedMethod("card");
+        } else if (availableMethods.bank) {
+          setSelectedMethod("bank");
+        }
+      }
+    }
+  }, [paymentData, selectedMethod]);
+
+  // Define functions before early returns
+  const handlePaymentSuccess = async () => {
+    console.log("Processing payment success");
+    setIsVerifying(false);
+    
+    // Clear timeout
+    if (verificationTimeout) {
+      clearTimeout(verificationTimeout);
+      setVerificationTimeout(null);
+    }
+    
+    // Save transaction result to backend
+    await saveTransactionResult();
+    
+    setStep("success");
+  };
+
   const handlePay = () => {
     console.log("handlePay called with:", { selectedMethod, paymentData });
     
@@ -220,7 +233,7 @@ export default function PaymentPage() {
     setStep("confirming");
     setIsVerifying(true);
     
-    // Set a timeout to stop verification after 5 minutes
+    // Set a timeout to stop verification after 15 minutes
     const timeout = setTimeout(() => {
       console.log("Payment verification timeout reached");
       setIsVerifying(false);
@@ -235,30 +248,73 @@ export default function PaymentPage() {
     if (step === "bank-details") setStep("method");
   };
 
-  // Loading state
+  const saveTransactionResult = async () => {
+    if (!paymentData) {
+      console.error('No payment data available');
+      return;
+    }
+
+    try {
+      console.log('Saving transaction result...');
+      
+      const response = await fetch(`/api/v1/record-transaction/${paymentData.transactionId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'admin': process.env.NEXT_PUBLIC_TORONET_ADMIN || '',
+          'adminpwd': process.env.NEXT_PUBLIC_TORONET_ADMIN_PWD || '',
+        },
+        body: JSON.stringify({
+          amount: paymentData.amount,
+          currency: paymentData.currency,
+          senderName: senderName || 'Anonymous',
+          senderPhone: senderPhone || '',
+          paidAt: new Date().toISOString(),
+        }),
+      });
+
+      const result = await response.json();
+      console.log('Transaction save response:', result);
+
+      if (!response.ok) {
+        // Check if it's an 'already recorded' error - treat as success
+        if (result.message?.toLowerCase().includes('already recorded') || 
+            result.error?.toLowerCase().includes('already recorded')) {
+          console.log('Transaction already recorded, treating as success');
+          // Redirect to success URL
+          if (paymentData.successUrl) {
+            setTimeout(() => {
+              window.location.href = paymentData.successUrl;
+            }, 2000);
+          }
+          return;
+        }
+        
+        console.error('Failed to save transaction result:', result);
+        // Don't block the success flow, just log the error
+      } else {
+        console.log('Transaction result saved successfully');
+        // Redirect to success URL after showing success page
+        if (paymentData.successUrl) {
+          setTimeout(() => {
+            window.location.href = paymentData.successUrl;
+          }, 3000); // Wait 3 seconds to show success page
+        }
+      }
+    } catch (error) {
+      console.error('Error saving transaction result:', error);
+      // Don't block the success flow, just log the error
+    }
+  };
+
+  // Loading state - early return after all hooks
   if (step === "loading") {
-    return (
-      <PaymentLayout step="method" onBack={handleBack} paymentData={null}>
-        <div className="flex flex-col items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
-          <p className="text-gray-600">Loading payment details...</p>
-        </div>
-      </PaymentLayout>
-    );
+    return <LoadingState onBack={() => {}} />;
   }
 
-  // Error state
+  // Error state - early return after all hooks  
   if (step === "error") {
-    return (
-      <PaymentLayout step="method" onBack={handleBack} paymentData={null}>
-        <div className="flex flex-col items-center justify-center h-64">
-          <div className="text-red-500 text-center">
-            <h3 className="text-lg font-semibold mb-2">Payment Link Error</h3>
-            <p className="text-sm">{error}</p>
-          </div>
-        </div>
-      </PaymentLayout>
-    );
+    return <ErrorState error={error} onBack={() => {}} />;
   }
 
   // Determine available payment methods based on currency and payment type
@@ -283,20 +339,6 @@ export default function PaymentPage() {
   
   console.log("Available methods:", availableMethods);
 
-  // Auto-select payment method if only one is available
-  useEffect(() => {
-    if (paymentData && !selectedMethod) {
-      const availableCount = Object.values(availableMethods).filter(Boolean).length;
-      if (availableCount === 1) {
-        if (availableMethods.card) {
-          setSelectedMethod("card");
-        } else if (availableMethods.bank) {
-          setSelectedMethod("bank");
-        }
-      }
-    }
-  }, [paymentData, availableMethods, selectedMethod]);
-
   return (
     <PaymentLayout step={step} onBack={handleBack} paymentData={paymentData}>
       {step === "method" && paymentData && (
@@ -314,6 +356,10 @@ export default function PaymentPage() {
           onSent={handleBankTransferSent}
           onChangeMethod={() => setStep("method")}
           paymentData={paymentData}
+          senderName={senderName}
+          setSenderName={setSenderName}
+          senderPhone={senderPhone}
+          setSenderPhone={setSenderPhone}
         />
       )}
 
@@ -336,9 +382,35 @@ export default function PaymentPage() {
             minute: "2-digit",
           })}
           method={selectedMethod === "card" ? "Card Payment" : "Bank Transfer"}
-          senderName="User" // You might want to get this from user context
+          senderName={senderName || "User"}
         />
       )}
+    </PaymentLayout>
+  );
+}
+
+// Loading state component
+function LoadingState({ onBack }: { onBack: () => void }) {
+  return (
+    <PaymentLayout step="method" onBack={onBack} paymentData={null}>
+      <div className="flex flex-col items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
+        <p className="text-gray-600">Loading payment details...</p>
+      </div>
+    </PaymentLayout>
+  );
+}
+
+// Error state component
+function ErrorState({ error, onBack }: { error: string; onBack: () => void }) {
+  return (
+    <PaymentLayout step="method" onBack={onBack} paymentData={null}>
+      <div className="flex flex-col items-center justify-center h-64">
+        <div className="text-red-500 text-center">
+          <h3 className="text-lg font-semibold mb-2">Payment Link Error</h3>
+          <p className="text-sm">{error}</p>
+        </div>
+      </div>
     </PaymentLayout>
   );
 }
