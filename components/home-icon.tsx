@@ -11,16 +11,16 @@ export default function HomeIcon() {
           d="M13.5 17.5H6.5C4.29086 17.5 2.5 15.7091 2.5 13.5V9.29849C2.5 7.89978 3.23061 6.60266 4.42679 5.8777L7.92679 3.75649C9.20105 2.98421 10.7989 2.98421 12.0732 3.75649L15.5732 5.8777C16.7694 6.60266 17.5 7.89977 17.5 9.29849V13.5C17.5 15.7091 15.7091 17.5 13.5 17.5Z"
           fill="white"
           stroke="white"
-          stroke-width="1.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           d="M7.5 14.166H12.5"
           stroke="#003DFF"
-          stroke-width="1.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
       </svg>
     );
