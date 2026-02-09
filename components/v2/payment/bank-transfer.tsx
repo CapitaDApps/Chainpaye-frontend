@@ -68,12 +68,53 @@ export function BankTransfer({
   };
 
   // NGN bank payment details (from API response)
-  const ngnBankDetails = {
+  let ngnBankDetails = {
     bankName: paymentData.paymentInitialization.toronetResponse.bankname || "",
     accountNumber: paymentData.paymentInitialization.toronetResponse.accountnumber || "",
     accountName: paymentData.paymentInitialization.toronetResponse.accountname || "",
-    amount: paymentData.paymentInitialization.toronetResponse.amount || 0,
+    amount: paymentData.paymentInitialization.toronetResponse.amount || Number(paymentData.amount) || 0,
   };
+
+  // Check if NGN bank details are missing
+  const isNGNBankDetailsMissing = !isUSDBank && (
+    !ngnBankDetails.bankName || 
+    !ngnBankDetails.accountNumber || 
+    !ngnBankDetails.accountName ||
+    ngnBankDetails.amount === 0
+  );
+
+  // Try to extract bank details from instruction if structured fields are missing
+  const instruction = paymentData.paymentInitialization.toronetResponse.instruction || "";
+  
+  if (!isUSDBank && isNGNBankDetailsMissing && instruction) {
+    // Try to extract bank name, account number, and account name from instruction
+    const accountNumberMatch = instruction.match(/account.*number[:\s]*(\d+)/i);
+    const accountNameMatch = instruction.match(/account.*name[:\s]*([^.]+)/i);
+    const bankNameMatch = instruction.match(/(\w+\s*Bank)/i);
+    
+    if (accountNumberMatch) {
+      ngnBankDetails.accountNumber = accountNumberMatch[1].trim();
+    }
+    if (accountNameMatch) {
+      ngnBankDetails.accountName = accountNameMatch[1].trim();
+    }
+    if (bankNameMatch) {
+      ngnBankDetails.bankName = bankNameMatch[1].trim();
+    }
+  }
+
+  // Debug logging for production issues
+  console.log("Payment Data Debug:", {
+    currency: paymentData.currency,
+    paymentType: paymentData.paymentType,
+    token: paymentData.token,
+    isUSDBank,
+    toronetResponse: paymentData.paymentInitialization.toronetResponse,
+    ngnBankDetails,
+    usdBankDetails,
+    isNGNBankDetailsMissing,
+    instruction
+  });
 
   return (
     <div className="flex flex-col h-full max-w-[400px] mx-auto">
@@ -100,6 +141,48 @@ export function BankTransfer({
           Account number expires in 30 Mins
         </div>
       </div>
+
+      {/* Loading state for NGN bank details */}
+      {!isUSDBank && !isNGNBankDetailsMissing && !ngnBankDetails.bankName && (
+        <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+          <div className="text-sm text-blue-800 flex items-center gap-2">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+            Loading bank account details...
+          </div>
+        </div>
+      )}
+
+      {/* Error message for missing NGN bank details */}
+      {isNGNBankDetailsMissing && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
+          <div className="text-sm text-red-800">
+            <strong>Error:</strong> Bank account details are not available. Please contact support or try refreshing the page.
+          </div>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-2 px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition"
+          >
+            Refresh Page
+          </button>
+          {process.env.NODE_ENV === 'development' && (
+            <details className="mt-2">
+              <summary className="text-xs text-red-600 cursor-pointer">Debug info (dev only)</summary>
+              <pre className="text-xs text-red-600 mt-1 overflow-auto max-h-32">
+                {JSON.stringify(paymentData.paymentInitialization.toronetResponse, null, 2)}
+              </pre>
+            </details>
+          )}
+        </div>
+      )}
+
+      {/* Instructions for NGN Bank Transfer */}
+      {!isUSDBank && paymentData.paymentInitialization.toronetResponse.instruction && (
+        <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+          <div className="text-sm text-blue-800">
+            <strong>Instructions:</strong> {paymentData.paymentInitialization.toronetResponse.instruction}
+          </div>
+        </div>
+      )}
 
       {/* Instructions for USD Bank Transfer */}
       {isUSDBank && (
@@ -132,7 +215,7 @@ export function BankTransfer({
         <div>
           <div className="text-xs text-gray-500 uppercase mb-1">BANK NAME</div>
           <div className="font-medium text-gray-900">
-            {isUSDBank ? usdBankDetails.bankName : ngnBankDetails.bankName}
+            {isUSDBank ? usdBankDetails.bankName : (ngnBankDetails.bankName || "Loading...")}
           </div>
         </div>
 
@@ -258,7 +341,7 @@ export function BankTransfer({
           <>
             <div>
               <div className="text-xs text-gray-500 uppercase mb-1">ACCOUNT NAME</div>
-              <div className="font-medium text-gray-900">{ngnBankDetails.accountName}</div>
+              <div className="font-medium text-gray-900">{ngnBankDetails.accountName || "Loading..."}</div>
             </div>
 
             <div
@@ -276,7 +359,7 @@ export function BankTransfer({
             >
               <div>
                 <div className="text-xs text-gray-500 uppercase mb-1">ACCOUNT NUMBER</div>
-                <div className="font-medium text-gray-900">{ngnBankDetails.accountNumber}</div>
+                <div className="font-medium text-gray-900">{ngnBankDetails.accountNumber || "Loading..."}</div>
               </div>
               <button 
                 className="text-gray-400 hover:text-blue-500 transition"

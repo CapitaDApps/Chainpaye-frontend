@@ -44,7 +44,7 @@ interface PaymentData {
       newwallet?: boolean; // For NGN payments
       amount?: number; // For NGN payments
       instruction: string; // For both NGN and USD payments
-      redirectUrl?: string; // For card payments
+      url?: string; // For card payments
     };
   };
 }
@@ -184,6 +184,14 @@ export default function PaymentPage() {
           if (result.success) {
             return result.data;
           } else {
+            // Handle API configuration errors
+            if (result.message?.includes('API configuration error')) {
+              throw new Error(`Configuration Error: ${result.message}. Please contact support.`);
+            }
+            // Log debug info if available
+            if (result.debug) {
+              console.error("API Debug Info:", result.debug);
+            }
             throw new Error(result.message || "Payment link is invalid");
           }
         }, { paymentId });
@@ -341,9 +349,14 @@ export default function PaymentPage() {
     } else if (selectedMethod === "card") {
       // Get redirect URL from payment data
       const redirectUrl = paymentData?.redirectUrl || 
-                         paymentData?.paymentInitialization?.toronetResponse?.redirectUrl;
+                         paymentData?.paymentInitialization?.toronetResponse?.url;
       
       console.log("Card payment redirect URL:", redirectUrl);
+      console.log("Payment data for debugging:", {
+        redirectUrl: paymentData?.redirectUrl,
+        toronetUrl: paymentData?.paymentInitialization?.toronetResponse?.url,
+        fullToronetResponse: paymentData?.paymentInitialization?.toronetResponse
+      });
       
       if (redirectUrl) {
         console.log("Redirecting to card payment provider:", redirectUrl);
@@ -357,6 +370,7 @@ export default function PaymentPage() {
       } else {
         // Fallback if no redirect URL is provided
         console.error("No redirect URL found for card payment");
+        console.error("Available payment data:", paymentData);
         const errorMsg = "Card payment redirect URL not available. Please contact support.";
         reportError(new Error(errorMsg), {
           context: 'card_payment_redirect',

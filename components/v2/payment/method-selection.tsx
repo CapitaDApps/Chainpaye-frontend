@@ -29,6 +29,18 @@ export function MethodSelection({
   paymentData,
   availableMethods,
 }: MethodSelectionProps) {
+  
+  // Debug logging
+  console.log("MethodSelection Debug:", {
+    selectedMethod,
+    availableMethods,
+    paymentData: {
+      currency: paymentData.currency,
+      paymentType: paymentData.paymentType,
+      amount: paymentData.amount
+    }
+  });
+
   return (
     <div className="flex flex-col h-full md:gap-24">
       <div>
@@ -52,7 +64,12 @@ export function MethodSelection({
           <div className="border border-gray-200 rounded-xl overflow-hidden">
             {/* Card Payment Option */}
             <label
-              onClick={() => availableMethods.card && onSelectMethod("card")}
+              onClick={() => {
+                console.log("Card option clicked:", { availableCard: availableMethods.card });
+                if (availableMethods.card) {
+                  onSelectMethod("card");
+                }
+              }}
               className={`flex items-center p-4 transition-all border-b border-gray-100 ${
                 availableMethods.card 
                   ? `cursor-pointer hover:bg-gray-50 ${selectedMethod === "card" ? "bg-gray-50" : ""}` 
@@ -104,7 +121,12 @@ export function MethodSelection({
 
             {/* Bank Transfer Option */}
             <label
-              onClick={() => availableMethods.bank && onSelectMethod("bank")}
+              onClick={() => {
+                console.log("Bank option clicked:", { availableBank: availableMethods.bank });
+                if (availableMethods.bank) {
+                  onSelectMethod("bank");
+                }
+              }}
               className={`flex items-center p-4 transition-all ${
                 availableMethods.bank 
                   ? `cursor-pointer hover:bg-gray-50 ${selectedMethod === "bank" ? "bg-gray-50" : ""}` 
@@ -147,6 +169,28 @@ export function MethodSelection({
       >
         Pay
       </button>
+      
+      {/* Debug info for development */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="mt-4 p-3 bg-gray-100 rounded text-xs">
+          <div><strong>Debug Info:</strong></div>
+          <div>Selected: {selectedMethod || 'none'}</div>
+          <div>Available: {JSON.stringify(availableMethods)}</div>
+          <div>Currency: {paymentData.currency}</div>
+          <div>Type: {paymentData.paymentType}</div>
+          
+          {/* Test redirect button */}
+          <button
+            onClick={() => {
+              console.log("Test redirect clicked");
+              onPay();
+            }}
+            className="mt-2 px-2 py-1 bg-blue-500 text-white text-xs rounded"
+          >
+            Test Pay Function
+          </button>
+        </div>
+      )}
     </div>
   );
 }
