@@ -12,7 +12,7 @@ import { useParams } from "next/navigation";
 import { usePaymentVerification } from "@/lib/hooks/usePaymentVerification";
 import { PaymentSkeleton } from "@/components/ui/skeleton";
 import { PaymentProgress } from "@/components/ui/progress-indicator";
-import { fetchWithRetry, handleApiError, trackEvent, reportError, createSession, validateSession, clearSession, checkRateLimit } from "@/lib/utils/api";
+import { fetchWithRetry, handleApiError, trackEvent, reportError, createSession, validateSession, clearSession } from "@/lib/utils/api";
 import { validateSenderInfo, sanitizeName, sanitizePhoneNumber, ValidationError } from "@/lib/utils/validation";
 import { paymentCache, cachedFetch, CACHE_KEYS } from "@/lib/utils/cache";
 import { performanceMonitor, measureAsync } from "@/lib/utils/performance";
@@ -65,7 +65,6 @@ export default function PaymentPage() {
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [sessionId, setSessionId] = useState<string>("");
-  const [rateLimitExceeded, setRateLimitExceeded] = useState(false);
   const [isOffline, setIsOffline] = useState(false);
   const params = useParams();
   const paymentId = params?.id as string;
@@ -85,15 +84,6 @@ export default function PaymentPage() {
       // Check initial online status
       setIsOffline(!isOnline());
       
-      // Check rate limiting
-      const rateLimit = checkRateLimit(`payment_access_${paymentId}`, 20, 60000); // 20 requests per minute
-      if (!rateLimit.allowed) {
-        setRateLimitExceeded(true);
-        setError("Too many requests. Please wait a moment and try again.");
-        setStep("error");
-        return cleanup;
-      }
-
       // Create or validate session
       if (!validateSession(paymentId)) {
         const newSessionId = createSession(paymentId);
@@ -140,10 +130,6 @@ export default function PaymentPage() {
         setStep("error");
         trackEvent('payment_error', { error: 'missing_payment_id' });
         return;
-      }
-
-      if (rateLimitExceeded) {
-        return; // Don't fetch if rate limited
       }
 
       try {
@@ -233,7 +219,7 @@ export default function PaymentPage() {
     };
 
     fetchPaymentData();
-  }, [paymentId, rateLimitExceeded]);
+  }, [paymentId]);
 
   // Debug logging - must be before early returns
   useEffect(() => {

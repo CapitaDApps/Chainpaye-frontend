@@ -12,14 +12,6 @@ This document outlines the advanced features implemented in the Chainpaye paymen
   - CSRF token validation helpers
   - Comprehensive form validation with error handling
 
-### Rate Limiting
-- **Location**: `lib/utils/api.ts`
-- **Features**:
-  - Client-side rate limiting to prevent abuse
-  - Configurable limits (default: 20 requests per minute per payment ID)
-  - Automatic cleanup of expired rate limit entries
-  - User-friendly error messages when limits are exceeded
-
 ## 🔄 Session Management
 - **Location**: `lib/utils/api.ts`
 - **Features**:
@@ -125,7 +117,7 @@ This document outlines the advanced features implemented in the Chainpaye paymen
 ### File Structure:
 ```
 lib/utils/
-├── api.ts              # Enhanced API utilities with rate limiting, session management
+├── api.ts              # Enhanced API utilities with session management, analytics, error reporting
 ├── validation.ts       # Enhanced input sanitization and validation
 ├── cache.ts           # Caching utilities and strategies
 ├── performance.ts     # Performance monitoring and optimization
@@ -161,9 +153,8 @@ public/
 
 ### Security Enhancements:
 1. **CSRF Protection**: Implement server-side CSRF token validation
-2. **Rate Limiting**: Add server-side rate limiting
-3. **Input Validation**: Server-side validation mirrors client-side rules
-4. **Session Security**: Use secure, HTTP-only cookies for session management
+2. **Input Validation**: Server-side validation mirrors client-side rules
+3. **Session Security**: Use secure, HTTP-only cookies for session management
 
 ### Performance Optimizations:
 1. **CDN**: Serve static assets from CDN
