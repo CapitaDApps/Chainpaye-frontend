@@ -15,6 +15,10 @@ interface MethodSelectionProps {
     currency: string;
     description: string;
     paymentType: string;
+    paymentInitialization?: {
+      status: string;
+      toronetResponse?: any;
+    };
   };
   availableMethods: {
     card: boolean;
@@ -37,9 +41,13 @@ export function MethodSelection({
     paymentData: {
       currency: paymentData.currency,
       paymentType: paymentData.paymentType,
-      amount: paymentData.amount
+      amount: paymentData.amount,
+      initializationStatus: paymentData.paymentInitialization?.status
     }
   });
+
+  // Check if payment initialization failed
+  const initializationFailed = paymentData.paymentInitialization?.status === 'FAILED';
 
   return (
     <div className="flex flex-col h-full md:gap-24">
@@ -54,6 +62,23 @@ export function MethodSelection({
         </div>
 
         <div className="space-y-4 mb-8">
+          {/* Payment initialization error warning */}
+          {initializationFailed && (
+            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl">
+              <div className="text-sm text-red-800">
+                <strong>Payment Setup Failed:</strong> There was an issue setting up this payment. 
+                {paymentData.paymentInitialization?.toronetResponse?.message && (
+                  <div className="mt-1 text-xs">
+                    {paymentData.paymentInitialization.toronetResponse.message}
+                  </div>
+                )}
+                <div className="mt-2 text-xs">
+                  Please try creating a new payment link or contact support.
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="text-sm font-medium text-gray-500 mb-2">
             Payment method
             {Object.values(availableMethods).filter(Boolean).length === 1 && (
@@ -160,14 +185,14 @@ export function MethodSelection({
 
       <button
         onClick={onPay}
-        disabled={!selectedMethod}
+        disabled={!selectedMethod || initializationFailed}
         className={`w-full py-4 rounded-xl font-semibold text-white transition-all mt-4 ${
-          selectedMethod
+          selectedMethod && !initializationFailed
             ? "bg-[#6390FF] hover:bg-[#4b7bff]"
             : "bg-[#6390FF]/50 cursor-not-allowed"
         }`}
       >
-        Pay
+        {initializationFailed ? "Payment Setup Failed" : "Pay"}
       </button>
       
       {/* Debug info for development */}

@@ -36,15 +36,19 @@ interface PaymentData {
     id: string;
     status: string;
     toronetResponse: {
-      result: boolean;
-      txid: string;
+      result?: boolean;
+      txid?: string;
       bankname?: string; // For NGN payments
       accountnumber?: string; // For NGN payments
       accountname?: string; // For NGN payments
       newwallet?: boolean; // For NGN payments
       amount?: number; // For NGN payments
-      instruction: string; // For both NGN and USD payments
+      instruction?: string; // For both NGN and USD payments
       url?: string; // For card payments
+      // For failed responses
+      success?: boolean;
+      error?: string;
+      message?: string;
     };
   };
 }
@@ -111,7 +115,7 @@ export default function PaymentPage() {
 
   // Payment verification hook - must be called before early returns
   // Use safe access to avoid errors when paymentData is null
-  const verificationParams = isVerifying && paymentData?.paymentInitialization?.toronetResponse ? {
+  const verificationParams = isVerifying && paymentData?.paymentInitialization?.toronetResponse?.txid ? {
     currency: paymentData.currency,
     txid: paymentData.paymentInitialization.toronetResponse.txid,
     paymenttype: paymentData.paymentType
@@ -124,7 +128,7 @@ export default function PaymentPage() {
 
   // Fetch payment data on mount - must be before early returns
   useEffect(() => {
-    const fetchPaymentData = async () => {
+    const fetchPaymentData = async (retryCount = 0) => {
       if (!paymentId) {
         setError("Payment ID is required");
         setStep("error");
@@ -133,18 +137,20 @@ export default function PaymentPage() {
       }
 
       try {
-        console.log("Fetching payment data for ID:", paymentId);
+        console.log("Fetching payment data for ID:", paymentId, retryCount > 0 ? `(retry ${retryCount})` : '');
         
-        // Try to get from cache first
-        const cacheKey = CACHE_KEYS.PAYMENT_DATA(paymentId);
-        const cachedData = paymentCache.get<PaymentData>(cacheKey);
-        
-        if (cachedData) {
-          console.log("Using cached payment data");
-          setPaymentData(cachedData);
-          setStep("method");
-          trackEvent('payment_data_cached', { paymentId });
-          return;
+        // Try to get from cache first (skip cache on retry)
+        if (retryCount === 0) {
+          const cacheKey = CACHE_KEYS.PAYMENT_DATA(paymentId);
+          const cachedData = paymentCache.get<PaymentData>(cacheKey);
+          
+          if (cachedData) {
+            console.log("Using cached payment data");
+            setPaymentData(cachedData);
+            setStep("method");
+            trackEvent('payment_data_cached', { paymentId });
+            return;
+          }
         }
 
         // Fetch with performance monitoring
@@ -184,7 +190,34 @@ export default function PaymentPage() {
 
         console.log("Payment data received:", data);
         
+        // Check if payment initialization failed
+        if (data.paymentInitialization?.status === 'FAILED') {
+          const errorMsg = data.paymentInitialization.toronetResponse?.message || 
+                          data.paymentInitialization.toronetResponse?.error || 
+                          'Payment initialization failed';
+          
+          console.error("Payment initialization failed:", data.paymentInitialization);
+          
+          // Check for specific SSL errors and provide helpful guidance
+          if (errorMsg.includes('SSL') || errorMsg.includes('TLS') || errorMsg.includes('EPROTO')) {
+            // Retry SSL errors up to 2 times with delay
+            if (retryCount < 2) {
+              console.log(`SSL error detected, retrying in ${(retryCount + 1) * 2} seconds...`);
+              setTimeout(() => fetchPaymentData(retryCount + 1), (retryCount + 1) * 2000);
+              return;
+            }
+            throw new Error(`SSL Connection Error: Unable to connect securely to payment processor. This is a temporary server issue. Please try again in a few minutes or contact support if the problem persists.`);
+          } else if (errorMsg.includes('timeout') || errorMsg.includes('ETIMEDOUT')) {
+            throw new Error(`Connection Timeout: The payment processor is taking too long to respond. Please try again in a few minutes.`);
+          } else if (errorMsg.includes('ENOTFOUND') || errorMsg.includes('DNS')) {
+            throw new Error(`Connection Error: Unable to reach payment processor. Please check your internet connection and try again.`);
+          } else {
+            throw new Error(`Payment Setup Error: ${errorMsg}. Please try creating a new payment link or contact support.`);
+          }
+        }
+        
         // Cache the data
+        const cacheKey = CACHE_KEYS.PAYMENT_DATA(paymentId);
         paymentCache.set(cacheKey, data, 5 * 60 * 1000); // Cache for 5 minutes
         
         setPaymentData(data);
@@ -194,7 +227,9 @@ export default function PaymentPage() {
           paymentId,
           currency: data.currency,
           amount: data.amount,
-          paymentType: data.paymentType
+          paymentType: data.paymentType,
+          initializationStatus: data.paymentInitialization?.status,
+          retryCount
         });
         
       } catch (err) {
@@ -207,13 +242,15 @@ export default function PaymentPage() {
         reportError(err as Error, {
           context: 'payment_data_fetch',
           paymentId,
-          timestamp: Date.now()
+          timestamp: Date.now(),
+          retryCount
         });
         
         trackEvent('payment_error', {
           error: 'fetch_failed',
           paymentId,
-          message: errorMessage
+          message: errorMessage,
+          retryCount
         });
       }
     };
@@ -333,14 +370,24 @@ export default function PaymentPage() {
     if (selectedMethod === "bank") {
       setStep("bank-details");
     } else if (selectedMethod === "card") {
+      // Check if payment initialization was successful
+      if (paymentData?.paymentInitialization?.status === 'FAILED') {
+        const errorMsg = paymentData.paymentInitialization.toronetResponse?.message || 
+                        paymentData.paymentInitialization.toronetResponse?.error || 
+                        'Payment initialization failed';
+        console.error("Cannot proceed with card payment - initialization failed:", errorMsg);
+        alert(`Payment setup failed: ${errorMsg}. Please try creating a new payment link.`);
+        return;
+      }
+      
       // Get redirect URL from payment data
-      const redirectUrl = paymentData?.redirectUrl || 
-                         paymentData?.paymentInitialization?.toronetResponse?.url;
+      const redirectUrl = paymentData?.paymentInitialization?.toronetResponse?.url;
       
       console.log("Card payment redirect URL:", redirectUrl);
       console.log("Payment data for debugging:", {
         redirectUrl: paymentData?.redirectUrl,
         toronetUrl: paymentData?.paymentInitialization?.toronetResponse?.url,
+        initializationStatus: paymentData?.paymentInitialization?.status,
         fullToronetResponse: paymentData?.paymentInitialization?.toronetResponse
       });
       
@@ -357,13 +404,20 @@ export default function PaymentPage() {
         // Fallback if no redirect URL is provided
         console.error("No redirect URL found for card payment");
         console.error("Available payment data:", paymentData);
-        const errorMsg = "Card payment redirect URL not available. Please contact support.";
-        reportError(new Error(errorMsg), {
-          context: 'card_payment_redirect',
-          paymentId,
-          paymentData
-        });
-        alert(errorMsg);
+        
+        // Check if this is due to failed initialization
+        if (paymentData?.paymentInitialization?.status === 'FAILED') {
+          const errorMsg = "Payment setup failed. Please try creating a new payment link.";
+          alert(errorMsg);
+        } else {
+          const errorMsg = "Card payment redirect URL not available. Please contact support.";
+          reportError(new Error(errorMsg), {
+            context: 'card_payment_redirect',
+            paymentId,
+            paymentData
+          });
+          alert(errorMsg);
+        }
       }
     }
   };

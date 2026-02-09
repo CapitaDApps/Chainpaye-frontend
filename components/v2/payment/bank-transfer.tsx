@@ -18,8 +18,8 @@ interface BankTransferProps {
         accountnumber?: string; // For NGN payments
         accountname?: string; // For NGN payments
         amount?: number; // For NGN payments
-        instruction: string;
-        txid: string; // Transaction ID for USD payments
+        instruction?: string;
+        txid?: string; // Transaction ID for USD payments
       };
     };
   };
@@ -63,8 +63,9 @@ export function BankTransfer({
     routingNumber: "021000021",
     accountNumber: "839128227",
     accountName: "ConnectWorld Inc",
+    bankAddress: "Chase Bank, NA. 270 Park Avenue, New York, NY 10017",
     amount: paymentData.amount,
-    transactionId: paymentData.paymentInitialization.toronetResponse.txid
+    transactionId: paymentData.paymentInitialization.toronetResponse.txid || ""
   };
 
   // NGN bank payment details (from API response)
@@ -193,7 +194,7 @@ export function BankTransfer({
         </div>
       )}
 
-      <div className="bg-[#F9FAFB] rounded-xl p-6 pb-10 space-y-5 mb-8 relative">
+      <div className="bg-[#F9FAFB] rounded-xl p-6 pb-8 space-y-6 mb-8 relative">
         {/* Custom Dashed Border via SVG */}
         <div className="absolute inset-0 pointer-events-none rounded-xl overflow-hidden">
           <svg className="w-full h-full">
@@ -288,6 +289,38 @@ export function BankTransfer({
             </div>
 
             <div
+              className="flex justify-between items-start group cursor-pointer"
+              onClick={() => copyToClipboard(usdBankDetails.bankAddress, "address")}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  copyToClipboard(usdBankDetails.bankAddress, "address");
+                }
+              }}
+              aria-label="Copy bank address to clipboard"
+            >
+              <div className="flex-1 pr-3">
+                <div className="text-xs text-gray-500 uppercase mb-1">BANK ADDRESS</div>
+                <div className="font-medium text-gray-900 text-sm leading-relaxed break-words">
+                  {usdBankDetails.bankAddress}
+                </div>
+              </div>
+              <button 
+                className="text-gray-400 hover:text-blue-500 transition flex-shrink-0 mt-5"
+                aria-label="Copy bank address"
+                tabIndex={-1}
+              >
+                {copiedField === "address" ? (
+                  <Check className="w-4 h-4 text-green-500" />
+                ) : (
+                  <Copy className="w-4 h-4" />
+                )}
+              </button>
+            </div>
+
+            <div
               className="flex justify-between items-center group cursor-pointer"
               onClick={() => copyToClipboard(usdBankDetails.amount, "amount")}
               role="button"
@@ -320,14 +353,27 @@ export function BankTransfer({
             </div>
 
             <div
-              className="flex justify-between items-center group cursor-pointer"
+              className="flex justify-between items-start group cursor-pointer"
               onClick={() => copyToClipboard(usdBankDetails.transactionId, "txid")}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  copyToClipboard(usdBankDetails.transactionId, "txid");
+                }
+              }}
+              aria-label="Copy transaction ID to clipboard"
             >
-              <div>
+              <div className="flex-1 pr-3">
                 <div className="text-xs text-gray-500 uppercase mb-1">TRANSACTION ID</div>
-                <div className="font-medium text-gray-900 break-all">{usdBankDetails.transactionId}</div>
+                <div className="font-medium text-gray-900 break-all text-sm">{usdBankDetails.transactionId}</div>
               </div>
-              <button className="text-gray-400 hover:text-blue-500 transition">
+              <button 
+                className="text-gray-400 hover:text-blue-500 transition flex-shrink-0 mt-5"
+                aria-label="Copy transaction ID"
+                tabIndex={-1}
+              >
                 {copiedField === "txid" ? (
                   <Check className="w-4 h-4 text-green-500" />
                 ) : (
