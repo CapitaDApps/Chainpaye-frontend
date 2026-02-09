@@ -57,7 +57,7 @@ export function MethodSelection({
             CHAINPAYE CHECKOUT
           </h3>
           <p className="text-gray-600  text-sm">
-            Use 1 of the payment methods below to pay {paymentData.currency} {Number(paymentData.amount).toLocaleString()}
+            Use one of the payment methods below to pay {paymentData.currency} {Number(paymentData.amount).toLocaleString()}
           </p>
         </div>
 
