@@ -62,7 +62,7 @@ export function BankTransfer({
     bankName: "Chase Bank",
     routingNumber: "021000021",
     accountNumber: "839128227",
-    accountName: "ConnectWorld Inc",
+    accountName: "ConnectWorld Inc.",
     bankAddress: "Chase Bank, NA. 270 Park Avenue, New York, NY 10017",
     amount: paymentData.amount,
     transactionId: paymentData.paymentInitialization.toronetResponse.txid || ""
