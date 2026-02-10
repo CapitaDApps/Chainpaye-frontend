@@ -59,7 +59,7 @@ export function BankTransfer({
   
   // USD bank payment details
   const usdBankDetails = {
-    bankName: "Chase Bank..",
+    bankName: "Chase Bank",
     routingNumber: "021000021",
     accountNumber: "839128227",
     accountName: "ConnectWorld Inc",
@@ -148,7 +148,7 @@ export function BankTransfer({
         <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-xl">
           <div className="text-sm text-blue-800 flex items-center gap-2">
             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-            Loading bank account details....
+            Loading bank account details...
           </div>
         </div>
       )}
