@@ -58,7 +58,7 @@ export default function PaymentPage() {
       {step === "bank-details" && (
         <BankTransfer
           onSent={handleBankTransferSent}
-          onChangeMethod={() => setStep("sender-detail")}
+          onChangeMethod={() => setStep("method")}
         />
       )}
 
