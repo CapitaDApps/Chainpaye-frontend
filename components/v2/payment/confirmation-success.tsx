@@ -1,8 +1,11 @@
 "use client";
 
-import { Download, Send } from "lucide-react";
+import { Check } from "lucide-react";
 import Image from "next/image";
-import logo from "../../../public/assets/Favicon.png";
+import logo from "../../../public/assets/chainpaye.png";
+import { generateReceiptPDF } from "@/util/pdf";
+import { useRef } from "react";
+import Download from "@/components/download";
 
 export function Confirmation() {
   return (
@@ -33,108 +36,156 @@ export function SuccessReceipt({
   method,
   senderName,
 }: SuccessReceiptProps) {
-  const handleDownloadPDF = () => {
-    window.print();
+  const receiptRef = useRef<HTMLDivElement>(null);
+
+  const handleDownloadPDF = async () => {
+    await generateReceiptPDF({
+      amount,
+      refNumber,
+      date,
+      method,
+      senderName,
+      logoSrc: logo.src,
+    });
   };
 
   return (
-    <div className="flex flex-col items-center shadow-2xl rounded-t-4xl mx-auto relative px-4 py-8 max-w-100">
-      <div className="absolute -top-24 left-1/2 transform -translate-x-1/2">
-        <div className="w-36 h-36 bg-white rounded-full flex items-center justify-center shadow-[0_4px_20px_rgba(0,0,0,0.08)]">
-          <div className="w-16 h-16 bg-[#23A26D] rounded-full flex items-center justify-center">
-            <Send className="w-5 h-5 text-white -ml-0.5 mt-0.5 transform -rotate-12" />
+    <div
+      className="mx-auto relative max-w-100 my-16 flex items-center justify-center pt-12"
+      ref={receiptRef}
+    >
+      <div className="flex flex-col items-center shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] rounded-t-4xl relative px-5 bg-white overflow-visible w-full max-w-95">
+        <div className="absolute inset-0 rounded-t-4xl overflow-hidden pointer-events-none z-0">
+          <div
+            className="absolute inset-0 opacity-[0.03]"
+            style={{
+              backgroundImage: `url(${logo.src})`,
+              backgroundRepeat: "repeat",
+              backgroundSize: "120px 60px",
+              transform: "rotate(-15deg) scale(1.2)",
+            }}
+          />
+        </div>
+
+        {/* Success Icon Overlap */}
+        <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 z-20">
+          <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-xl border-4 border-[#f9fafb]">
+            <div className="w-16 h-16 bg-[#23A26D] rounded-full flex items-center justify-center shadow-lg shadow-[#23A26D]/20">
+              <Check className="w-8 h-8 text-white stroke-[4px]" />
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="my-8 text-center">
-        <h2 className="text-xl font-medium text-[#121212] ">
-          Payment Success!
-        </h2>
-        <p className="text-sm text-[#474747] font-normal">
-          Your payment has been successfully done.
-        </p>
-      </div>
+        <div className="relative z-10 w-full px-1 pt-14">
+          {/* Header Row - Below the Icon */}
+          <div className="flex justify-between items-center w-full mb-6">
+            <div className="flex items-center gap-1.5 ">
+              <div className="w-[70px] sm:w-[100px] h-[50px] relative">
+                <Image
+                  src={logo}
+                  alt="Chainpaye"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+            </div>
+            <span className="text-[#111528] text-[12px] font-normal uppercase tracking-widest">
+              Transaction Receipt
+            </span>
+          </div>
 
-      {/* Divider */}
-      <div className="w-full h-px bg-[#E8EAED]  mb-8" />
+          <div className="flex flex-col items-center">
+            <div className="text-center mb-6">
+              <p className="text-[#121212] font-medium text-base mb-1">
+                Payment Success!
+              </p>
+              <div className="flex items-baseline justify-center text-[#00174F] text-[32px]">
+                <span className="mr-1">₦</span>
+                <span className="tracking-tight leading-none">
+                  {amount.replace(/[^\d.,]/g, "")}
+                </span>
+              </div>
+              <p className="text-[#5A5F73] text-[12px] font-normal tracking-wide whitespace-nowrap">
+                {date}
+              </p>
+            </div>
 
-      <div className="text-center mb-8">
-        <div className="text-sm text-[#474747] mb-2 font-normal">
-          Total Payment
-        </div>
-        <div className="text-2xl font-semibold text-[#121212]">
-          {amount}
-        </div>
-      </div>
+            {/* Details List */}
+            <div className="w-full space-y-5 mb-6 border-t border-b border-[#F3F4F6] py-6 px-1">
+              <div className="flex justify-between items-start group">
+                <span className="text-[#9CA3AF] text-[12px] font-normal">
+                  Recipient Details
+                </span>
+                <div className="text-right">
+                  <div className="font-medium text-[#111528] text-[12px] leading-tight ">
+                    Idowu Blessing Jeremiah
+                  </div>
+                  <div className="text-[#5A5F73] text-[12px] font-medium mt-0.5">
+                    GTB | 01234567890
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-between items-start">
+                <span className="text-[#9CA3AF] text-[12px] font-normal">
+                  Sender Details
+                </span>
+                <div className="text-right">
+                  <div className="font-medium text-[#111528] text-[12px] leading-tight ">
+                    {senderName}
+                  </div>
+                  <div className="text-[#5A5F73] text-[12px] font-medium mt-0.5">
+                    {method} | {refNumber.slice(0, 10)}
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-[#9CA3AF] text-[12px] font-normal">
+                  Transaction Id
+                </span>
+                <span className="text-[#5A5F73] text-[12px] font-medium mt-0.5">
+                  {refNumber}
+                </span>
+              </div>
+            </div>
 
-      {/* Details Grid */}
-      <div className="w-full grid grid-cols-2 gap-4 gap-y-6 text-left mb-10 px-2">
-        <div className="p-3 border border-[#F3F4F6] rounded-lg">
-          <div className="text-[11px] text-gray-400 mb-1">Ref Number</div>
-          <div className="font-medium text-[#111528] text-sm">
-            {refNumber}
+            <button
+              className="flex items-center gap-3 text-[#003DFF] hover:opacity-80 transition group z-10 py-1.5 mb-6"
+              onClick={handleDownloadPDF}
+            >
+              <Download />
+              <span className="text-sm font-normal">Download PDF receipt</span>
+            </button>
+
+            {/* Footer Text - Inside and compact */}
+            <div className="flex justify-center items-center gap-2.5 mb-8 text-gray-400 text-[11px] font-semibold border-t border-gray-50 pt-6 w-full relative z-10">
+              <span>
+                Powered by{" "}
+                <span className="text-gray-900 font-bold">Chainpaye</span>
+              </span>
+              <div className="w-px h-4 bg-gray-200" />
+              <button className="hover:text-gray-800 transition">help</button>
+            </div>
           </div>
         </div>
-        <div className="p-3 border border-[#F3F4F6] rounded-lg">
-          <div className="text-[11px] text-gray-400 mb-1">Payment Time</div>
-          <div className="font-medium text-[#111528] text-sm">
-            {date}
-          </div>
-        </div>
-        <div className="p-3 border border-[#F3F4F6] rounded-lg">
-          <div className="text-[11px] text-gray-400 mb-1">Payment Method</div>
-          <div className="font-medium text-[#111528] text-sm">
-            {method}
-          </div>
-        </div>
-        <div className="p-3 border border-[#F3F4F6] rounded-lg">
-          <div className="text-[11px] text-gray-400 mb-1">Sender Name</div>
-          <div className="font-medium text-[#111528] text-sm">
-            {senderName}
-          </div>
-        </div>
+        <style jsx>{`
+          .scalloped-bottom {
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            right: 0;
+            height: 10px;
+            background-image: radial-gradient(
+              circle,
+              transparent 50%,
+              #ffffff 50%
+            );
+            background-size: 20px 20px;
+            background-position: center bottom;
+            transform: rotate(180deg);
+          }
+        `}</style>
+        <div className="scalloped-bottom"></div>
       </div>
-
-      <button
-        className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition group"
-        onClick={handleDownloadPDF}
-      >
-        <Download className="w-4 h-4 text-gray-400 group-hover:text-gray-900" />
-        <span className="text-sm font-medium">Download PDF receipt</span>
-      </button>
-
-      {/* Scalloped Bottom Edge */}
-      <div className="absolute -bottom-[12px] left-0 right-0 h-[12px] overflow-hidden">
-        <div
-          className="w-full h-full flex"
-          style={{
-            maskImage:
-              "radial-gradient(circle at center top, transparent 6px, black 6px)",
-          }}
-        >
-          {/* We simulate the 'teeth' by repeating circles or simpler css mask */}
-        </div>
-      </div>
-
-      <style jsx>{`
-        .scalloped-bottom {
-          position: absolute;
-          bottom: -10px;
-          left: 0;
-          right: 0;
-          height: 10px;
-          background-image: radial-gradient(
-            circle,
-            transparent 50%,
-            #ffffff 50%
-          );
-          background-size: 20px 20px;
-          background-position: center bottom;
-          transform: rotate(180deg);
-        }
-      `}</style>
-      <div className="scalloped-bottom"></div>
     </div>
   );
 }
