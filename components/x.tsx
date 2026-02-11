@@ -6,7 +6,7 @@ export default function XIcon() {
       viewBox="0 0 32 32"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className="w-5 md:w-10"
+      className="w-5 md:w-10 "
     >
       <mask
         id="mask0_1905_1930"
