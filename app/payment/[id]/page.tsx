@@ -8,20 +8,21 @@ import {
   Confirmation,
   SuccessReceipt,
 } from "@/components/v2/payment/confirmation-success";
-import { useParams,} from "next/navigation";
+import { useParams } from "next/navigation";
+import SenderDetail from "@/components/v2/payment/sender-detail";
 
 export default function PaymentPage() {
   const [step, setStep] = useState<
-    "method" | "bank-details" | "confirming" | "success"
+    "method" | "sender-detail" | "bank-details" | "confirming" | "success"
   >("method");
   const [selectedMethod, setSelectedMethod] = useState<"card" | "bank" | null>(
-    null
+    null,
   );
-  const path = useParams()
-  console.log(path?.id)
+  const path = useParams();
+  console.log(path?.id);
   const handlePay = () => {
     if (selectedMethod === "bank") {
-      setStep("bank-details");
+      setStep("sender-detail");
     } else if (selectedMethod === "card") {
       // Logic for Card Payment - redirects or opens external provider
       alert("Redirecting to Card Payment Provider...");
@@ -34,6 +35,10 @@ export default function PaymentPage() {
     setTimeout(() => {
       setStep("success");
     }, 3000);
+  };
+
+  const handleUserDetail = () => {
+    setStep("bank-details");
   };
 
   const handleBack = () => {
@@ -53,10 +58,16 @@ export default function PaymentPage() {
       {step === "bank-details" && (
         <BankTransfer
           onSent={handleBankTransferSent}
-          onChangeMethod={() => setStep("method")}
+          onChangeMethod={() => setStep("sender-detail")}
         />
       )}
 
+      {step === "sender-detail" && (
+        <SenderDetail
+          onSent={handleUserDetail}
+          onChangeMethod={() => setStep("method")}
+        />
+      )}
       {step === "confirming" && <Confirmation />}
 
       {step === "success" && (

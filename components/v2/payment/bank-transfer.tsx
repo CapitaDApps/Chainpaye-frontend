@@ -3,7 +3,7 @@
 import { ArrowLeft, Copy, Check } from "lucide-react";
 import { useState } from "react";
 
-interface BankTransferProps {
+export interface BankTransferProps {
   onSent: () => void;
   onChangeMethod: () => void;
 }
@@ -28,19 +28,20 @@ export function BankTransfer({ onSent, onChangeMethod }: BankTransferProps) {
         </span>
       </div>
 
-      <div className="text-center mb-6">
+      <div className="text-center mb-6 space-y-2">
         <div className="text-sm text-[#111528] mb-1">
           Transfer
-          <span className="font-bold text-[#111528] ml-1">
-            NGN 362,500
-          </span>
+          <span className="font-bold text-[#111528] ml-1">NGN 362,500</span>
+        </div>
+        <div className="text-sm md:text-base font-medium text-[#FF7700]">
+          Copy transaction ID for this transaction to be successful
         </div>
         <div className="text-xs text-blue-500">
           Account number expires in 30 Mins
         </div>
       </div>
 
-      <div className="bg-[#F9FAFB] rounded-xl p-6 pb-10 space-y-5 mb-8 relative">
+      <div className="md:bg-[#F9FAFB] rounded-xl p-6 pb-10 space-y-5 mb-8 relative">
         {/* Custom Dashed Border via SVG */}
         <div className="absolute inset-0 pointer-events-none rounded-xl overflow-hidden">
           <svg className="w-full h-full">
@@ -54,7 +55,6 @@ export function BankTransfer({ onSent, onChangeMethod }: BankTransferProps) {
               stroke="#DEE2E6"
               strokeWidth="2"
               strokeDasharray="10 10"
-              // className="dark:stroke-gray-800"
             />
           </svg>
         </div>
@@ -68,9 +68,7 @@ export function BankTransfer({ onSent, onChangeMethod }: BankTransferProps) {
           <div className="text-xs text-gray-500 uppercase mb-1">
             ACCOUNT NAME
           </div>
-          <div className="font-medium text-gray-900">
-            Jane Doe
-          </div>
+          <div className="font-medium text-gray-900">Jane Doe</div>
         </div>
 
         <div
@@ -81,9 +79,7 @@ export function BankTransfer({ onSent, onChangeMethod }: BankTransferProps) {
             <div className="text-xs text-gray-500 uppercase mb-1">
               ACCOUNT NUMBER
             </div>
-            <div className="font-medium text-gray-900 ">
-              1234567890
-            </div>
+            <div className="font-medium text-gray-900 ">1234567890</div>
           </div>
           <button className="text-gray-400 hover:text-blue-500 transition">
             {copiedField === "account" ? (
@@ -93,24 +89,57 @@ export function BankTransfer({ onSent, onChangeMethod }: BankTransferProps) {
             )}
           </button>
         </div>
-
         <div
           className="flex justify-between items-center group cursor-pointer"
-          onClick={() => copyToClipboard("362500", "amount")}
+          onClick={() =>
+            copyToClipboard(
+              "Chase Bank, NA. 270 Park Avenue, New York, NY10017",
+              "bank-address",
+            )
+          }
         >
           <div>
-            <div className="text-xs text-gray-500 uppercase mb-1">AMOUNT</div>
+            <div className="text-xs text-gray-500 uppercase mb-1">
+              BANK ADDRESS
+            </div>
             <div className="font-medium text-gray-900 ">
-              NGN 362,500
+              Chase Bank, NA. 270 Park Avenue, New York, NY10017
             </div>
           </div>
           <button className="text-gray-400 hover:text-blue-500 transition">
-            {copiedField === "amount" ? (
+            {copiedField === "bank-address" ? (
               <Check className="w-4 h-4 text-green-500" />
             ) : (
               <Copy className="w-4 h-4" />
             )}
           </button>
+        </div>
+        <div
+          className="flex justify-between items-center group cursor-pointer"
+          onClick={() => copyToClipboard("1020394873JNUR2882R729", "tx-id")}
+        >
+          <div>
+            <div className="text-xs text-gray-500 uppercase mb-1">
+              TRANSACTION ID
+            </div>
+            <div className="font-medium text-gray-900 break-all">
+              1020394873JNUR2882R729
+            </div>
+          </div>
+          <button className="text-gray-400 hover:text-blue-500 transition">
+            {copiedField === "tx-id" ? (
+              <Check className="w-4 h-4 text-green-500" />
+            ) : (
+              <Copy className="w-4 h-4" />
+            )}
+          </button>
+        </div>
+
+        <div className="flex justify-between items-center group cursor-pointer">
+          <div>
+            <div className="text-xs text-gray-500 uppercase mb-1">AMOUNT</div>
+            <div className="font-medium text-gray-900 ">NGN 362,500</div>
+          </div>
         </div>
       </div>
 

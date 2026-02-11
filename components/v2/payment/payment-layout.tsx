@@ -4,13 +4,13 @@ import Image from "next/image";
 
 interface PaymentLayoutProps {
   children: React.ReactNode;
-  step: "method" | "bank-details" | "confirming" | "success";
+  step: "method" | "bank-details" | "confirming" | "success" | "sender-detail";
   onBack?: () => void;
 }
 
 export function PaymentLayout({ children, step, onBack }: PaymentLayoutProps) {
   return (
-    <div className="min-h-screen bg-[#F5F5F5] flex items-center justify-center p-4 font-sans">
+    <div className="min-h-screen  bg-[#FDFDFD] md:bg-[#F5F5F5] flex items-center justify-center p-4 font-sans">
       {step === "method" ? (
         <div className="bg-white  rounded-[32px] w-full max-w-[1100px] min-h-[600px] flex justify-between flex-col md:flex-row p-8 md:p-12 gap-8 md:gap-20 shadow-sm relative pb-16">
           {/* Left Column: Summary */}
@@ -19,9 +19,7 @@ export function PaymentLayout({ children, step, onBack }: PaymentLayoutProps) {
               <div className="text-gray-500 mb-6 font-medium">
                 You&apos;re paying:
               </div>
-              <h1 className="text-5xl font-bold text-[#111528] mb-10">
-                $250
-              </h1>
+              <h1 className="text-5xl font-bold text-[#111528] mb-10">$250</h1>
 
               <div className="rounded-xl border border-gray-100 p-0 overflow-hidden">
                 <div className="flex justify-between py-4 px-4 border-b border-gray-50  bg-white ">
@@ -41,9 +39,7 @@ export function PaymentLayout({ children, step, onBack }: PaymentLayoutProps) {
 
             <div className="mt-8 w-fit text-nowrap md:mt-0 flex items-center gap-2 text-xs text-gray-400 md:relative absolute bottom-4 left-1/2 transform -translate-x-1/2">
               <span>Powered by</span>
-              <span className="font-bold text-[#111528]">
-                Chainpaye
-              </span>
+              <span className="font-bold text-[#111528]">Chainpaye</span>
               <span className="mx-2 text-gray-300">help</span>
             </div>
           </div>
@@ -52,7 +48,7 @@ export function PaymentLayout({ children, step, onBack }: PaymentLayoutProps) {
           <div className="relative pt-2">{children}</div>
         </div>
       ) : (
-        <div className="w-full bg-[#FDFDFD] rounded-xl min-h-175 h-[80vh] max-w-[972px] justify-center flex flex-col items-center relative px-4">
+        <div className="w-full md:bg-[#FDFDFD] rounded-xl min-h-175 max-w-[972px] md:py-10 flex flex-col items-center relative px-4">
           <div
             className={`max-w-125 ${
               step === "success" ? "rounded-t-4xl" : "rounded-4xl"
@@ -61,12 +57,9 @@ export function PaymentLayout({ children, step, onBack }: PaymentLayoutProps) {
             {children}
           </div>
 
-          {/* Footer Outside */}
-          <div className=" flex items-start absolute md:left-14 left-1/2 transform -translate-x-1/2 md:translate-x-0   bottom-6 gap-2 text-xs text-gray-400 ">
+          <div className=" flex items-center text-center mt-10 md:mt-0 md:items-start md:absolute md:left-14  transform  md:translate-x-0   bottom-6 gap-2 text-xs text-gray-400 ">
             <span>Powered by</span>
-            <span className="font-normal text-[#111528]">
-              Chainpaye
-            </span>
+            <span className="font-normal text-[#111528]">Chainpaye</span>
             <span className="mx-2 text-[#5A5F73]">help</span>
           </div>
         </div>
