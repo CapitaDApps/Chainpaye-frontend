@@ -10,12 +10,23 @@ interface MethodSelectionProps {
   selectedMethod: "card" | "bank" | null;
   onSelectMethod: (method: "card" | "bank") => void;
   onPay: () => void;
+  paymentData: {
+    amount: string;
+    currency: string;
+    name: string;
+  };
+  availableMethods: {
+    card: boolean;
+    bank: boolean;
+  };
 }
 
 export function MethodSelection({
   selectedMethod,
   onSelectMethod,
   onPay,
+  paymentData,
+  availableMethods,
 }: MethodSelectionProps) {
   return (
     <div className="flex flex-col h-full md:gap-24">
@@ -35,11 +46,14 @@ export function MethodSelection({
           </div>
 
           <div className="border border-gray-200 rounded-xl overflow-hidden">
+            {/* Card Payment Option */}
             <label
-              onClick={() => onSelectMethod("card")}
-              className={`flex items-center p-4 cursor-pointer transition-all border-b border-gray-100  hover:bg-gray-50 ${
-                selectedMethod === "card" ? "bg-gray-50 " : ""
-              }`}
+              onClick={() => availableMethods.card && onSelectMethod("card")}
+              className={`flex items-center p-4 transition-all border-b border-gray-100 ${
+                availableMethods.card 
+                  ? 'cursor-pointer hover:bg-gray-50' 
+                  : 'cursor-not-allowed opacity-50 bg-gray-100'
+              } ${selectedMethod === "card" ? "bg-gray-50" : ""}`}
             >
               <div
                 className={`w-5 h-5 rounded-full border flex items-center justify-center mr-4 ${
@@ -53,9 +67,12 @@ export function MethodSelection({
                 )}
               </div>
 
-              <CreditCard className="w-5 h-5 text-gray-900  mr-3" />
-              <span className="font-medium text-gray-900  flex-1">
+              <CreditCard className={`w-5 h-5 mr-3 ${availableMethods.card ? 'text-gray-900' : 'text-gray-400'}`} />
+              <span className={`font-medium flex-1 ${availableMethods.card ? 'text-gray-900' : 'text-gray-400'}`}>
                 Pay with card
+                {!availableMethods.card && (
+                  <span className="text-xs block text-gray-400">Not available for this payment</span>
+                )}
               </span>
 
               <div className="flex gap-1.5">
@@ -84,10 +101,12 @@ export function MethodSelection({
 
             {/* Bank Transfer Option */}
             <label
-              onClick={() => onSelectMethod("bank")}
-              className={`flex items-center p-4 cursor-pointer transition-all hover:bg-gray-50 ${
-                selectedMethod === "bank" ? "bg-gray-50 " : ""
-              }`}
+              onClick={() => availableMethods.bank && onSelectMethod("bank")}
+              className={`flex items-center p-4 transition-all ${
+                availableMethods.bank 
+                  ? 'cursor-pointer hover:bg-gray-50' 
+                  : 'cursor-not-allowed opacity-50 bg-gray-100'
+              } ${selectedMethod === "bank" ? "bg-gray-50" : ""}`}
             >
               <div
                 className={`w-5 h-5 rounded-full border flex items-center justify-center mr-4 ${
@@ -100,9 +119,12 @@ export function MethodSelection({
                   <div className="w-2.5 h-2.5 rounded-full bg-blue-600" />
                 )}
               </div>
-              <Landmark className="w-5 h-5 text-gray-900  mr-3" />
-              <span className="font-medium text-gray-900 ">
+              <Landmark className={`w-5 h-5 mr-3 ${availableMethods.bank ? 'text-gray-900' : 'text-gray-400'}`} />
+              <span className={`font-medium ${availableMethods.bank ? 'text-gray-900' : 'text-gray-400'}`}>
                 Pay with Bank Transfer
+                {!availableMethods.bank && (
+                  <span className="text-xs block text-gray-400">Not available for this payment</span>
+                )}
               </span>
             </label>
           </div>
