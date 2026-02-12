@@ -159,8 +159,8 @@ console.log('Transaction data:', {
 ```bash
 # Required
 NEXT_PUBLIC_API_BASE_URL=http://localhost:4000
-NEXT_PUBLIC_TORONET_ADMIN=0x6b03eea493cfeab887f40969e40b069bb334f632
-NEXT_PUBLIC_TORONET_ADMIN_PWD=Holland234$
+NEXT_PUBLIC_TORONET_ADMIN=//
+NEXT_PUBLIC_TORONET_ADMIN_PWD=//
 ```
 
 ## File Locations
