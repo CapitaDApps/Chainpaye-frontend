@@ -1,10 +1,21 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
-// Initialize Resend with API key from environment variables
-const apiKey =
-  process.env.RESEND_API || process.env.NEXT_PUBLIC_RESEND_API;
-const resend = new Resend(apiKey);
+// Get API key from environment variables
+const getApiKey = () => process.env.RESEND_API || process.env.NEXT_PUBLIC_RESEND_API;
+
+// Initialize Resend lazily to avoid build-time errors
+let resend: Resend | null = null;
+const getResend = () => {
+  if (!resend) {
+    const apiKey = getApiKey();
+    if (!apiKey) {
+      throw new Error("RESEND_API_KEY is missing");
+    }
+    resend = new Resend(apiKey);
+  }
+  return resend;
+};
 
 export async function POST(request: Request) {
   try {
@@ -21,6 +32,7 @@ export async function POST(request: Request) {
       );
     }
 
+    const apiKey = getApiKey();
     if (!apiKey) {
       console.error("RESEND_API_KEY is missing");
       return NextResponse.json(
@@ -28,6 +40,9 @@ export async function POST(request: Request) {
         { status: 500 }
       );
     }
+
+    // Get Resend instance
+    const resendInstance = getResend();
 
     // Construct Admin Email (HTML)
     const adminHtmlContent = `
@@ -131,7 +146,7 @@ export async function POST(request: Request) {
     //   apiKey ? `...${apiKey.slice(-4)}` : "MISSING"
     // );
 
-    const { data: adminData, error: adminError } = await resend.emails.send({
+    const { data: adminData, error: adminError } = await resendInstance.emails.send({
       from: "Chainpaye Admin <onboarding@resend.dev>",
       to: [adminEmail],
       subject: `New Visa Card Request: ${name}`,
