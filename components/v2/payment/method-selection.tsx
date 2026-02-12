@@ -36,7 +36,7 @@ export function MethodSelection({
             CHAINPAYE CHECKOUT
           </h3>
           <p className="text-gray-600  text-sm">
-            Use one of the payment methods below to pay $250 to Blessing Idowu
+            Use one of the payment methods below to pay {paymentData.currency}{paymentData.amount} to {paymentData.name}
           </p>
         </div>
 

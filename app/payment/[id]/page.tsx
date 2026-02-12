@@ -579,8 +579,10 @@ export default function PaymentPage() {
         paidAt: new Date().toISOString(),
       };
       
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://chainpaye-backend.onrender.com';
+      
       const response = await measureAsync('save_transaction', async () => {
-        return await fetchWithRetry(`/api/v1/record-transaction/${paymentData.transactionId}`, {
+        return await fetchWithRetry(`${apiBaseUrl}/api/v1/record-transaction/${paymentData.transactionId}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

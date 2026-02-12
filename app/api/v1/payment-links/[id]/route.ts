@@ -14,7 +14,7 @@ export async function POST(
       );
     }
 
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000';
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://chainpaye-backend.onrender.com';
     const url = `${apiBaseUrl}/api/v1/payment-links/${id}`;
 
     console.log('Fetching payment link from:', url);

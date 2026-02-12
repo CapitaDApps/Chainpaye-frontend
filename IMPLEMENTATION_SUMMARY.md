@@ -135,9 +135,11 @@ Successfully implemented a dynamic payment flow that supports multiple currencie
 ### 7. Hooks Created
 
 #### usePaymentVerification (`lib/hooks/usePaymentVerification.ts`)
-- Polls payment verification endpoint every 5 seconds
-- Returns verification status
-- Handles errors gracefully
+- Uses SWR library for automatic polling
+- Polls Toronet API every 5 seconds
+- Handles verification status
+- Auto-retries on errors
+- Stops polling on success
 
 ## Payment Flow
 
@@ -155,22 +157,36 @@ Successfully implemented a dynamic payment flow that supports multiple currencie
    - Display appropriate bank details
    - Collect sender information
    - Validate inputs
-   - Start payment verification
+   - Start payment verification with SWR polling
 
-4. **Card Payment Flow**
+4. **Payment Verification (NEW)**
+   - Poll Toronet API every 5 seconds using SWR
+   - Endpoint: `https://www.toronet.org/api/payment/toro/`
+   - Send: `{op: "recordfiattransaction", params: [currency, txid, paymenttype]}`
+   - Continue until success response received
+   - Timeout after 15 minutes
+   - Show confirmation screen with loading spinner
+
+5. **Save Transaction**
+   - POST to `/api/v1/record-transaction/{transactionId}`
+   - Include sender details and payment info
+   - Treat "already recorded" as success
+   - Don't block flow on errors
+
+6. **Notify Success URL**
+   - POST payment details to merchant's success URL
+   - Include: paymentLinkId, transactionId, amount, currency, sender info
+   - Timeout after 8 seconds
+   - Always redirect regardless of POST result
+
+7. **Card Payment Flow**
    - Redirect to external payment provider
    - Use URL from payment initialization response
 
-5. **Verification**
-   - Poll verification endpoint every 5 seconds
-   - Timeout after 15 minutes
-   - Show confirmation screen
-
-6. **Success**
-   - Save transaction to backend
-   - POST to success URL
-   - Redirect to success page
-   - Display receipt with download option
+8. **Success**
+   - Display receipt with transaction details
+   - Offer PDF download
+   - Auto-redirect to success URL after 3 seconds
 
 ## Environment Variables Required
 
@@ -179,6 +195,12 @@ NEXT_PUBLIC_API_BASE_URL=http://localhost:4000
 NEXT_PUBLIC_TORONET_ADMIN=<admin_address>
 NEXT_PUBLIC_TORONET_ADMIN_PWD=<admin_password>
 ```
+
+## Dependencies
+
+- `swr`: ^2.x - For automatic polling and data fetching
+- `next`: ^16.x - Next.js framework
+- `react`: ^19.x - React library
 
 ## Testing Checklist
 

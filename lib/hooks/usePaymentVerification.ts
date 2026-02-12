@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import useSWR from 'swr';
 
 interface VerificationParams {
   currency: string;
@@ -6,78 +6,80 @@ interface VerificationParams {
   paymenttype: string;
 }
 
-interface VerificationResponse {
-  success: boolean;
-  data?: {
-    status: string;
-    amount?: number;
-    currency?: string;
-    [key: string]: any;
-  };
+interface ToronetVerificationResponse {
+  success?: boolean;
+  result?: boolean;
+  status?: string;
   message?: string;
+  error?: string;
+  data?: any;
 }
+
+// Fetcher function for SWR
+const verificationFetcher = async (url: string, params: VerificationParams): Promise<ToronetVerificationResponse> => {
+  console.log('Verifying payment with Toronet API:', params);
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'admin': process.env.NEXT_PUBLIC_TORONET_ADMIN || '',
+      'adminpwd': process.env.NEXT_PUBLIC_TORONET_ADMIN_PWD || '',
+    },
+    body: JSON.stringify({
+      op: 'recordfiattransaction',
+      params: [
+        { name: 'currency', value: params.currency },
+        { name: 'txid', value: params.txid },
+        { name: 'paymenttype', value: params.paymenttype },
+      ],
+    }),
+  });
+
+  const result = await response.json();
+  console.log('Toronet verification response:', result);
+
+  // Check if payment was successful
+  if (result.success === true || result.result === true || result.status === 'completed') {
+    return { ...result, success: true };
+  }
+
+  // If not successful yet, throw error to trigger retry
+  throw new Error(result.message || result.error || 'Payment not confirmed yet');
+};
 
 export function usePaymentVerification(
   params: VerificationParams | null,
   enabled: boolean
 ) {
-  const [data, setData] = useState<VerificationResponse | null>(null);
-  const [error, setError] = useState<Error | null>(null);
-  const [isSuccess, setIsSuccess] = useState(false);
-
-  useEffect(() => {
-    if (!enabled || !params) {
-      return;
+  const shouldFetch = enabled && params !== null;
+  
+  // Use SWR with polling configuration
+  const { data, error, isValidating } = useSWR(
+    shouldFetch ? ['https://www.toronet.org/api/payment/toro/', params] : null,
+    ([url, params]) => verificationFetcher(url, params),
+    {
+      refreshInterval: 5000, // Poll every 5 seconds
+      revalidateOnFocus: false,
+      revalidateOnReconnect: true,
+      shouldRetryOnError: true,
+      errorRetryInterval: 5000, // Retry every 5 seconds on error
+      dedupingInterval: 2000, // Prevent duplicate requests within 2 seconds
+      onSuccess: (data) => {
+        console.log('Payment verification successful:', data);
+      },
+      onError: (error) => {
+        console.log('Payment verification pending:', error.message);
+      },
     }
+  );
 
-    let isMounted = true;
-    let pollInterval: NodeJS.Timeout;
+  const isSuccess = data?.success === true || data?.result === true;
 
-    const verifyPayment = async () => {
-      try {
-        const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000';
-        const url = `${apiBaseUrl}/api/v1/verify-payment`;
-
-        console.log('Verifying payment with params:', params);
-
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(params),
-        });
-
-        const result = await response.json();
-        console.log('Verification response:', result);
-
-        if (!isMounted) return;
-
-        if (result.success && result.data?.status === 'completed') {
-          setData(result);
-          setIsSuccess(true);
-          setError(null);
-          if (pollInterval) clearInterval(pollInterval);
-        } else if (!response.ok) {
-          throw new Error(result.message || 'Verification failed');
-        }
-      } catch (err) {
-        console.error('Verification error:', err);
-        if (isMounted) {
-          setError(err as Error);
-        }
-      }
-    };
-
-    // Start polling every 5 seconds
-    verifyPayment();
-    pollInterval = setInterval(verifyPayment, 5000);
-
-    return () => {
-      isMounted = false;
-      if (pollInterval) clearInterval(pollInterval);
-    };
-  }, [params, enabled]);
-
-  return { data, error, isSuccess };
+  return {
+    data,
+    error: error as Error | null,
+    isSuccess,
+    isValidating,
+  };
 }
