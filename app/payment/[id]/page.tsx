@@ -866,7 +866,7 @@ function ErrorState({ error, onBack }: { error: string; onBack: () => void }) {
             
             <button
               onClick={() => window.history.back()}
-              className="w-full py-3 px-6 rounded-xl font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition-all"
+              className="w-full py-3 px-6 rounded-xl font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition-all "
             >
               Go Back
             </button>
