@@ -4,16 +4,13 @@ import { useState, useEffect } from "react";
 import { PaymentLayout } from "@/components/v2/payment/payment-layout";
 import { MethodSelection } from "@/components/v2/payment/method-selection";
 import { BankTransfer } from "@/components/v2/payment/bank-transfer";
-import {
-  Confirmation,
-  SuccessReceipt,
-} from "@/components/v2/payment/confirmation-success";
+import { SuccessReceipt } from "@/components/v2/payment/confirmation-success";
+import { VerificationPending } from "@/components/v2/payment/verification-pending";
 import { useParams } from "next/navigation";
-import { usePaymentVerification } from "@/lib/hooks/usePaymentVerification";
 import { PaymentSkeleton } from "@/components/ui/skeleton";
 import { PaymentProgress } from "@/components/ui/progress-indicator";
 import { fetchWithRetry, handleApiError, trackEvent, reportError, createSession, validateSession, clearSession } from "@/lib/utils/api";
-import { validateSenderInfo, sanitizeName, sanitizePhoneNumber, ValidationError } from "@/lib/utils/validation";
+import { validateSenderInfo, sanitizeName, sanitizePhoneNumber, sanitizeEmail, ValidationError } from "@/lib/utils/validation";
 import { paymentCache, cachedFetch, CACHE_KEYS } from "@/lib/utils/cache";
 import { performanceMonitor, measureAsync } from "@/lib/utils/performance";
 import { registerServiceWorker, setupOnlineOfflineListeners, isOnline } from "@/lib/utils/service-worker";
@@ -32,6 +29,7 @@ interface PaymentData {
   redirectUrl?: string; // For card payments
   toronetReference: string;
   transactionId: string;
+  reference?: string; // Transaction reference (TXN_XXX format)
   paymentInitialization: {
     id: string;
     status: string;
@@ -55,23 +53,72 @@ interface PaymentData {
 
 export default function PaymentPage() {
   const [step, setStep] = useState<
-    "method" | "bank-details" | "confirming" | "success" | "loading" | "error"
+    "method" | "bank-details" | "verifying" | "success" | "loading" | "error"
   >("loading");
   const [selectedMethod, setSelectedMethod] = useState<"card" | "bank" | null>(
     null
   );
   const [paymentData, setPaymentData] = useState<PaymentData | null>(null);
   const [error, setError] = useState<string>("");
-  const [isVerifying, setIsVerifying] = useState(false);
-  const [verificationTimeout, setVerificationTimeout] = useState<NodeJS.Timeout | null>(null);
   const [senderName, setSenderName] = useState<string>("");
   const [senderPhone, setSenderPhone] = useState<string>("");
+  const [senderEmail, setSenderEmail] = useState<string>("");
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [sessionId, setSessionId] = useState<string>("");
   const [isOffline, setIsOffline] = useState(false);
+  const [isPolling, setIsPolling] = useState(false);
+  const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null);
   const params = useParams();
   const paymentId = params?.id as string;
+
+  // Handle success redirect with POST request
+  const handleSuccessRedirect = async (paymentData: PaymentData, transactionData: { transactionId: string; senderName: string; senderPhone: string }) => {
+    try {
+      console.log('Posting to success endpoint:', paymentData.successUrl);
+      
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000); // 8-second timeout
+      
+      const response = await fetch(paymentData.successUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          paymentLinkId: paymentId,
+          transactionId: transactionData.transactionId,
+          amount: paymentData.amount,
+          currency: paymentData.currency,
+          senderName: transactionData.senderName,
+          senderPhone: transactionData.senderPhone,
+          paymentMethod: paymentData.paymentType,
+          status: 'completed',
+          paidAt: new Date().toISOString(),
+          name: paymentData.name
+        }),
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        console.log('Success endpoint notified successfully');
+      } else {
+        console.error('Failed to notify success endpoint:', response.status);
+      }
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        console.error('Success endpoint request timed out after 8 seconds');
+      } else {
+        console.error('Error calling success endpoint:', error);
+      }
+    } finally {
+      // Always redirect regardless of POST success/failure since payment was successful
+      console.log('Redirecting to success page:', paymentData.successUrl);
+      window.location.href = paymentData.successUrl;
+    }
+  };
 
   // Initialize session, performance monitoring, and service worker
   useEffect(() => {
@@ -112,19 +159,6 @@ export default function PaymentPage() {
       performanceMonitor.endTiming('payment_page_load');
     };
   }, [paymentId]);
-
-  // Payment verification hook - must be called before early returns
-  // Use safe access to avoid errors when paymentData is null
-  const verificationParams = isVerifying && paymentData?.paymentInitialization?.toronetResponse?.txid ? {
-    currency: paymentData.currency,
-    txid: paymentData.paymentInitialization.toronetResponse.txid,
-    paymenttype: paymentData.paymentType
-  } : null;
-  
-  const { data: verificationData, error: verificationError, isSuccess } = usePaymentVerification(
-    verificationParams,
-    isVerifying
-  );
 
   // Fetch payment data on mount - must be before early returns
   useEffect(() => {
@@ -167,7 +201,29 @@ export default function PaymentPage() {
           if (!response.ok) {
             const errorText = await response.text();
             console.error("Response error:", errorText);
-            throw new Error(`HTTP ${response.status}: ${errorText}`);
+            
+            // Parse error response
+            let errorData;
+            try {
+              errorData = JSON.parse(errorText);
+            } catch {
+              errorData = { message: errorText };
+            }
+            
+            // Handle specific HTTP status codes
+            if (response.status === 404) {
+              throw new Error('Payment link not found. Please check the link and try again.');
+            } else if (response.status === 410) {
+              throw new Error('This payment link has expired. Please request a new one.');
+            } else if (response.status === 400) {
+              throw new Error(errorData.message || 'Invalid payment link. Please check the link and try again.');
+            } else if (response.status === 500) {
+              throw new Error('Server error. Please try again in a few moments.');
+            } else if (response.status === 503) {
+              throw new Error('Payment service is temporarily unavailable. Please try again later.');
+            } else {
+              throw new Error(errorData.message || `Unable to load payment link (Error ${response.status})`);
+            }
           }
 
           const result = await response.json();
@@ -258,55 +314,14 @@ export default function PaymentPage() {
     fetchPaymentData();
   }, [paymentId]);
 
-  // Debug logging - must be before early returns
-  useEffect(() => {
-    if (isVerifying) {
-      console.log('Verification status:', {
-        isVerifying,
-        verificationData,
-        verificationError  ,
-        isSuccess,
-        paymentData: paymentData ? {
-          currency: paymentData.currency,
-          txid: paymentData.paymentInitialization?.toronetResponse?.txid,
-          paymentType: paymentData.paymentType
-        } : null
-      });
-    }
-  }, [isVerifying, verificationData, verificationError, isSuccess, paymentData]);
-
-  // Handle successful payment verification - must be before early returns
-  useEffect(() => {
-    if (isSuccess && isVerifying) {
-      console.log("Payment verification successful:", verificationData);
-      handlePaymentSuccess();
-    }
-  }, [isSuccess, isVerifying, verificationData]);
-
-  // Handle verification errors - must be before early returns
-  useEffect(() => {
-    if (verificationError && isVerifying) {
-      console.error("Payment verification error:", verificationError);
-      // Continue polling - errors are handled in the fetcher
-    }
-  }, [verificationError, isVerifying]);
-
-  // Cleanup timeout on unmount - must be before early returns
+  // Cleanup polling interval on unmount
   useEffect(() => {
     return () => {
-      if (verificationTimeout) {
-        clearTimeout(verificationTimeout);
+      if (pollingInterval) {
+        clearInterval(pollingInterval);
       }
-      
-      // Clear session on unmount (optional - you might want to keep it)
-      if (paymentId && step === "success") {
-        clearSession(paymentId);
-      }
-      
-      // Disconnect performance monitoring
-      performanceMonitor.endTiming('payment_page_session');
     };
-  }, [verificationTimeout, paymentId, step]);
+  }, [pollingInterval]);
 
   // Auto-select payment method if only one is available - must be before early returns
   useEffect(() => {
@@ -334,29 +349,6 @@ export default function PaymentPage() {
   }, [paymentData, selectedMethod]);
 
   // Define functions before early returns
-  const handlePaymentSuccess = async () => {
-    console.log("Processing payment success");
-    setIsVerifying(false);
-    
-    trackEvent('payment_verification_success', {
-      paymentId,
-      currency: paymentData?.currency,
-      amount: paymentData?.amount,
-      verificationData
-    });
-    
-    // Clear timeout
-    if (verificationTimeout) {
-      clearTimeout(verificationTimeout);
-      setVerificationTimeout(null);
-    }
-    
-    // Save transaction result to backend
-    await saveTransactionResult();
-    
-    setStep("success");
-  };
-
   const handlePay = () => {
     console.log("handlePay called with:", { selectedMethod, paymentData });
     
@@ -422,9 +414,57 @@ export default function PaymentPage() {
     }
   };
 
-  const handleBankTransferSent = () => {
-    // Validate sender information
-    const errors = validateSenderInfo(senderName, senderPhone);
+  // Check transaction status (for polling)
+  const checkTransactionStatus = async () => {
+    if (!paymentData?.transactionId && !paymentData?.reference) return;
+    
+    const transactionRef = paymentData?.transactionId || paymentData?.reference;
+    
+    try {
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://chainpaye-backend.onrender.com';
+      
+      const response = await fetch(
+        `${apiBaseUrl}/api/v1/transactions/${transactionRef}/status`,
+        {
+          method: 'GET',
+          headers: {
+            'admin': process.env.NEXT_PUBLIC_TORONET_ADMIN || '',
+            'adminpwd': process.env.NEXT_PUBLIC_TORONET_ADMIN_PWD || '',
+          },
+        }
+      );
+      
+      if (!response.ok) {
+        console.error('Failed to check transaction status');
+        return;
+      }
+      
+      const result = await response.json();
+      console.log('Transaction status:', result);
+      
+      // If payment is confirmed, show success
+      if (result.data?.state === 'PAID' || result.data?.state === 'COMPLETED') {
+        console.log('Payment confirmed!');
+        setIsPolling(false);
+        if (pollingInterval) {
+          clearInterval(pollingInterval);
+          setPollingInterval(null);
+        }
+        setStep('success');
+        
+        trackEvent('payment_confirmed_via_polling', {
+          paymentId,
+          transactionId: paymentData.transactionId,
+        });
+      }
+    } catch (error) {
+      console.error('Error checking transaction status:', error);
+    }
+  };
+
+  const handleBankTransferSent = async () => {
+    // Validate sender information including email
+    const errors = validateSenderInfo(senderName, senderPhone, senderEmail);
     if (errors.length > 0) {
       setValidationErrors(errors);
       trackEvent('validation_error', {
@@ -436,39 +476,104 @@ export default function PaymentPage() {
     
     // Clear any previous validation errors
     setValidationErrors([]);
+    setIsSubmitting(true);
     
-    console.log("Starting payment verification...");
-    trackEvent('payment_verification_started', {
-      paymentId,
-      currency: paymentData?.currency,
-      txid: paymentData?.paymentInitialization?.toronetResponse?.txid
-    });
-    
-    setStep("confirming");
-    setIsVerifying(true);
-    
-    // Set a timeout to stop verification after 15 minutes
-    const timeout = setTimeout(() => {
-      console.log("Payment verification timeout reached");
-      setIsVerifying(false);
-      const errorMsg = "Payment verification timed out. Please contact support if your payment was successful.";
+    try {
+      console.log("Submitting payment verification request...");
+      console.log("Sender info:", {
+        name: sanitizeName(senderName),
+        phone: sanitizePhoneNumber(senderPhone),
+        email: sanitizeEmail(senderEmail)
+      });
+      
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ;
+      
+      // Get transaction reference
+
+      const transactionRef = paymentData?.transactionId || paymentData?.reference;
+      
+      if (!transactionRef) {
+        throw new Error('Transaction reference not found');
+      }
+      console.log("payment data", paymentData)
+      console.log('Using transaction reference:', transactionRef);
+      
+      const response = await fetchWithRetry(
+        `${apiBaseUrl}/api/v1/transactions/${transactionRef}/verify`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'admin': process.env.NEXT_PUBLIC_TORONET_ADMIN || '',
+            'adminpwd': process.env.NEXT_PUBLIC_TORONET_ADMIN_PWD || '',
+          },
+          body: JSON.stringify({
+            senderName: sanitizeName(senderName),
+            senderPhone: sanitizePhoneNumber(senderPhone),
+            senderEmail: sanitizeEmail(senderEmail),
+            currency: paymentData?.currency,
+            txid: paymentData?.paymentInitialization?.toronetResponse?.txid,
+            paymentType: paymentData?.paymentType,
+            amount: paymentData?.amount,
+            successUrl: paymentData?.successUrl,
+            paymentLinkId: paymentId,
+          }),
+        },
+        2
+      );
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to submit verification request');
+      }
+      
+      const result = await response.json();
+      console.log("Verification request submitted:", result);
+      
+      // Show verifying screen
+      setStep("verifying");
+      
+      // START POLLING for status updates
+      setIsPolling(true);
+      
+      // Check immediately
+      checkTransactionStatus();
+      
+      // Then check every 5 seconds
+      const interval = setInterval(checkTransactionStatus, 5000);
+      setPollingInterval(interval);
+      
+      // Stop polling after 20 minutes (backend handles the rest)
+      setTimeout(() => {
+        setIsPolling(false);
+        if (interval) {
+          clearInterval(interval);
+          setPollingInterval(null);
+        }
+        console.log('Stopped frontend polling after 20 minutes. Backend will continue verification.');
+      }, 20 * 60 * 1000);
+      
+      trackEvent('verification_request_submitted', {
+        paymentId,
+        transactionId: paymentData?.transactionId,
+        email: senderEmail,
+      });
+      
+    } catch (error) {
+      console.error("Error submitting verification:", error);
+      const errorMsg = error instanceof Error ? error.message : 'Failed to submit verification request';
       setError(errorMsg);
       setStep("error");
       
-      trackEvent('payment_verification_timeout', {
+      reportError(error as Error, {
+        context: 'submit_verification',
         paymentId,
-        duration: 15 * 60 * 1000
+        transactionId: paymentData?.transactionId,
       });
-      
-      reportError(new Error(errorMsg), {
-        context: 'payment_verification_timeout',
-        paymentId,
-        duration: 15 * 60 * 1000
-      });
-    }, 15 * 60 * 1000); // 15 minutes
-    
-    setVerificationTimeout(timeout);
-  };
+    } finally {
+      setIsSubmitting(false);
+    }
+  }; 
 
   const handleSenderNameChange = (name: string) => {
     const sanitized = sanitizeName(name);
@@ -484,6 +589,14 @@ export default function PaymentPage() {
     
     // Clear validation errors for this field
     setValidationErrors(prev => prev.filter(error => error.field !== 'phone'));
+  };
+
+  const handleSenderEmailChange = (email: string) => {
+    const sanitized = sanitizeEmail(email);
+    setSenderEmail(sanitized);
+    
+    // Clear validation errors for this field
+    setValidationErrors(prev => prev.filter(error => error.field !== 'email'));
   };
 
   const handleBack = () => {
@@ -509,8 +622,10 @@ export default function PaymentPage() {
         paidAt: new Date().toISOString(),
       };
       
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://chainpaye-backend.onrender.com';
+      
       const response = await measureAsync('save_transaction', async () => {
-        return await fetchWithRetry(`/api/v1/record-transaction/${paymentData.transactionId}`, {
+        return await fetchWithRetry(`${apiBaseUrl}/api/v1/record-transaction/${paymentData.transactionId}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -535,10 +650,14 @@ export default function PaymentPage() {
             transactionId: paymentData.transactionId
           });
           
-          // Redirect to success URL
+          // POST to success endpoint then redirect
           if (paymentData.successUrl) {
-            setTimeout(() => {
-              window.location.href = paymentData.successUrl;
+            setTimeout(async () => {
+              await handleSuccessRedirect(paymentData, { 
+                transactionId: paymentData.transactionId,
+                senderName,
+                senderPhone 
+              });
             }, 2000);
           }
           return;
@@ -562,10 +681,14 @@ export default function PaymentPage() {
           currency: paymentData.currency
         });
         
-        // Redirect to success URL after showing success page
+        // POST to success endpoint then redirect
         if (paymentData.successUrl) {
-          setTimeout(() => {
-            window.location.href = paymentData.successUrl;
+          setTimeout(async () => {
+            await handleSuccessRedirect(paymentData, { 
+              transactionId: paymentData.transactionId,
+              senderName,
+              senderPhone 
+            });
           }, 3000); // Wait 3 seconds to show success page
         }
       }
@@ -635,7 +758,7 @@ export default function PaymentPage() {
       )}
 
       {/* Progress Indicator - only show for main flow steps */}
-      {["method", "bank-details", "confirming", "success"].includes(step) && (
+      {["method", "bank-details", "verifying", "success"].includes(step) && (
         <PaymentProgress step={step} />
       )}
 
@@ -658,15 +781,18 @@ export default function PaymentPage() {
           setSenderName={handleSenderNameChange}
           senderPhone={senderPhone}
           setSenderPhone={handleSenderPhoneChange}
+          senderEmail={senderEmail}
+          setSenderEmail={handleSenderEmailChange}
           validationErrors={validationErrors}
           isSubmitting={isSubmitting}
         />
       )}
 
-      {step === "confirming" && (
-        <Confirmation 
-          isVerifying={isVerifying}
-          verificationError={verificationError}
+      {step === "verifying" && paymentData && (
+        <VerificationPending
+          email={senderEmail}
+          transactionId={paymentData.transactionId}
+          isPolling={isPolling}
         />
       )}
 
@@ -691,14 +817,119 @@ export default function PaymentPage() {
 
 // Error state component
 function ErrorState({ error, onBack }: { error: string; onBack: () => void }) {
+  // Determine error type and customize message
+  const getErrorDetails = (errorMessage: string) => {
+    if (errorMessage.includes('404') || errorMessage.includes('not found') || errorMessage.includes('invalid')) {
+      return {
+        title: 'Payment Link Not Found',
+        message: 'This payment link doesn\'t exist or has expired. Please check the link and try again, or contact the sender for a new payment link.',
+        icon: '🔍',
+        showRetry: false,
+      };
+    } else if (errorMessage.includes('expired')) {
+      return {
+        title: 'Payment Link Expired',
+        message: 'This payment link has expired. Please contact the sender to request a new payment link.',
+        icon: '⏰',
+        showRetry: false,
+      };
+    } else if (errorMessage.includes('Network') || errorMessage.includes('connection') || errorMessage.includes('fetch')) {
+      return {
+        title: 'Connection Error',
+        message: 'Unable to connect to the server. Please check your internet connection and try again.',
+        icon: '📡',
+        showRetry: true,
+      };
+    } else if (errorMessage.includes('SSL') || errorMessage.includes('TLS') || errorMessage.includes('EPROTO')) {
+      return {
+        title: 'Connection Security Error',
+        message: 'There\'s a temporary issue with the secure connection. Please try again in a few minutes.',
+        icon: '🔒',
+        showRetry: true,
+      };
+    } else if (errorMessage.includes('timeout') || errorMessage.includes('ETIMEDOUT')) {
+      return {
+        title: 'Request Timeout',
+        message: 'The server is taking too long to respond. Please try again.',
+        icon: '⏱️',
+        showRetry: true,
+      };
+    } else if (errorMessage.includes('Configuration Error') || errorMessage.includes('API configuration')) {
+      return {
+        title: 'Service Configuration Error',
+        message: 'There\'s a configuration issue with the payment service. Please contact support for assistance.',
+        icon: '⚙️',
+        showRetry: false,
+      };
+    } else if (errorMessage.includes('Payment Setup Error')) {
+      return {
+        title: 'Payment Setup Failed',
+        message: 'Unable to initialize the payment. Please try creating a new payment link or contact support.',
+        icon: '❌',
+        showRetry: false,
+      };
+    } else {
+      return {
+        title: 'Something Went Wrong',
+        message: errorMessage || 'An unexpected error occurred. Please try again or contact support if the problem persists.',
+        icon: '⚠️',
+        showRetry: true,
+      };
+    }
+  };
+
+  const errorDetails = getErrorDetails(error);
+
   return (
-    <PaymentLayout step="method" paymentData={null}>
-      <div className="flex flex-col items-center justify-center h-64">
-        <div className="text-red-500 text-center">
-          <h3 className="text-lg font-semibold mb-2">Payment Link Error</h3>
-          <p className="text-sm">{error}</p>
+    <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
+        <div className="flex flex-col items-center text-center">
+          {/* Error Icon */}
+          <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mb-6">
+            <span className="text-4xl">{errorDetails.icon}</span>
+          </div>
+
+          {/* Error Title */}
+          <h3 className="text-2xl font-bold text-gray-900 mb-3">
+            {errorDetails.title}
+          </h3>
+
+          {/* Error Message */}
+          <p className="text-gray-600 mb-8 leading-relaxed">
+            {errorDetails.message}
+          </p>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col gap-3 w-full">
+            {errorDetails.showRetry && (
+              <button
+                onClick={onBack}
+                className="w-full py-3 px-6 rounded-xl font-medium text-white bg-blue-600 hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20"
+              >
+                Try Again
+              </button>
+            )}
+            
+            <button
+              onClick={() => window.history.back()}
+              className="w-full py-3 px-6 rounded-xl font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition-all"
+            >
+              Go Back
+            </button>
+          </div>
+
+          {/* Support Link */}
+          <div className="mt-6 text-sm text-gray-500">
+            Need help?{' '}
+            <a 
+              href="mailto:support@chainpaye.com" 
+              className="text-blue-600 hover:text-blue-700 font-medium"
+            >
+              Contact Support
+            </a>
+          </div>
         </div>
       </div>
-    </PaymentLayout>
+    </div>
   );
 }

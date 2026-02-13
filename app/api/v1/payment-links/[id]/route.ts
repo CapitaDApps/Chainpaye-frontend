@@ -7,137 +7,66 @@ export async function POST(
   try {
     const { id } = await params;
     
-    // Get API base URL from environment variables
-    const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-    
-    // Log environment info for debugging
-    console.log('Environment debug:', {
-      NODE_ENV: process.env.NODE_ENV,
-      API_BASE_URL,
-      isProduction: process.env.NODE_ENV === 'production',
-      vercelUrl: process.env.VERCEL_URL,
-      vercelEnv: process.env.VERCEL_ENV
-    });
-    
-    if (!API_BASE_URL) {
-      console.error('NEXT_PUBLIC_API_BASE_URL is not configured');
+    if (!id) {
       return NextResponse.json(
-        { 
-          success: false, 
-          message: 'API configuration error: Backend URL not configured',
-          debug: {
-            NODE_ENV: process.env.NODE_ENV,
-            hasApiBaseUrl: !!API_BASE_URL
-          }
-        },
-        { status: 500 }
+        { success: false, message: 'Payment link ID is required' },
+        { status: 400 }
       );
     }
-    
-    // Handle localhost URL in production
-    if (process.env.NODE_ENV === 'production' && API_BASE_URL.includes('localhost')) {
-      console.error('Production environment detected but API_BASE_URL points to localhost');
-      return NextResponse.json(
-        { 
-          success: false, 
-          message: 'API configuration error: Cannot use localhost URL in production',
-          debug: {
-            API_BASE_URL,
-            NODE_ENV: process.env.NODE_ENV
-          }
-        },
-        { status: 500 }
-      );
-    }
-    
-    const apiUrl = `${API_BASE_URL}/api/v1/payment-links/${id}`;
-    
-    console.log('Proxying request to:', apiUrl);
-    
-    const response = await fetch(apiUrl, {
+
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://chainpaye-backend.onrender.com';
+    const url = `${apiBaseUrl}/api/v1/payment-links/${id}`;
+
+    console.log('Fetching payment link from:', url);
+
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // Add any authentication headers if needed
-        // 'Authorization': `Bearer ${process.env.API_TOKEN}`,
       },
-      // Add timeout for production
-      signal: AbortSignal.timeout(10000) // 10 second timeout
     });
 
-    console.log('Backend response status:', response.status);
-    console.log('Backend response headers:', Object.fromEntries(response.headers.entries()));
+    const data = await response.json();
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Backend error response:', errorText);
+      console.error('Payment link fetch failed:', data);
+      
+      // Return specific error messages based on status code
+      let errorMessage = data.message || 'Failed to fetch payment link';
+      
+      if (response.status === 404) {
+        errorMessage = 'Payment link not found';
+      } else if (response.status === 410) {
+        errorMessage = 'Payment link has expired';
+      } else if (response.status === 400) {
+        errorMessage = 'Invalid payment link';
+      } else if (response.status === 500) {
+        errorMessage = 'Payment service error';
+      } else if (response.status === 503) {
+        errorMessage = 'Payment service temporarily unavailable';
+      }
+      
       return NextResponse.json(
         { 
           success: false, 
-          message: `Backend error: ${response.status} - ${errorText}`,
-          debug: {
-            apiUrl,
-            status: response.status,
-            statusText: response.statusText
-          }
+          message: errorMessage,
+          statusCode: response.status,
+          debug: data
         },
         { status: response.status }
       );
     }
 
-    const data = await response.json();
-    console.log('Backend response data:', JSON.stringify(data, null, 2));
-    
-    // Validate the response structure
-    if (!data || typeof data !== 'object') {
-      console.error('Invalid response format from backend');
-      return NextResponse.json(
-        { 
-          success: false, 
-          message: 'Invalid response format from backend',
-          debug: { receivedData: data }
-        },
-        { status: 500 }
-      );
-    }
-    
-    return NextResponse.json(data);
-    
+    console.log('Payment link fetched successfully:', data);
+
+    return NextResponse.json(data, { status: 200 });
   } catch (error) {
-    console.error('Error in payment link proxy:', error);
-    
-    // Handle timeout errors
-    if (error instanceof Error && error.name === 'TimeoutError') {
-      return NextResponse.json(
-        { 
-          success: false, 
-          message: 'Backend request timed out. Please try again.',
-          debug: { error: 'timeout' }
-        },
-        { status: 504 }
-      );
-    }
-    
-    // Handle network errors
-    if (error instanceof Error && error.message.includes('fetch')) {
-      return NextResponse.json(
-        { 
-          success: false, 
-          message: 'Unable to connect to backend API. Please check your internet connection.',
-          debug: { error: 'network_error', message: error.message }
-        },
-        { status: 503 }
-      );
-    }
-    
+    console.error('Error fetching payment link:', error);
     return NextResponse.json(
       { 
         success: false, 
-        message: `Proxy error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        debug: { 
-          error: error instanceof Error ? error.message : 'Unknown error',
-          stack: error instanceof Error ? error.stack : undefined
-        }
+        message: error instanceof Error ? error.message : 'Internal server error',
+        error: String(error)
       },
       { status: 500 }
     );

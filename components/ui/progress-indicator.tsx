@@ -1,87 +1,75 @@
-import { Check } from "lucide-react";
-import { cn } from "@/lib/utils";
+// Progress indicator for payment flow
 
-interface ProgressIndicatorProps {
-  currentStep: number;
-  steps: string[];
-  className?: string;
+interface PaymentProgressProps {
+  step: "method" | "bank-details" | "verifying" | "success" | "loading" | "error";
 }
 
-export function ProgressIndicator({ currentStep, steps, className }: ProgressIndicatorProps) {
-  return (
-    <div className={cn("w-full", className)}>
-      <div className="flex items-center justify-between">
-        {steps.map((step, index) => (
-          <div key={index} className="flex items-center">
-            {/* Step Circle */}
-            <div className="flex flex-col items-center">
-              <div
-                className={cn(
-                  "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-200",
-                  index < currentStep
-                    ? "bg-green-500 text-white"
-                    : index === currentStep
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200 text-gray-500"
-                )}
-              >
-                {index < currentStep ? (
-                  <Check className="w-4 h-4" />
-                ) : (
-                  <span>{index + 1}</span>
-                )}
-              </div>
-              
-              {/* Step Label */}
-              <span
-                className={cn(
-                  "mt-2 text-xs font-medium text-center max-w-20",
-                  index <= currentStep ? "text-gray-900" : "text-gray-500"
-                )}
-              >
-                {step}
-              </span>
-            </div>
-            
-            {/* Connector Line */}
-            {index < steps.length - 1 && (
-              <div
-                className={cn(
-                  "flex-1 h-0.5 mx-4 transition-all duration-200",
-                  index < currentStep ? "bg-green-500" : "bg-gray-200"
-                )}
-              />
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+export function PaymentProgress({ step }: PaymentProgressProps) {
+  const steps = [
+    { id: "method", label: "Select Method" },
+    { id: "bank-details", label: "Bank Details" },
+    { id: "verifying", label: "Verifying" },
+    { id: "success", label: "Complete" },
+  ];
 
-// Payment-specific progress component
-export function PaymentProgress({ step }: { step: string }) {
-  const steps = ["Method", "Details", "Verify", "Complete"];
-  
-  const getCurrentStepIndex = (currentStep: string): number => {
-    switch (currentStep) {
-      case "method": return 0;
-      case "bank-details": return 1;
-      case "confirming": return 2;
-      case "success": return 3;
-      default: return 0;
-    }
-  };
-  
-  const currentStepIndex = getCurrentStepIndex(step);
-  
+  const currentStepIndex = steps.findIndex((s) => s.id === step);
+
   return (
     <div className="mb-8">
-      <ProgressIndicator 
-        currentStep={currentStepIndex} 
-        steps={steps}
-        className="max-w-md mx-auto"
-      />
+      <div className="flex items-center justify-between">
+        {steps.map((s, index) => {
+          const isActive = index === currentStepIndex;
+          const isCompleted = index < currentStepIndex;
+
+          return (
+            <div key={s.id} className="flex items-center flex-1">
+              <div className="flex flex-col items-center flex-1">
+                <div
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all ${
+                    isCompleted
+                      ? "bg-green-500 text-white"
+                      : isActive
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-200 text-gray-500"
+                  }`}
+                >
+                  {isCompleted ? (
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  ) : (
+                    index + 1
+                  )}
+                </div>
+                <span
+                  className={`text-xs mt-2 text-center ${
+                    isActive ? "text-blue-600 font-medium" : "text-gray-500"
+                  }`}
+                >
+                  {s.label}
+                </span>
+              </div>
+              {index < steps.length - 1 && (
+                <div
+                  className={`h-0.5 flex-1 mx-2 transition-all ${
+                    isCompleted ? "bg-green-500" : "bg-gray-200"
+                  }`}
+                />
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

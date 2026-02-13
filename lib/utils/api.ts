@@ -1,171 +1,138 @@
-export const fetchWithRetry = async (
-  url: string, 
-  options: RequestInit, 
-  retries = 3,
-  delay = 1000
-): Promise<Response> => {
-  for (let i = 0; i < retries; i++) {
+// API utility functions for handling requests, errors, and tracking
+
+export async function fetchWithRetry(
+  url: string,
+  options: RequestInit = {},
+  maxRetries: number = 3
+): Promise<Response> {
+  let lastError: Error | null = null;
+
+  for (let i = 0; i < maxRetries; i++) {
     try {
       const response = await fetch(url, options);
-      if (response.ok) return response;
-      
-      // If it's a client error (4xx), don't retry
-      if (response.status >= 400 && response.status < 500) {
-        return response;
-      }
-      
-      // For server errors (5xx), retry
-      if (i === retries - 1) return response;
-      
+      return response;
     } catch (error) {
-      if (i === retries - 1) throw error;
+      lastError = error as Error;
+      console.error(`Fetch attempt ${i + 1} failed:`, error);
+      
+      // Wait before retrying (exponential backoff)
+      if (i < maxRetries - 1) {
+        await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000));
+      }
+    }
+  }
+
+  throw lastError || new Error('Fetch failed after retries');
+}
+
+export function handleApiError(error: unknown, context: string): string {
+  console.error(`API Error in ${context}:`, error);
+
+  if (error instanceof Error) {
+    // Handle specific error types
+    if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+      return 'Network error. Please check your internet connection and try again.';
     }
     
-    // Exponential backoff
-    await new Promise(resolve => setTimeout(resolve, delay * Math.pow(2, i)));
-  }
-  
-  throw new Error('Max retries exceeded');
-};
+    if (error.message.includes('timeout') || error.message.includes('ETIMEDOUT')) {
+      return 'Request timed out. Please try again.';
+    }
+    
+    if (error.message.includes('not found') || error.message.includes('404')) {
+      return 'Payment link not found. Please check the link and try again.';
+    }
+    
+    if (error.message.includes('expired') || error.message.includes('410')) {
+      return 'This payment link has expired. Please request a new one.';
+    }
+    
+    if (error.message.includes('invalid') || error.message.includes('400')) {
+      return 'Invalid payment link. Please check the link and try again.';
+    }
+    
+    if (error.message.includes('SSL') || error.message.includes('TLS') || error.message.includes('EPROTO')) {
+      return 'Connection security error. Please try again in a few minutes.';
+    }
+    
+    if (error.message.includes('ENOTFOUND') || error.message.includes('DNS')) {
+      return 'Unable to reach payment service. Please check your internet connection.';
+    }
+    
+    if (error.message.includes('500') || error.message.includes('Server error')) {
+      return 'Server error. Please try again in a few moments.';
+    }
+    
+    if (error.message.includes('503') || error.message.includes('unavailable')) {
+      return 'Payment service is temporarily unavailable. Please try again later.';
+    }
 
-export const handleApiError = (error: any, context?: string): string => {
-  console.error(`API Error${context ? ` in ${context}` : ''}:`, error);
-  
-  if (error instanceof TypeError && error.message.includes('fetch')) {
-    return 'Network connection failed. Please check your internet connection.';
+    // Return the original error message if it's user-friendly
+    if (error.message.length < 200 && !error.message.includes('Error:')) {
+      return error.message;
+    }
   }
+
+  return 'An unexpected error occurred. Please try again or contact support.';
+}
+
+export function trackEvent(eventName: string, properties?: Record<string, any>) {
+  // Log events for debugging
+  console.log(`[Event] ${eventName}`, properties);
   
-  if (error.message?.includes('timeout')) {
-    return 'Request timed out. Please try again.';
+  // You can integrate with analytics services here (e.g., Google Analytics, Mixpanel)
+  if (typeof window !== 'undefined' && (window as any).gtag) {
+    (window as any).gtag('event', eventName, properties);
   }
+}
+
+export function reportError(error: Error, context?: Record<string, any>) {
+  console.error('[Error Report]', error, context);
   
-  if (error.status === 404) {
-    return 'Payment link not found or has expired.';
+  // You can integrate with error tracking services here (e.g., Sentry)
+  if (typeof window !== 'undefined' && (window as any).Sentry) {
+    (window as any).Sentry.captureException(error, { extra: context });
   }
-  
-  if (error.status === 429) {
-    return 'Too many requests. Please wait a moment and try again.';
-  }
-  
-  if (error.status >= 500) {
-    return 'Server error. Please try again in a few moments.';
-  }
-  
-  return error.message || 'An unexpected error occurred. Please try again.';
-};
+}
 
 // Session management
-export const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+const SESSION_KEY_PREFIX = 'payment_session_';
+const SESSION_DURATION = 30 * 60 * 1000; // 30 minutes
 
-export const createSession = (paymentId: string): string => {
-  const sessionId = `session_${paymentId}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+export function createSession(paymentId: string): string {
+  const sessionId = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   const sessionData = {
     id: sessionId,
     paymentId,
     createdAt: Date.now(),
-    lastActivity: Date.now(),
-    isActive: true
+    expiresAt: Date.now() + SESSION_DURATION,
   };
-  
-  localStorage.setItem(`payment_session_${paymentId}`, JSON.stringify(sessionData));
-  return sessionId;
-};
 
-export const validateSession = (paymentId: string): boolean => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(
+      `${SESSION_KEY_PREFIX}${paymentId}`,
+      JSON.stringify(sessionData)
+    );
+  }
+
+  return sessionId;
+}
+
+export function validateSession(paymentId: string): boolean {
+  if (typeof window === 'undefined') return false;
+
+  const sessionData = localStorage.getItem(`${SESSION_KEY_PREFIX}${paymentId}`);
+  if (!sessionData) return false;
+
   try {
-    const sessionData = localStorage.getItem(`payment_session_${paymentId}`);
-    if (!sessionData) return false;
-    
     const session = JSON.parse(sessionData);
-    const now = Date.now();
-    
-    // Check if session has expired
-    if (now - session.lastActivity > SESSION_TIMEOUT) {
-      localStorage.removeItem(`payment_session_${paymentId}`);
-      return false;
-    }
-    
-    // Update last activity
-    session.lastActivity = now;
-    localStorage.setItem(`payment_session_${paymentId}`, JSON.stringify(session));
-    
-    return session.isActive;
+    return session.expiresAt > Date.now();
   } catch {
     return false;
   }
-};
-
-export const clearSession = (paymentId: string): void => {
-  localStorage.removeItem(`payment_session_${paymentId}`);
-};
-
-// Analytics and event tracking
-export interface AnalyticsEvent {
-  event: string;
-  properties: Record<string, any>;
-  timestamp: number;
-  sessionId?: string;
 }
 
-export const trackEvent = (event: string, properties: Record<string, any> = {}): void => {
-  try {
-    const analyticsEvent: AnalyticsEvent = {
-      event,
-      properties: {
-        ...properties,
-        userAgent: navigator.userAgent,
-        url: window.location.href,
-        timestamp: Date.now()
-      },
-      timestamp: Date.now()
-    };
-    
-    // Store locally for now - in production, send to analytics service
-    const events = JSON.parse(localStorage.getItem('payment_analytics') || '[]');
-    events.push(analyticsEvent);
-    
-    // Keep only last 100 events
-    if (events.length > 100) {
-      events.splice(0, events.length - 100);
-    }
-    
-    localStorage.setItem('payment_analytics', JSON.stringify(events));
-    
-    // In production, send to analytics service
-    // sendToAnalyticsService(analyticsEvent);
-  } catch (error) {
-    console.warn('Failed to track event:', error);
+export function clearSession(paymentId: string) {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem(`${SESSION_KEY_PREFIX}${paymentId}`);
   }
-};
-
-// Error reporting
-export const reportError = (error: Error, context?: Record<string, any>): void => {
-  try {
-    const errorReport = {
-      message: error.message,
-      stack: error.stack,
-      timestamp: Date.now(),
-      url: window.location.href,
-      userAgent: navigator.userAgent,
-      context: context || {}
-    };
-    
-    // Store locally for now - in production, send to error reporting service
-    const errors = JSON.parse(localStorage.getItem('payment_errors') || '[]');
-    errors.push(errorReport);
-    
-    // Keep only last 50 errors
-    if (errors.length > 50) {
-      errors.splice(0, errors.length - 50);
-    }
-    
-    localStorage.setItem('payment_errors', JSON.stringify(errors));
-    
-    // In production, send to error reporting service like Sentry
-    // Sentry.captureException(error, { extra: context });
-    
-    console.error('Error reported:', errorReport);
-  } catch (reportingError) {
-    console.error('Failed to report error:', reportingError);
-  }
-};
+}

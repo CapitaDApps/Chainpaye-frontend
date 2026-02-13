@@ -1,0 +1,327 @@
+===========================================
+BACKEND CODE PART 2 - ROUTES AND CRON
+===========================================
+
+===========================================
+FILE 3: routes/transactions.ts (ADD THESE ENDPOINTS)
+===========================================
+
+import { checkToronetAPI, handleConfirmedTransaction } from '../services/verification.service';
+import Transaction, { TransactionState } from '../models/Transaction';
+
+// POST /api/v1/transactions/:id/verify - Start verification
+router.post('/transactions/:id/verify', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { 
+      senderName, 
+      senderPhone, 
+      senderEmail,
+      currency,
+      txid,
+      paymentType,
+      amount,
+      successUrl,
+      paymentLinkId
+    } = req.body;
+    
+    // Validate admin credentials
+    const admin = req.headers.admin;
+    const adminpwd = req.headers.adminpwd;
+    
+    if (!admin || !adminpwd) {
+      return res.status(401).json({
+        success: false,
+        message: 'Admin credentials required'
+      });
+    }
+    
+    // Find transaction
+    const transaction = await Transaction.findOne({ reference: id });
+    
+    if (!transaction) {
+      return res.status(404).json({
+        success: false,
+        message: 'Transaction not found'
+      });
+    }
+    
+    // Save all info needed for verification
+    transaction.payerInfo = {
+      name: senderName,
+      phone: senderPhone,
+      email: senderEmail,
+    };
+    transaction.toronetReference = txid;
+    transaction.verificationStartedAt = new Date();
+    transaction.expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    transaction.metadata = {
+      ...transaction.metadata,
+      paymentType,
+      successUrl,
+      paymentLinkId,
+    };
+    
+    await transaction.save();
+    
+    console.log(`Verification request received for transaction ${id}`);
+    
+    // Start immediate verification (15 minutes, every 3 seconds)
+    startImmediateVerification(transaction);
+    
+    return res.status(200).json({
+      success: true,
+      message: 'Verification started. You will receive an email confirmation.',
+      data: {
+        transactionId: transaction.reference,
+        email: senderEmail,
+      }
+    });
+    
+  } catch (error) {
+    console.error('Error submitting verification:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to submit verification request',
+      error: error.message
+    });
+  }
+});
+
+// Helper function to start immediate verification (15 minutes, every 3 seconds)
+async function startImmediateVerification(transaction: any) {
+  const maxDuration = 15 * 60 * 1000; // 15 minutes
+  const checkInterval = 3000; // 3 seconds
+  const startTime = Date.now();
+  
+  console.log(`🚀 Starting immediate verification for ${transaction.reference} (15 min, every 3s)`);
+  
+  const verificationInterval = setInterval(async () => {
+    const elapsed = Date.now() - startTime;
+    
+    // Stop after 15 minutes
+    if (elapsed >= maxDuration) {
+      clearInterval(verificationInterval);
+      console.log(`⏱️ Immediate verification ended for ${transaction.reference}. Hourly cron will continue.`);
+      return;
+    }
+    
+    try {
+      // Check if transaction was already confirmed
+      const currentTransaction = await Transaction.findById(transaction._id);
+      if (!currentTransaction || currentTransaction.state !== TransactionState.PENDING) {
+        clearInterval(verificationInterval);
+        console.log(`✅ Transaction ${transaction.reference} already confirmed. Stopping immediate checks.`);
+        return;
+      }
+      
+      // Check Toronet API
+      const isConfirmed = await checkToronetAPI(currentTransaction);
+      
+      if (isConfirmed) {
+        clearInterval(verificationInterval);
+        console.log(`✅ Payment confirmed for ${transaction.reference} (immediate verification)`);
+        await handleConfirmedTransaction(currentTransaction);
+      }
+    } catch (error) {
+      console.error(`Error in immediate verification for ${transaction.reference}:`, error.message);
+      // Continue checking despite errors
+    }
+  }, checkInterval);
+}
+
+// GET /api/v1/transactions/:id/status - Check transaction status
+router.get('/transactions/:id/status', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Validate admin credentials
+    const admin = req.headers.admin;
+    const adminpwd = req.headers.adminpwd;
+    
+    if (!admin || !adminpwd) {
+      return res.status(401).json({
+        success: false,
+        message: 'Admin credentials required'
+      });
+    }
+    
+    // Find transaction
+    const transaction = await Transaction.findOne({ reference: id });
+    
+    if (!transaction) {
+      return res.status(404).json({
+        success: false,
+        message: 'Transaction not found'
+      });
+    }
+    
+    return res.status(200).json({
+      success: true,
+      data: {
+        transactionId: transaction.reference,
+        state: transaction.state,
+        amount: transaction.amount,
+        currency: transaction.currency,
+        paidAt: transaction.paidAt,
+        senderName: transaction.payerInfo?.name,
+      }
+    });
+    
+  } catch (error) {
+    console.error('Error checking transaction status:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to check transaction status',
+      error: error.message
+    });
+  }
+});
+
+===========================================
+FILE 4: cron/verify-pending-transactions.ts
+===========================================
+
+import Transaction, { TransactionState } from '../models/Transaction';
+import { checkToronetAPI, handleConfirmedTransaction, handleExpiredTransactions } from '../services/verification.service';
+
+// Main verification function - runs every 1 hour for transactions past immediate verification
+export async function verifyPendingTransactions() {
+  try {
+    console.log('🔍 Starting hourly verification check...');
+
+    // Find PENDING transactions that:
+    // 1. Haven't expired yet
+    // 2. Have a toronet reference
+    // 3. Started verification more than 15 minutes ago (immediate verification is done)
+    const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
+    
+    const pendingTransactions = await Transaction.find({
+      state: TransactionState.PENDING,
+      expiresAt: { $gt: new Date() },
+      toronetReference: { $exists: true, $ne: null },
+      verificationStartedAt: { $lt: fifteenMinutesAgo }, // Only check transactions past immediate verification
+    });
+
+    console.log(`Found ${pendingTransactions.length} pending transactions for hourly check`);
+
+    for (const transaction of pendingTransactions) {
+      // Update last verification check timestamp
+      await Transaction.findByIdAndUpdate(transaction._id, {
+        $set: { lastVerificationCheck: new Date() },
+      });
+
+      // Check if payment is confirmed
+      const isConfirmed = await checkToronetAPI(transaction);
+
+      if (isConfirmed) {
+        console.log(`✅ Payment confirmed for ${transaction.reference} (hourly check)`);
+        await handleConfirmedTransaction(transaction);
+      } else {
+        console.log(`⏳ Transaction ${transaction.reference} still pending`);
+      }
+    }
+
+    // Handle expired transactions (24 hours passed)
+    await handleExpiredTransactions();
+
+    console.log('✓ Hourly verification check completed');
+  } catch (error) {
+    console.error('❌ Error in hourly verification:', error);
+  }
+}
+
+// Start the cron job (runs every 1 hour)
+export function startVerificationCron() {
+  console.log('🚀 Starting verification cron job (every 1 hour)...');
+  
+  // Run immediately on startup
+  verifyPendingTransactions();
+  
+  // Then run every 1 hour
+  const oneHour = 60 * 60 * 1000;
+  setInterval(verifyPendingTransactions, oneHour);
+  
+  console.log('✓ Cron job scheduled successfully');
+}
+
+===========================================
+FILE 5: server.ts (ADD THIS LINE)
+===========================================
+
+import { startVerificationCron } from './cron/verify-pending-transactions';
+
+// ... other imports and setup ...
+
+// Start the hourly verification cron job
+startVerificationCron();
+
+// ... rest of server setup ...
+
+===========================================
+FILE 6: .env (ADD THESE VARIABLES)
+===========================================
+
+# Gmail configuration for Nodemailer
+GMAIL_USER=your-email@gmail.com
+GMAIL_APP_PASSWORD=your-16-char-app-password
+
+# Toronet API credentials
+TORONET_ADMIN=0x6b03eea493cfeab887f40969e40b069bb334f632
+TORONET_ADMIN_PWD=Holland234$
+
+===========================================
+FILE 7: models/Transaction.ts (ADD THESE FIELDS)
+===========================================
+
+Add to the schema definition (after existing fields):
+
+lastVerificationCheck: {
+  type: Date,
+  index: true,
+},
+expiresAt: {
+  type: Date,
+  index: true,
+},
+verificationStartedAt: {
+  type: Date,
+},
+
+Add these indexes (after existing indexes):
+
+TransactionSchema.index({ state: 1, expiresAt: 1 });
+TransactionSchema.index({ state: 1, verificationStartedAt: 1 });
+
+===========================================
+INSTALLATION STEPS
+===========================================
+
+1. Install dependencies:
+   npm install nodemailer @types/nodemailer
+
+2. Create service files:
+   - services/verification.service.ts
+   - services/email.service.ts
+
+3. Create cron file:
+   - cron/verify-pending-transactions.ts
+
+4. Update existing files:
+   - models/Transaction.ts (add 3 fields + 2 indexes)
+   - routes/transactions.ts (add 2 endpoints + helper function)
+   - server.ts (import and start cron)
+
+5. Configure environment:
+   - Add Gmail credentials to .env
+   - Get App Password from https://myaccount.google.com/apppasswords
+
+6. Test:
+   - Submit payment verification
+   - Check logs for immediate verification (every 3 seconds)
+   - Wait 15 minutes, verify cron takes over
+   - Confirm email is sent when payment confirmed
+
+===========================================
+END OF BACKEND IMPLEMENTATION
+===========================================

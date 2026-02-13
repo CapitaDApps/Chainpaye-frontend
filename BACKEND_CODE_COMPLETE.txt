@@ -1,0 +1,338 @@
+===========================================
+COMPLETE BACKEND IMPLEMENTATION - OPTION B
+===========================================
+
+This file contains all the backend code you need to copy/paste.
+
+===========================================
+FILE 1: services/verification.service.ts
+===========================================
+
+import Transaction, { TransactionState } from '../models/Transaction';
+import { sendConfirmationEmail, sendExpirationEmail } from './email.service';
+import axios from 'axios';
+
+// Check Toronet API for payment confirmation
+export async function checkToronetAPI(transaction: any): Promise<boolean> {
+  try {
+    const response = await axios.post(
+      'https://www.toronet.org/api/payment/toro/',
+      {
+        op: 'recordfiattransaction',
+        params: [
+          { name: 'currency', value: transaction.currency },
+          { name: 'txid', value: transaction.toronetReference },
+          { name: 'paymenttype', value: transaction.metadata?.paymentType || 'bank' },
+        ],
+      },
+      {
+        headers: {
+          admin: process.env.TORONET_ADMIN,
+          adminpwd: process.env.TORONET_ADMIN_PWD,
+        },
+        timeout: 10000,
+      }
+    );
+
+    return response.data?.result === true;
+  } catch (error) {
+    console.error(`Error checking Toronet API for ${transaction.reference}:`, error.message);
+    return false;
+  }
+}
+
+// Handle confirmed transaction with atomic update
+export async function handleConfirmedTransaction(transaction: any) {
+  try {
+    // Atomic update - only succeeds if state is still PENDING
+    const updatedTransaction = await Transaction.findOneAndUpdate(
+      {
+        _id: transaction._id,
+        state: TransactionState.PENDING,
+      },
+      {
+        $set: {
+          state: TransactionState.PAID,
+          paidAt: new Date(),
+          recordedAt: new Date(),
+          actualAmountPaid: transaction.amount,
+          senderName: transaction.payerInfo?.name,
+          senderPhone: transaction.payerInfo?.phone,
+        },
+      },
+      { new: true }
+    );
+
+    // If null, another process already handled it
+    if (!updatedTransaction) {
+      console.log(`Transaction ${transaction.reference} already processed by another process`);
+      return;
+    }
+
+    console.log(`✅ Transaction ${transaction.reference} confirmed and updated`);
+
+    // Send confirmation email with receipt
+    if (updatedTransaction.payerInfo?.email) {
+      await sendConfirmationEmail(updatedTransaction.payerInfo.email, {
+        transactionId: updatedTransaction.reference,
+        amount: updatedTransaction.amount,
+        currency: updatedTransaction.currency,
+        senderName: updatedTransaction.payerInfo.name || 'User',
+        senderPhone: updatedTransaction.payerInfo.phone || '',
+        successUrl: updatedTransaction.metadata?.successUrl || '',
+        paidAt: updatedTransaction.paidAt || new Date(),
+      });
+      console.log(`📧 Confirmation email sent to ${updatedTransaction.payerInfo.email}`);
+    }
+
+    // Call webhook to successUrl
+    if (updatedTransaction.metadata?.successUrl) {
+      try {
+        await axios.post(
+          updatedTransaction.metadata.successUrl,
+          {
+            paymentLinkId: updatedTransaction.metadata.paymentLinkId,
+            transactionId: updatedTransaction.reference,
+            amount: updatedTransaction.amount,
+            currency: updatedTransaction.currency,
+            senderName: updatedTransaction.payerInfo?.name,
+            senderPhone: updatedTransaction.payerInfo?.phone,
+            senderEmail: updatedTransaction.payerInfo?.email,
+            paymentMethod: updatedTransaction.metadata?.paymentType,
+            status: 'completed',
+            paidAt: updatedTransaction.paidAt?.toISOString(),
+          },
+          { timeout: 8000 }
+        );
+        console.log(`📤 Webhook called successfully for ${transaction.reference}`);
+      } catch (error) {
+        console.error(`❌ Webhook failed for ${transaction.reference}:`, error.message);
+        // Don't throw - email was sent, that's what matters most
+      }
+    }
+  } catch (error) {
+    console.error(`Error handling confirmed transaction ${transaction.reference}:`, error);
+  }
+}
+
+// Handle expired transactions (24 hours passed)
+export async function handleExpiredTransactions() {
+  try {
+    const expiredTransactions = await Transaction.find({
+      state: TransactionState.PENDING,
+      expiresAt: { $lt: new Date() },
+    });
+
+    console.log(`Found ${expiredTransactions.length} expired transactions`);
+
+    for (const transaction of expiredTransactions) {
+      // Update state to failed
+      await Transaction.findByIdAndUpdate(transaction._id, {
+        $set: { state: TransactionState.PAYOUT_FAILED },
+      });
+
+      // Send expiration email
+      if (transaction.payerInfo?.email) {
+        await sendExpirationEmail(transaction.payerInfo.email, {
+          transactionId: transaction.reference,
+          amount: transaction.amount,
+          currency: transaction.currency,
+          senderName: transaction.payerInfo.name || 'User',
+        });
+      }
+
+      console.log(`⏰ Transaction ${transaction.reference} expired and marked as failed`);
+    }
+  } catch (error) {
+    console.error('Error handling expired transactions:', error);
+  }
+}
+
+===========================================
+FILE 2: services/email.service.ts
+===========================================
+
+import nodemailer from 'nodemailer';
+
+// Create transporter
+const transporter = nodemailer.createTransporter({
+  service: 'gmail',
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_APP_PASSWORD,
+  },
+});
+
+export async function sendConfirmationEmail(
+  to: string,
+  transactionData: {
+    transactionId: string;
+    amount: string;
+    currency: string;
+    senderName: string;
+    senderPhone: string;
+    successUrl: string;
+    paidAt: Date;
+  }
+) {
+  const mailOptions = {
+    from: process.env.GMAIL_USER,
+    to,
+    subject: '✅ Payment Confirmed - ChainPaye Receipt',
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: linear-gradient(135deg, #003DFF 0%, #0029b3 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+          .content { background: #ffffff; padding: 30px; border: 1px solid #e0e0e0; }
+          .receipt { background: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0; }
+          .receipt-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #e0e0e0; }
+          .receipt-row:last-child { border-bottom: none; }
+          .label { color: #666; font-size: 14px; }
+          .value { color: #111; font-weight: 600; font-size: 14px; }
+          .amount { font-size: 24px; color: #003DFF; font-weight: bold; text-align: center; margin: 20px 0; }
+          .button { display: inline-block; background: #003DFF; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; margin: 20px 0; }
+          .footer { text-align: center; color: #666; font-size: 12px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; }
+          .success-icon { font-size: 48px; text-align: center; margin: 20px 0; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1 style="margin: 0;">Payment Confirmed!</h1>
+          </div>
+          
+          <div class="content">
+            <div class="success-icon">✅</div>
+            
+            <p>Hi <strong>${transactionData.senderName}</strong>,</p>
+            <p>Your payment has been successfully confirmed and processed.</p>
+            
+            <div class="amount">
+              ${transactionData.currency} ${Number(transactionData.amount).toLocaleString()}
+            </div>
+            
+            <div class="receipt">
+              <h3 style="margin-top: 0; color: #111;">Payment Receipt</h3>
+              
+              <div class="receipt-row">
+                <span class="label">Transaction ID</span>
+                <span class="value">${transactionData.transactionId}</span>
+              </div>
+              
+              <div class="receipt-row">
+                <span class="label">Amount</span>
+                <span class="value">${transactionData.currency} ${Number(transactionData.amount).toLocaleString()}</span>
+              </div>
+              
+              <div class="receipt-row">
+                <span class="label">Sender Name</span>
+                <span class="value">${transactionData.senderName}</span>
+              </div>
+              
+              <div class="receipt-row">
+                <span class="label">Phone Number</span>
+                <span class="value">${transactionData.senderPhone}</span>
+              </div>
+              
+              <div class="receipt-row">
+                <span class="label">Date & Time</span>
+                <span class="value">${new Date(transactionData.paidAt).toLocaleString('en-GB', {
+                  day: '2-digit',
+                  month: 'short',
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}</span>
+              </div>
+              
+              <div class="receipt-row">
+                <span class="label">Status</span>
+                <span class="value" style="color: #10b981;">Completed</span>
+              </div>
+            </div>
+            
+            <div style="text-align: center;">
+              <a href="${transactionData.successUrl}" class="button">
+                View Full Receipt
+              </a>
+            </div>
+            
+            <p style="color: #666; font-size: 14px; margin-top: 30px;">
+              Thank you for using ChainPaye. If you have any questions about this transaction, 
+              please contact our support team with your transaction ID.
+            </p>
+          </div>
+          
+          <div class="footer">
+            <p>This is an automated email from ChainPaye. Please do not reply to this email.</p>
+            <p>Need help? Contact us at support@chainpaye.com</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`Confirmation email sent to ${to}`);
+  } catch (error) {
+    console.error('Error sending confirmation email:', error);
+    throw error;
+  }
+}
+
+export async function sendExpirationEmail(
+  to: string,
+  transactionData: {
+    transactionId: string;
+    amount: string;
+    currency: string;
+    senderName: string;
+  }
+) {
+  const mailOptions = {
+    from: process.env.GMAIL_USER,
+    to,
+    subject: '⏰ Payment Verification Expired - ChainPaye',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background: #FF7700; color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+          <h1 style="margin: 0;">Payment Verification Expired</h1>
+        </div>
+        
+        <div style="background: white; padding: 30px; border: 1px solid #e0e0e0;">
+          <p>Hi <strong>${transactionData.senderName}</strong>,</p>
+          <p>We were unable to verify your payment within 24 hours.</p>
+          
+          <div style="background: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <p><strong>Transaction ID:</strong> ${transactionData.transactionId}</p>
+            <p><strong>Amount:</strong> ${transactionData.currency} ${Number(transactionData.amount).toLocaleString()}</p>
+          </div>
+          
+          <p>If you have made the payment, please contact our support team with your transaction ID and proof of payment.</p>
+          
+          <p style="color: #666; font-size: 14px; margin-top: 30px;">
+            Contact support: support@chainpaye.com
+          </p>
+        </div>
+      </div>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`Expiration email sent to ${to}`);
+  } catch (error) {
+    console.error('Error sending expiration email:', error);
+    throw error;
+  }
+}
+
+===========================================
+CONTINUED IN NEXT MESSAGE...
+===========================================

@@ -1,48 +1,31 @@
-// Caching utilities for payment data and API responses
+// Cache utilities for storing and retrieving data
 
-interface CacheEntry<T> {
+interface CacheItem<T> {
   data: T;
-  timestamp: number;
   expiresAt: number;
 }
 
-class PaymentCache {
-  private cache = new Map<string, CacheEntry<any>>();
-  private readonly DEFAULT_TTL = 5 * 60 * 1000; // 5 minutes
+class Cache {
+  private cache: Map<string, CacheItem<any>> = new Map();
 
-  set<T>(key: string, data: T, ttl: number = this.DEFAULT_TTL): void {
-    const now = Date.now();
+  set<T>(key: string, data: T, ttl: number = 5 * 60 * 1000): void {
     this.cache.set(key, {
       data,
-      timestamp: now,
-      expiresAt: now + ttl
+      expiresAt: Date.now() + ttl,
     });
   }
 
   get<T>(key: string): T | null {
-    const entry = this.cache.get(key);
-    if (!entry) return null;
-
-    const now = Date.now();
-    if (now > entry.expiresAt) {
+    const item = this.cache.get(key);
+    
+    if (!item) return null;
+    
+    if (Date.now() > item.expiresAt) {
       this.cache.delete(key);
       return null;
     }
-
-    return entry.data as T;
-  }
-
-  has(key: string): boolean {
-    const entry = this.cache.get(key);
-    if (!entry) return false;
-
-    const now = Date.now();
-    if (now > entry.expiresAt) {
-      this.cache.delete(key);
-      return false;
-    }
-
-    return true;
+    
+    return item.data as T;
   }
 
   delete(key: string): void {
@@ -53,62 +36,38 @@ class PaymentCache {
     this.cache.clear();
   }
 
-  // Clean up expired entries
+  // Clean up expired items
   cleanup(): void {
     const now = Date.now();
-    for (const [key, entry] of this.cache.entries()) {
-      if (now > entry.expiresAt) {
+    for (const [key, item] of this.cache.entries()) {
+      if (now > item.expiresAt) {
         this.cache.delete(key);
       }
     }
   }
-
-  // Get cache statistics
-  getStats(): { size: number; entries: Array<{ key: string; age: number; ttl: number }> } {
-    const now = Date.now();
-    const entries = Array.from(this.cache.entries()).map(([key, entry]) => ({
-      key,
-      age: now - entry.timestamp,
-      ttl: entry.expiresAt - now
-    }));
-
-    return {
-      size: this.cache.size,
-      entries
-    };
-  }
 }
 
-// Singleton instance
-export const paymentCache = new PaymentCache();
+export const paymentCache = new Cache();
 
-// Cached fetch wrapper
-export const cachedFetch = async <T>(
+// Run cleanup every 5 minutes
+if (typeof window !== 'undefined') {
+  setInterval(() => paymentCache.cleanup(), 5 * 60 * 1000);
+}
+
+export const CACHE_KEYS = {
+  PAYMENT_DATA: (id: string) => `payment_data_${id}`,
+  VERIFICATION: (txid: string) => `verification_${txid}`,
+};
+
+export async function cachedFetch<T>(
   key: string,
   fetcher: () => Promise<T>,
   ttl?: number
-): Promise<T> => {
-  // Check cache first
+): Promise<T> {
   const cached = paymentCache.get<T>(key);
-  if (cached) {
-    return cached;
-  }
+  if (cached) return cached;
 
-  // Fetch and cache
   const data = await fetcher();
   paymentCache.set(key, data, ttl);
   return data;
-};
-
-// Specific cache keys for payment system
-export const CACHE_KEYS = {
-  PAYMENT_DATA: (id: string) => `payment_data_${id}`,
-  VERIFICATION_STATUS: (txid: string) => `verification_${txid}`,
-  EXCHANGE_RATES: 'exchange_rates',
-  BANK_DETAILS: (currency: string) => `bank_details_${currency}`,
-} as const;
-
-// Auto cleanup every 10 minutes
-setInterval(() => {
-  paymentCache.cleanup();
-}, 10 * 60 * 1000);
+}

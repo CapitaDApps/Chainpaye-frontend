@@ -3,60 +3,31 @@
 import { Check } from "lucide-react";
 import Image from "next/image";
 import logo from "../../../public/assets/chainpaye.png";
+import { generateReceiptPDF } from "@/util/pdf";
 import { useRef } from "react";
-import { generateReceiptPDF } from "@/lib/utils/generate-receipt-pdf";
 import Download from "@/components/download";
 
 interface ConfirmationProps {
   isVerifying?: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  verificationError?: any;
+  verificationError?: Error | null;
 }
 
-export function Confirmation({
-  isVerifying = true,
-  verificationError,
-}: ConfirmationProps = {}) {
+export function Confirmation({ isVerifying = true, verificationError }: ConfirmationProps) {
   return (
     <div className="flex flex-col items-center justify-center h-full min-h-[400px]">
       <div className="relative mb-6">
         <Image src={logo} alt="Chainpaye" width={100} height={100} />
       </div>
       <h3 className="text-lg font-medium text-gray-600  mb-6 uppercase tracking-wide">
-        {isVerifying ? "CONFIRMING PAYMENT" : "PAYMENT VERIFICATION"}
+        CONFIRMING PAYMENT
       </h3>
-
-      {isVerifying ? (
-        <div className="flex flex-col items-center">
-          <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-          <p className="text-sm text-gray-500 text-center max-w-md">
-            We&apos;re verifying your payment with our banking partner. This may
-            take a few moments...
-          </p>
-        </div>
-      ) : (
-        <div className="text-center">
-          <p className="text-sm text-gray-500">
-            Payment verification in progress
-          </p>
-        </div>
+      {isVerifying && (
+        <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
       )}
-
       {verificationError && (
-        <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <p className="text-sm text-yellow-800">
-            Still verifying... This may take a few minutes for the payment to be
-            processed.
-          </p>
-          <details className="mt-2">
-            <summary className="text-xs text-yellow-600 cursor-pointer">
-              Technical Details
-            </summary>
-            <pre className="text-xs text-yellow-700 mt-1 whitespace-pre-wrap">
-              {JSON.stringify(verificationError, null, 2)}
-            </pre>
-          </details>
-        </div>
+        <p className="text-sm text-gray-500 mt-4">
+          Checking payment status...
+        </p>
       )}
     </div>
   );
@@ -103,7 +74,7 @@ export function SuccessReceipt({
               backgroundImage: `url(${logo.src})`,
               backgroundRepeat: "repeat",
               backgroundSize: "120px 60px",
-              transform: "rotate(-15deg) scale(1.5)",
+              transform: "rotate(-15deg) scale(1.2)",
             }}
           />
         </div>

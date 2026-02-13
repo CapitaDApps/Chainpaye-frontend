@@ -1,115 +1,85 @@
 import useSWR from 'swr';
 
-interface PaymentVerificationParams {
+interface VerificationParams {
   currency: string;
   txid: string;
   paymenttype: string;
 }
 
-interface PaymentVerificationResponse {
+interface ToronetVerificationResponse {
   success?: boolean;
-  status?: string;
   result?: boolean;
+  status?: string;
+  message?: string;
   error?: string;
-  responseText?: string;
-  // Add other response fields as needed
+  data?: any;
 }
 
-const fetcher = async (url: string, params: PaymentVerificationParams): Promise<PaymentVerificationResponse> => {
-  console.log('Making payment verification request:', { url, params });
-  
-  try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'admin': process.env.NEXT_PUBLIC_TORONET_ADMIN || '',
-        'adminpwd': process.env.NEXT_PUBLIC_TORONET_ADMIN_PWD || '',
-      },
-      body: JSON.stringify({
-        op: "recordfiattransaction",
-        params: [
-          { name: "currency", value: params.currency },
-          { name: "txid", value: params.txid },
-          { name: "paymenttype", value: params.paymenttype }
-        ]
-      }),
-    });
+// Fetcher function for SWR
+const verificationFetcher = async (url: string, params: VerificationParams): Promise<ToronetVerificationResponse> => {
+  console.log('Verifying payment with Toronet API:', params);
 
-    console.log('Payment verification response status:', response.status);
-    
-    // Get response text for better error handling
-    const responseText = await response.text();
-    console.log('Payment verification response text:', responseText);
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'admin': process.env.NEXT_PUBLIC_TORONET_ADMIN || '',
+      'adminpwd': process.env.NEXT_PUBLIC_TORONET_ADMIN_PWD || '',
+    },
+    body: JSON.stringify({
+      op: 'recordfiattransaction',
+      params: [
+        { name: 'currency', value: params.currency },
+        { name: 'txid', value: params.txid },
+        { name: 'paymenttype', value: params.paymenttype },
+      ],
+    }),
+  });
 
-    if (!response.ok) {
-      console.error('Payment verification failed:', {
-        status: response.status,
-        statusText: response.statusText,
-        responseText
-      });
-      
-      // Don't throw error - return failed response to allow SWR retries
-      return {
-        success: false,
-        status: 'failed',
-        error: `HTTP ${response.status}: ${response.statusText}`,
-        responseText
-      };
-    }
+  const result = await response.json();
+  console.log('Toronet verification response:', result);
 
-    // Try to parse JSON
-    let result;
-    try {
-      result = JSON.parse(responseText);
-    } catch (parseError) {
-      console.error('Failed to parse JSON response:', parseError);
-      return {
-        success: false,
-        status: 'failed',
-        error: 'Invalid JSON response'
-      };
-    }
-    
-    console.log('Payment verification response:', result);
-    return result;
-    
-  } catch (networkError) {
-    console.error('Network error during payment verification:', networkError);
-    return {
-      success: false,
-      status: 'failed',
-      error: networkError instanceof Error ? networkError.message : 'Network error'
-    };
+  // Check if payment was successful
+  if (result.success === true || result.result === true || result.status === 'completed') {
+    return { ...result, success: true };
   }
+
+  // If not successful yet, throw error to trigger retry
+  throw new Error(result.message || result.error || 'Payment not confirmed yet');
 };
 
 export function usePaymentVerification(
-  params: PaymentVerificationParams | null,
-  shouldPoll: boolean = false
+  params: VerificationParams | null,
+  enabled: boolean
 ) {
-  const { data, error, isLoading } = useSWR(
-    shouldPoll && params ? ['https://www.toronet.org/api/payment/toro/', params] : null,
-    ([url, params]) => fetcher(url, params),
+  const shouldFetch = enabled && params !== null;
+  
+  // Use SWR with polling configuration
+  const { data, error, isValidating } = useSWR(
+    shouldFetch ? ['https://www.toronet.org/api/payment/toro/', params] : null,
+    ([url, params]) => verificationFetcher(url, params),
     {
-      refreshInterval: shouldPoll ? 3000 : 0, // Poll every 3 seconds when active
+      refreshInterval: 5000, // Poll every 5 seconds
       revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-      shouldRetryOnError: false, // Handle errors in fetcher instead
-      dedupingInterval: 2000, // Prevent duplicate requests
+      revalidateOnReconnect: true,
+      shouldRetryOnError: true,
+      errorRetryInterval: 5000, // Retry every 5 seconds on error
+      dedupingInterval: 2000, // Prevent duplicate requests within 2 seconds
+      onSuccess: (data) => {
+        console.log('Payment verification successful:', data);
+      },
+      onError: (error) => {
+        console.log('Payment verification pending:', error.message);
+      },
     }
   );
 
-  // Check for success in multiple possible response formats
-  const isSuccess = data?.success === true || 
-                   data?.status === 'success' || 
-                   data?.result === true ||
-                   (data && !data.error && data.status !== 'failed');
+  const isSuccess = data?.success === true || data?.result === true;
 
   return {
     data,
-    error,
-    isLoading,
+    error: error as Error | null,
     isSuccess,
+    isValidating,
   };
 }
