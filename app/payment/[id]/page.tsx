@@ -573,7 +573,7 @@ export default function PaymentPage() {
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }; 
 
   const handleSenderNameChange = (name: string) => {
     const sanitized = sanitizeName(name);
