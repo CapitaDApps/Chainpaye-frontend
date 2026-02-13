@@ -27,6 +27,8 @@ export interface BankTransferProps {
   setSenderName: (name: string) => void;
   senderPhone: string;
   setSenderPhone: (phone: string) => void;
+  senderEmail: string;
+  setSenderEmail: (email: string) => void;
   validationErrors: Array<{ field: string; message: string }>;
   isSubmitting: boolean;
 }
@@ -39,6 +41,8 @@ export function BankTransfer({
   setSenderName,
   senderPhone,
   setSenderPhone,
+  senderEmail,
+  setSenderEmail,
   validationErrors,
   isSubmitting
 }: BankTransferProps) {
@@ -287,6 +291,32 @@ export function BankTransfer({
               {validationErrors.find(e => e.field === 'phone')?.message}
             </p>
           )}
+        </div>
+
+        <div>
+          <label htmlFor="senderEmail" className="block text-sm font-medium text-gray-700 mb-1">
+            Email Address
+          </label>
+          <input
+            type="email"
+            id="senderEmail"
+            value={senderEmail}
+            onChange={(e) => setSenderEmail(e.target.value)}
+            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              validationErrors.find(e => e.field === 'email') 
+                ? 'border-red-500' 
+                : 'border-gray-300'
+            }`}
+            placeholder="your.email@example.com"
+          />
+          {validationErrors.find(e => e.field === 'email') && (
+            <p className="text-red-500 text-xs mt-1">
+              {validationErrors.find(e => e.field === 'email')?.message}
+            </p>
+          )}
+          <p className="text-xs text-gray-500 mt-1">
+            We'll send your receipt to this email
+          </p>
         </div>
       </div>
 

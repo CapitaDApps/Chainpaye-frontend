@@ -1,14 +1,14 @@
 // Progress indicator for payment flow
 
 interface PaymentProgressProps {
-  step: "method" | "bank-details" | "confirming" | "success" | "loading" | "error";
+  step: "method" | "bank-details" | "verifying" | "success" | "loading" | "error";
 }
 
 export function PaymentProgress({ step }: PaymentProgressProps) {
   const steps = [
     { id: "method", label: "Select Method" },
     { id: "bank-details", label: "Bank Details" },
-    { id: "confirming", label: "Confirming" },
+    { id: "verifying", label: "Verifying" },
     { id: "success", label: "Complete" },
   ];
 

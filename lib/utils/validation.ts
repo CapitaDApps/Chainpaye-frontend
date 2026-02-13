@@ -5,7 +5,7 @@ export interface ValidationError {
   message: string;
 }
 
-export function validateSenderInfo(name: string, phone: string): ValidationError[] {
+export function validateSenderInfo(name: string, phone: string, email: string): ValidationError[] {
   const errors: ValidationError[] = [];
 
   // Validate name
@@ -44,6 +44,19 @@ export function validateSenderInfo(name: string, phone: string): ValidationError
     });
   }
 
+  // Validate email
+  if (!email || email.trim().length === 0) {
+    errors.push({
+      field: 'email',
+      message: 'Email is required',
+    });
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errors.push({
+      field: 'email',
+      message: 'Please enter a valid email address',
+    });
+  }
+
   return errors;
 }
 
@@ -60,4 +73,8 @@ export function sanitizePhoneNumber(phone: string): string {
   return phone
     .trim()
     .replace(/[^\d\s\-\+\(\)]/g, '');
+}
+
+export function sanitizeEmail(email: string): string {
+  return email.trim().toLowerCase();
 }

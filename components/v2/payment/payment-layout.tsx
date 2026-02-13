@@ -4,7 +4,7 @@ import Image from "next/image";
 
 interface PaymentLayoutProps {
   children: React.ReactNode;
-  step: "method" | "bank-details" | "confirming" | "success" | "sender-detail" | "loading" | "error";
+  step: "method" | "bank-details" | "verifying" | "success" | "sender-detail" | "loading" | "error";
   onBack?: () => void;
   paymentData?: {
     name?: string;

@@ -4,16 +4,13 @@ import { useState, useEffect } from "react";
 import { PaymentLayout } from "@/components/v2/payment/payment-layout";
 import { MethodSelection } from "@/components/v2/payment/method-selection";
 import { BankTransfer } from "@/components/v2/payment/bank-transfer";
-import {
-  Confirmation,
-  SuccessReceipt,
-} from "@/components/v2/payment/confirmation-success";
+import { SuccessReceipt } from "@/components/v2/payment/confirmation-success";
+import { VerificationPending } from "@/components/v2/payment/verification-pending";
 import { useParams } from "next/navigation";
-import { usePaymentVerification } from "@/lib/hooks/usePaymentVerification";
 import { PaymentSkeleton } from "@/components/ui/skeleton";
 import { PaymentProgress } from "@/components/ui/progress-indicator";
 import { fetchWithRetry, handleApiError, trackEvent, reportError, createSession, validateSession, clearSession } from "@/lib/utils/api";
-import { validateSenderInfo, sanitizeName, sanitizePhoneNumber, ValidationError } from "@/lib/utils/validation";
+import { validateSenderInfo, sanitizeName, sanitizePhoneNumber, sanitizeEmail, ValidationError } from "@/lib/utils/validation";
 import { paymentCache, cachedFetch, CACHE_KEYS } from "@/lib/utils/cache";
 import { performanceMonitor, measureAsync } from "@/lib/utils/performance";
 import { registerServiceWorker, setupOnlineOfflineListeners, isOnline } from "@/lib/utils/service-worker";
@@ -32,6 +29,7 @@ interface PaymentData {
   redirectUrl?: string; // For card payments
   toronetReference: string;
   transactionId: string;
+  reference?: string; // Transaction reference (TXN_XXX format)
   paymentInitialization: {
     id: string;
     status: string;
@@ -55,21 +53,22 @@ interface PaymentData {
 
 export default function PaymentPage() {
   const [step, setStep] = useState<
-    "method" | "bank-details" | "confirming" | "success" | "loading" | "error"
+    "method" | "bank-details" | "verifying" | "success" | "loading" | "error"
   >("loading");
   const [selectedMethod, setSelectedMethod] = useState<"card" | "bank" | null>(
     null
   );
   const [paymentData, setPaymentData] = useState<PaymentData | null>(null);
   const [error, setError] = useState<string>("");
-  const [isVerifying, setIsVerifying] = useState(false);
-  const [verificationTimeout, setVerificationTimeout] = useState<NodeJS.Timeout | null>(null);
   const [senderName, setSenderName] = useState<string>("");
   const [senderPhone, setSenderPhone] = useState<string>("");
+  const [senderEmail, setSenderEmail] = useState<string>("");
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [sessionId, setSessionId] = useState<string>("");
   const [isOffline, setIsOffline] = useState(false);
+  const [isPolling, setIsPolling] = useState(false);
+  const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null);
   const params = useParams();
   const paymentId = params?.id as string;
 
@@ -160,19 +159,6 @@ export default function PaymentPage() {
       performanceMonitor.endTiming('payment_page_load');
     };
   }, [paymentId]);
-
-  // Payment verification hook - must be called before early returns
-  // Use safe access to avoid errors when paymentData is null
-  const verificationParams = isVerifying && paymentData?.paymentInitialization?.toronetResponse?.txid ? {
-    currency: paymentData.currency,
-    txid: paymentData.paymentInitialization.toronetResponse.txid,
-    paymenttype: paymentData.paymentType
-  } : null;
-  
-  const { data: verificationData, error: verificationError, isSuccess } = usePaymentVerification(
-    verificationParams,
-    isVerifying
-  );
 
   // Fetch payment data on mount - must be before early returns
   useEffect(() => {
@@ -328,55 +314,14 @@ export default function PaymentPage() {
     fetchPaymentData();
   }, [paymentId]);
 
-  // Debug logging - must be before early returns
-  useEffect(() => {
-    if (isVerifying) {
-      console.log('Verification status:', {
-        isVerifying,
-        verificationData,
-        verificationError,
-        isSuccess,
-        paymentData: paymentData ? {
-          currency: paymentData.currency,
-          txid: paymentData.paymentInitialization?.toronetResponse?.txid,
-          paymentType: paymentData.paymentType
-        } : null
-      });
-    }
-  }, [isVerifying, verificationData, verificationError, isSuccess, paymentData]);
-
-  // Handle successful payment verification - must be before early returns
-  useEffect(() => {
-    if (isSuccess && isVerifying) {
-      console.log("Payment verification successful:", verificationData);
-      handlePaymentSuccess();
-    }
-  }, [isSuccess, isVerifying, verificationData]);
-
-  // Handle verification errors - must be before early returns
-  useEffect(() => {
-    if (verificationError && isVerifying) {
-      console.error("Payment verification error:", verificationError);
-      // Continue polling - errors are handled in the fetcher
-    }
-  }, [verificationError, isVerifying]);
-
-  // Cleanup timeout on unmount - must be before early returns
+  // Cleanup polling interval on unmount
   useEffect(() => {
     return () => {
-      if (verificationTimeout) {
-        clearTimeout(verificationTimeout);
+      if (pollingInterval) {
+        clearInterval(pollingInterval);
       }
-      
-      // Clear session on unmount (optional - you might want to keep it)
-      if (paymentId && step === "success") {
-        clearSession(paymentId);
-      }
-      
-      // Disconnect performance monitoring
-      performanceMonitor.endTiming('payment_page_session');
     };
-  }, [verificationTimeout, paymentId, step]);
+  }, [pollingInterval]);
 
   // Auto-select payment method if only one is available - must be before early returns
   useEffect(() => {
@@ -404,29 +349,6 @@ export default function PaymentPage() {
   }, [paymentData, selectedMethod]);
 
   // Define functions before early returns
-  const handlePaymentSuccess = async () => {
-    console.log("Processing payment success");
-    setIsVerifying(false);
-    
-    trackEvent('payment_verification_success', {
-      paymentId,
-      currency: paymentData?.currency,
-      amount: paymentData?.amount,
-      verificationData
-    });
-    
-    // Clear timeout
-    if (verificationTimeout) {
-      clearTimeout(verificationTimeout);
-      setVerificationTimeout(null);
-    }
-    
-    // Save transaction result to backend
-    await saveTransactionResult();
-    
-    setStep("success");
-  };
-
   const handlePay = () => {
     console.log("handlePay called with:", { selectedMethod, paymentData });
     
@@ -492,9 +414,57 @@ export default function PaymentPage() {
     }
   };
 
-  const handleBankTransferSent = () => {
-    // Validate sender information
-    const errors = validateSenderInfo(senderName, senderPhone);
+  // Check transaction status (for polling)
+  const checkTransactionStatus = async () => {
+    if (!paymentData?.transactionId && !paymentData?.reference) return;
+    
+    const transactionRef = paymentData?.transactionId || paymentData?.reference;
+    
+    try {
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://chainpaye-backend.onrender.com';
+      
+      const response = await fetch(
+        `${apiBaseUrl}/api/v1/transactions/${transactionRef}/status`,
+        {
+          method: 'GET',
+          headers: {
+            'admin': process.env.NEXT_PUBLIC_TORONET_ADMIN || '',
+            'adminpwd': process.env.NEXT_PUBLIC_TORONET_ADMIN_PWD || '',
+          },
+        }
+      );
+      
+      if (!response.ok) {
+        console.error('Failed to check transaction status');
+        return;
+      }
+      
+      const result = await response.json();
+      console.log('Transaction status:', result);
+      
+      // If payment is confirmed, show success
+      if (result.data?.state === 'PAID' || result.data?.state === 'COMPLETED') {
+        console.log('Payment confirmed!');
+        setIsPolling(false);
+        if (pollingInterval) {
+          clearInterval(pollingInterval);
+          setPollingInterval(null);
+        }
+        setStep('success');
+        
+        trackEvent('payment_confirmed_via_polling', {
+          paymentId,
+          transactionId: paymentData.transactionId,
+        });
+      }
+    } catch (error) {
+      console.error('Error checking transaction status:', error);
+    }
+  };
+
+  const handleBankTransferSent = async () => {
+    // Validate sender information including email
+    const errors = validateSenderInfo(senderName, senderPhone, senderEmail);
     if (errors.length > 0) {
       setValidationErrors(errors);
       trackEvent('validation_error', {
@@ -506,38 +476,103 @@ export default function PaymentPage() {
     
     // Clear any previous validation errors
     setValidationErrors([]);
+    setIsSubmitting(true);
     
-    console.log("Starting payment verification...");
-    trackEvent('payment_verification_started', {
-      paymentId,
-      currency: paymentData?.currency,
-      txid: paymentData?.paymentInitialization?.toronetResponse?.txid
-    });
-    
-    setStep("confirming");
-    setIsVerifying(true);
-    
-    // Set a timeout to stop verification after 15 minutes
-    const timeout = setTimeout(() => {
-      console.log("Payment verification timeout reached");
-      setIsVerifying(false);
-      const errorMsg = "Payment verification timed out. Please contact support if your payment was successful.";
+    try {
+      console.log("Submitting payment verification request...");
+      console.log("Sender info:", {
+        name: sanitizeName(senderName),
+        phone: sanitizePhoneNumber(senderPhone),
+        email: sanitizeEmail(senderEmail)
+      });
+      
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ;
+      
+      // Get transaction reference
+
+      const transactionRef = paymentData?.transactionId || paymentData?.reference;
+      
+      if (!transactionRef) {
+        throw new Error('Transaction reference not found');
+      }
+      console.log("payment data", paymentData)
+      console.log('Using transaction reference:', transactionRef);
+      
+      const response = await fetchWithRetry(
+        `${apiBaseUrl}/api/v1/transactions/${transactionRef}/verify`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'admin': process.env.NEXT_PUBLIC_TORONET_ADMIN || '',
+            'adminpwd': process.env.NEXT_PUBLIC_TORONET_ADMIN_PWD || '',
+          },
+          body: JSON.stringify({
+            senderName: sanitizeName(senderName),
+            senderPhone: sanitizePhoneNumber(senderPhone),
+            senderEmail: sanitizeEmail(senderEmail),
+            currency: paymentData?.currency,
+            txid: paymentData?.paymentInitialization?.toronetResponse?.txid,
+            paymentType: paymentData?.paymentType,
+            amount: paymentData?.amount,
+            successUrl: paymentData?.successUrl,
+            paymentLinkId: paymentId,
+          }),
+        },
+        2
+      );
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to submit verification request');
+      }
+      
+      const result = await response.json();
+      console.log("Verification request submitted:", result);
+      
+      // Show verifying screen
+      setStep("verifying");
+      
+      // START POLLING for status updates
+      setIsPolling(true);
+      
+      // Check immediately
+      checkTransactionStatus();
+      
+      // Then check every 5 seconds
+      const interval = setInterval(checkTransactionStatus, 5000);
+      setPollingInterval(interval);
+      
+      // Stop polling after 20 minutes (backend handles the rest)
+      setTimeout(() => {
+        setIsPolling(false);
+        if (interval) {
+          clearInterval(interval);
+          setPollingInterval(null);
+        }
+        console.log('Stopped frontend polling after 20 minutes. Backend will continue verification.');
+      }, 20 * 60 * 1000);
+      
+      trackEvent('verification_request_submitted', {
+        paymentId,
+        transactionId: paymentData?.transactionId,
+        email: senderEmail,
+      });
+      
+    } catch (error) {
+      console.error("Error submitting verification:", error);
+      const errorMsg = error instanceof Error ? error.message : 'Failed to submit verification request';
       setError(errorMsg);
       setStep("error");
       
-      trackEvent('payment_verification_timeout', {
+      reportError(error as Error, {
+        context: 'submit_verification',
         paymentId,
-        duration: 15 * 60 * 1000
+        transactionId: paymentData?.transactionId,
       });
-      
-      reportError(new Error(errorMsg), {
-        context: 'payment_verification_timeout',
-        paymentId,
-        duration: 15 * 60 * 1000
-      });
-    }, 15 * 60 * 1000); // 15 minutes
-    
-    setVerificationTimeout(timeout);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleSenderNameChange = (name: string) => {
@@ -554,6 +589,14 @@ export default function PaymentPage() {
     
     // Clear validation errors for this field
     setValidationErrors(prev => prev.filter(error => error.field !== 'phone'));
+  };
+
+  const handleSenderEmailChange = (email: string) => {
+    const sanitized = sanitizeEmail(email);
+    setSenderEmail(sanitized);
+    
+    // Clear validation errors for this field
+    setValidationErrors(prev => prev.filter(error => error.field !== 'email'));
   };
 
   const handleBack = () => {
@@ -715,7 +758,7 @@ export default function PaymentPage() {
       )}
 
       {/* Progress Indicator - only show for main flow steps */}
-      {["method", "bank-details", "confirming", "success"].includes(step) && (
+      {["method", "bank-details", "verifying", "success"].includes(step) && (
         <PaymentProgress step={step} />
       )}
 
@@ -738,15 +781,18 @@ export default function PaymentPage() {
           setSenderName={handleSenderNameChange}
           senderPhone={senderPhone}
           setSenderPhone={handleSenderPhoneChange}
+          senderEmail={senderEmail}
+          setSenderEmail={handleSenderEmailChange}
           validationErrors={validationErrors}
           isSubmitting={isSubmitting}
         />
       )}
 
-      {step === "confirming" && (
-        <Confirmation 
-          isVerifying={isVerifying}
-          verificationError={verificationError}
+      {step === "verifying" && paymentData && (
+        <VerificationPending
+          email={senderEmail}
+          transactionId={paymentData.transactionId}
+          isPolling={isPolling}
         />
       )}
 
