@@ -39,6 +39,9 @@ interface SuccessReceiptProps {
   date: string;
   method: string;
   senderName: string;
+  recipientName?: string;
+  recipientBank?: string;
+  recipientAccount?: string;
 }
 
 export function SuccessReceipt({
@@ -47,6 +50,9 @@ export function SuccessReceipt({
   date,
   method,
   senderName,
+  recipientName,
+  recipientBank,
+  recipientAccount,
 }: SuccessReceiptProps) {
   const receiptRef = useRef<HTMLDivElement>(null);
 
@@ -57,6 +63,9 @@ export function SuccessReceipt({
       date,
       method,
       senderName,
+      recipientName,
+      recipientBank,
+      recipientAccount,
       logoSrc: logo.src,
     });
   };
@@ -130,11 +139,15 @@ export function SuccessReceipt({
                 </span>
                 <div className="text-right">
                   <div className="font-medium text-[#111528] text-[12px] leading-tight ">
-                    Idowu Blessing Jeremiah
+                    {recipientName || 'N/A'}
                   </div>
-                  <div className="text-[#5A5F73] text-[12px] font-medium mt-0.5">
-                    GTB | 01234567890
-                  </div>
+                  {(recipientBank || recipientAccount) && (
+                    <div className="text-[#5A5F73] text-[12px] font-medium mt-0.5">
+                      {recipientBank && recipientAccount 
+                        ? `${recipientBank} | ${recipientAccount}`
+                        : recipientBank || recipientAccount}
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="flex justify-between items-start">

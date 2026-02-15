@@ -112,9 +112,11 @@ export function BankTransfer({
           Transfer
           <span className="font-bold text-[#111528] ml-1">{bankDetails.amount}</span>
         </div>
-        <div className="text-sm md:text-base font-medium text-[#FF7700]">
-          Copy transaction ID for this transaction to be successful
-        </div>
+        {isUSDBank && (
+          <div className="text-sm md:text-base font-medium text-[#FF7700]">
+            Copy transaction ID and paste it in the payment description for this transaction to be processed quicker
+          </div>
+        )}
         {isNGN && (
           <div className="text-xs text-blue-500">
             Account number expires in 30 Mins

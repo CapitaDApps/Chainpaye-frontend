@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { PaymentLayout } from "@/components/v2/payment/payment-layout";
 import { MethodSelection } from "@/components/v2/payment/method-selection";
 import { BankTransfer } from "@/components/v2/payment/bank-transfer";
@@ -68,7 +68,7 @@ export default function PaymentPage() {
   const [sessionId, setSessionId] = useState<string>("");
   const [isOffline, setIsOffline] = useState(false);
   const [isPolling, setIsPolling] = useState(false);
-  const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null);
+  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const params = useParams();
   const paymentId = params?.id as string;
 
@@ -317,11 +317,12 @@ export default function PaymentPage() {
   // Cleanup polling interval on unmount
   useEffect(() => {
     return () => {
-      if (pollingInterval) {
-        clearInterval(pollingInterval);
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+        pollingIntervalRef.current = null;
       }
     };
-  }, [pollingInterval]);
+  }, []);
 
   // Auto-select payment method if only one is available - must be before early returns
   useEffect(() => {
@@ -446,15 +447,19 @@ export default function PaymentPage() {
       if (result.data?.state === 'PAID' || result.data?.state === 'COMPLETED') {
         console.log('Payment confirmed!');
         setIsPolling(false);
-        if (pollingInterval) {
-          clearInterval(pollingInterval);
-          setPollingInterval(null);
+        
+        // Clear the polling interval
+        if (pollingIntervalRef.current) {
+          clearInterval(pollingIntervalRef.current);
+          pollingIntervalRef.current = null;
+          console.log('Polling interval cleared');
         }
+        
         setStep('success');
         
         trackEvent('payment_confirmed_via_polling', {
           paymentId,
-          transactionId: paymentData.transactionId,
+          transactionId: transactionRef,
         });
       }
     } catch (error) {
@@ -541,16 +546,18 @@ export default function PaymentPage() {
       
       // Then check every 5 seconds
       const interval = setInterval(checkTransactionStatus, 5000);
-      setPollingInterval(interval);
+      pollingIntervalRef.current = interval;
+      console.log('Polling started, interval ID:', interval);
       
       // Stop polling after 20 minutes (backend handles the rest)
       setTimeout(() => {
+        console.log('20-minute timeout reached, stopping polling');
         setIsPolling(false);
-        if (interval) {
-          clearInterval(interval);
-          setPollingInterval(null);
+        if (pollingIntervalRef.current) {
+          clearInterval(pollingIntervalRef.current);
+          pollingIntervalRef.current = null;
+          console.log('Polling interval cleared after timeout');
         }
-        console.log('Stopped frontend polling after 20 minutes. Backend will continue verification.');
       }, 20 * 60 * 1000);
       
       trackEvent('verification_request_submitted', {
@@ -809,6 +816,9 @@ export default function PaymentPage() {
           })}
           method={selectedMethod === "card" ? "Card Payment" : "Bank Transfer"}
           senderName={senderName || "User"}
+          recipientName={paymentData.name}
+          recipientBank={paymentData.paymentInitialization?.toronetResponse?.bankname}
+          recipientAccount={paymentData.paymentInitialization?.toronetResponse?.accountnumber}
         />
       )}
     </PaymentLayout>
