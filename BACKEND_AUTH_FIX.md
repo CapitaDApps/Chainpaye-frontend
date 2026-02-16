@@ -69,7 +69,7 @@ router.post('/:id/verify', async (req, res) => {
       });
     }
     
-    console.log('Auth parsed successfully:', { admin: auth.admin });
+    console.log('Auth parsed successfully');
     
     // Validate credentials (optional - add your validation logic)
     // if (auth.admin !== process.env.TORONET_ADMIN || auth.adminpwd !== process.env.TORONET_ADMIN_PWD) {

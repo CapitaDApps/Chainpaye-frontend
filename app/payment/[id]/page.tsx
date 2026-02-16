@@ -424,14 +424,11 @@ export default function PaymentPage() {
     try {
       const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://chainpaye-backend.onrender.com';
       
+      // Use proxy route to keep credentials server-side
       const response = await fetch(
-        `${apiBaseUrl}/api/v1/transactions/${transactionRef}/status`,
+        `/api/proxy/toronet?endpoint=${encodeURIComponent(`${apiBaseUrl}/api/v1/transactions/${transactionRef}/status`)}`,
         {
           method: 'GET',
-          headers: {
-            'admin': process.env.NEXT_PUBLIC_TORONET_ADMIN || '',
-            'adminpwd': process.env.NEXT_PUBLIC_TORONET_ADMIN_PWD || '',
-          },
         }
       );
       
@@ -503,25 +500,28 @@ export default function PaymentPage() {
       console.log("payment data", paymentData)
       console.log('Using transaction reference:', transactionRef);
       
+      // Use proxy route to keep credentials server-side
       const response = await fetchWithRetry(
-        `${apiBaseUrl}/api/v1/transactions/${transactionRef}/verify`,
+        `/api/proxy/toronet`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'admin': process.env.NEXT_PUBLIC_TORONET_ADMIN || '',
-            'adminpwd': process.env.NEXT_PUBLIC_TORONET_ADMIN_PWD || '',
           },
           body: JSON.stringify({
-            senderName: sanitizeName(senderName),
-            senderPhone: sanitizePhoneNumber(senderPhone),
-            senderEmail: sanitizeEmail(senderEmail),
-            currency: paymentData?.currency,
-            txid: paymentData?.paymentInitialization?.toronetResponse?.txid,
-            paymentType: paymentData?.paymentType,
-            amount: paymentData?.amount,
-            successUrl: paymentData?.successUrl,
-            paymentLinkId: paymentId,
+            endpoint: `${apiBaseUrl}/api/v1/transactions/${transactionRef}/verify`,
+            method: 'POST',
+            data: {
+              senderName: sanitizeName(senderName),
+              senderPhone: sanitizePhoneNumber(senderPhone),
+              senderEmail: sanitizeEmail(senderEmail),
+              currency: paymentData?.currency,
+              txid: paymentData?.paymentInitialization?.toronetResponse?.txid,
+              paymentType: paymentData?.paymentType,
+              amount: paymentData?.amount,
+              successUrl: paymentData?.successUrl,
+              paymentLinkId: paymentId,
+            },
           }),
         },
         2
@@ -631,15 +631,18 @@ export default function PaymentPage() {
       
       const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://chainpaye-backend.onrender.com';
       
+      // Use proxy route to keep credentials server-side
       const response = await measureAsync('save_transaction', async () => {
-        return await fetchWithRetry(`${apiBaseUrl}/api/v1/record-transaction/${paymentData.transactionId}`, {
+        return await fetchWithRetry(`/api/proxy/toronet`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'admin': process.env.NEXT_PUBLIC_TORONET_ADMIN || '',
-            'adminpwd': process.env.NEXT_PUBLIC_TORONET_ADMIN_PWD || '',
           },
-          body: JSON.stringify(transactionData),
+          body: JSON.stringify({
+            endpoint: `${apiBaseUrl}/api/v1/record-transaction/${paymentData.transactionId}`,
+            method: 'POST',
+            data: transactionData,
+          }),
         }, 2);
       }, { paymentId, transactionId: paymentData.transactionId });
 

@@ -17,12 +17,29 @@ export async function POST(
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://chainpaye-backend.onrender.com';
     const url = `${apiBaseUrl}/api/v1/payment-links/${id}`;
 
+    // Get server-side credentials (no NEXT_PUBLIC_ prefix)
+    const admin = process.env.TORONET_ADMIN;
+    const adminpwd = process.env.TORONET_ADMIN_PWD;
+
+    if (!admin || !adminpwd) {
+      console.error('Missing Toronet credentials in environment variables');
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: 'Server configuration error: Missing credentials'
+        },
+        { status: 500 }
+      );
+    }
+
     console.log('Fetching payment link from:', url);
 
     const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'admin': admin,
+        'adminpwd': adminpwd,
       },
     });
 

@@ -262,13 +262,16 @@ startVerificationCron();
 FILE 6: .env (ADD THESE VARIABLES)
 ===========================================
 
+**⚠️ SECURITY WARNING:**
+Never commit this file to git! Use .env.example as a template.
+
 # Gmail configuration for Nodemailer
 GMAIL_USER=your-email@gmail.com
 GMAIL_APP_PASSWORD=your-16-char-app-password
 
 # Toronet API credentials
-TORONET_ADMIN=0x6b03eea493cfeab887f40969e40b069bb334f632
-TORONET_ADMIN_PWD=Holland234$
+TORONET_ADMIN=your-toronet-admin-address
+TORONET_ADMIN_PWD=your-toronet-admin-password
 
 ===========================================
 FILE 7: models/Transaction.ts (ADD THESE FIELDS)
