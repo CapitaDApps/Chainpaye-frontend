@@ -75,6 +75,12 @@ verificationStartedAt: Date  // When user clicked "I've sent money"
 
 ## Environment Variables Needed
 
+**⚠️ SECURITY WARNING:**
+- Never commit real credentials to documentation or git
+- Use `.env.example` as a template
+- Keep actual credentials in `.env.local` (gitignored)
+- For production, use your hosting platform's environment variables
+
 Add to `.env`:
 ```env
 # Gmail configuration for Nodemailer
@@ -82,8 +88,8 @@ GMAIL_USER=your-email@gmail.com
 GMAIL_APP_PASSWORD=your-16-char-app-password
 
 # Toronet API credentials
-TORONET_ADMIN=0x6b03eea493cfeab887f40969e40b069bb334f632
-TORONET_ADMIN_PWD=Holland234$
+TORONET_ADMIN=your-toronet-admin-address
+TORONET_ADMIN_PWD=your-toronet-admin-password
 ```
 
 ### How to Get Gmail App Password:
