@@ -188,7 +188,7 @@ Set these environment variables in your hosting platform:
 
 ```env
 NEXT_PUBLIC_API_BASE_URL=https://your-backend.com
-TORONET_ADMIN=0x6b03eea493cfeab887f40969e40b069bb334f632
+TORONET_ADMIN=..
 TORONET_ADMIN_PWD=your-new-password-here
 ```
 
