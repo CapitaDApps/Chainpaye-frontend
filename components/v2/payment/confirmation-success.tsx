@@ -3,6 +3,7 @@
 import { Check } from "lucide-react";
 import Image from "next/image";
 import logo from "../../../public/assets/chainpaye.png";
+import logo1 from "../../../public/assets/Favicon.png";
 import { generateReceiptPDF } from "@/util/pdf";
 import { useRef } from "react";
 import Download from "@/components/download";
@@ -16,7 +17,7 @@ export function Confirmation({ isVerifying = true, verificationError }: Confirma
   return (
     <div className="flex flex-col items-center justify-center h-full min-h-[400px]">
       <div className="relative mb-6">
-        <Image src={logo} alt="Chainpaye" width={100} height={100} />
+        <Image src={logo1} alt="Chainpaye" width={100} height={100} />
       </div>
       <h3 className="text-lg font-medium text-gray-600  mb-6 uppercase tracking-wide">
         CONFIRMING PAYMENT
@@ -139,11 +140,11 @@ export function SuccessReceipt({
                 </span>
                 <div className="text-right">
                   <div className="font-medium text-[#111528] text-[12px] leading-tight ">
-                    {recipientName || 'N/A'}
+                    {recipientName || "N/A"}
                   </div>
                   {(recipientBank || recipientAccount) && (
                     <div className="text-[#5A5F73] text-[12px] font-medium mt-0.5">
-                      {recipientBank && recipientAccount 
+                      {recipientBank && recipientAccount
                         ? `${recipientBank} | ${recipientAccount}`
                         : recipientBank || recipientAccount}
                     </div>
@@ -181,15 +182,7 @@ export function SuccessReceipt({
               <span className="text-sm font-normal">Download PDF receipt</span>
             </button>
 
-            {/* Footer Text - Inside and compact */}
-            <div className="flex justify-center items-center gap-2.5 mb-8 text-gray-400 text-[11px] font-semibold border-t border-gray-50 pt-6 w-full relative z-10">
-              <span>
-                Powered by{" "}
-                <span className="text-gray-900 font-bold">Chainpaye</span>
-              </span>
-              <div className="w-px h-4 bg-gray-200" />
-              <button className="hover:text-gray-800 transition">help</button>
-            </div>
+            {/* Footer handled by PaymentLayout */}
           </div>
         </div>
         <style jsx>{`

@@ -23,28 +23,14 @@ export interface BankTransferProps {
       };
     };
   };
-  senderName: string;
-  setSenderName: (name: string) => void;
-  senderPhone: string;
-  setSenderPhone: (phone: string) => void;
-  senderEmail: string;
-  setSenderEmail: (email: string) => void;
-  validationErrors: Array<{ field: string; message: string }>;
   isSubmitting: boolean;
 }
 
-export function BankTransfer({ 
-  onSent, 
+export function BankTransfer({
+  onSent,
   onChangeMethod,
   paymentData,
-  senderName,
-  setSenderName,
-  senderPhone,
-  setSenderPhone,
-  senderEmail,
-  setSenderEmail,
-  validationErrors,
-  isSubmitting
+  isSubmitting,
 }: BankTransferProps) {
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
@@ -55,10 +41,11 @@ export function BankTransfer({
   };
 
   // Determine if this is a USD bank payment
-  const isUSDBank = paymentData.currency === "USD" && 
-                    paymentData.paymentType === "bank" && 
-                    paymentData.token === "USD";
-  
+  const isUSDBank =
+    paymentData.currency === "USD" &&
+    paymentData.paymentType === "bank" &&
+    paymentData.token === "USD";
+
   // Determine if this is NGN payment
   const isNGN = paymentData.currency === "NGN";
 
@@ -75,9 +62,14 @@ export function BankTransfer({
       };
     } else if (isNGN) {
       return {
-        bankName: paymentData.paymentInitialization.toronetResponse.bankname || "N/A",
-        accountName: paymentData.paymentInitialization.toronetResponse.accountname || "N/A",
-        accountNumber: paymentData.paymentInitialization.toronetResponse.accountnumber || "N/A",
+        bankName:
+          paymentData.paymentInitialization.toronetResponse.bankname || "N/A",
+        accountName:
+          paymentData.paymentInitialization.toronetResponse.accountname ||
+          "N/A",
+        accountNumber:
+          paymentData.paymentInitialization.toronetResponse.accountnumber ||
+          "N/A",
         amount: `${paymentData.currency} ${Number(paymentData.paymentInitialization.toronetResponse.amount || paymentData.amount).toLocaleString()}`,
       };
     }
@@ -110,11 +102,13 @@ export function BankTransfer({
       <div className="text-center mb-6 space-y-2">
         <div className="text-sm text-[#111528] mb-1">
           Transfer
-          <span className="font-bold text-[#111528] ml-1">{bankDetails.amount}</span>
+          <span className="font-bold text-[#111528] ml-1">
+            {bankDetails.amount}
+          </span>
         </div>
         {isUSDBank && (
-          <div className="text-sm md:text-base font-medium text-[#FF7700]">
-            Copy transaction ID and paste it in the payment description for this transaction to be processed quicker
+          <div className="px-4 py-2 bg-orange-50 text-[#FF7700] rounded-lg text-sm text-center">
+            Copy transaction ID for this transaction to be successful
           </div>
         )}
         {isNGN && (
@@ -124,34 +118,21 @@ export function BankTransfer({
         )}
       </div>
 
-      <div className="md:bg-[#F9FAFB] rounded-xl p-6 pb-10 space-y-5 mb-8 relative">
-        {/* Custom Dashed Border via SVG */}
-        <div className="absolute inset-0 pointer-events-none rounded-xl overflow-hidden">
-          <svg className="w-full h-full">
-            <rect
-              x="1"
-              y="1"
-              width="calc(100% - 2px)"
-              height="calc(100% - 2px)"
-              rx="12"
-              fill="none"
-              stroke="#DEE2E6"
-              strokeWidth="2"
-              strokeDasharray="10 10"
-            />
-          </svg>
-        </div>
-
+      <div className="bg-white border-2 border-dashed border-[#DEE2E6] rounded-xl p-6 space-y-5 mb-8">
         <div>
           <div className="text-xs text-gray-500 uppercase mb-1">BANK NAME</div>
-          <div className="font-medium text-gray-900">{bankDetails.bankName}</div>
+          <div className="font-medium text-gray-900">
+            {bankDetails.bankName}
+          </div>
         </div>
 
         <div>
           <div className="text-xs text-gray-500 uppercase mb-1">
             ACCOUNT NAME
           </div>
-          <div className="font-medium text-gray-900">{bankDetails.accountName}</div>
+          <div className="font-medium text-gray-900">
+            {bankDetails.accountName}
+          </div>
         </div>
 
         <div
@@ -162,7 +143,9 @@ export function BankTransfer({
             <div className="text-xs text-gray-500 uppercase mb-1">
               ACCOUNT NUMBER
             </div>
-            <div className="font-medium text-gray-900">{bankDetails.accountNumber}</div>
+            <div className="font-medium text-gray-900">
+              {bankDetails.accountNumber}
+            </div>
           </div>
           <button className="text-gray-400 hover:text-blue-500 transition">
             {copiedField === "account" ? (
@@ -174,16 +157,20 @@ export function BankTransfer({
         </div>
 
         {/* Routing Number for USD Bank Payments */}
-        {isUSDBank && 'routingNumber' in bankDetails && (
+        {isUSDBank && "routingNumber" in bankDetails && (
           <div
             className="flex justify-between items-center group cursor-pointer"
-            onClick={() => copyToClipboard(bankDetails.routingNumber!, "routing")}
+            onClick={() =>
+              copyToClipboard(bankDetails.routingNumber!, "routing")
+            }
           >
             <div>
               <div className="text-xs text-gray-500 uppercase mb-1">
                 ROUTING NUMBER
               </div>
-              <div className="font-medium text-gray-900">{bankDetails.routingNumber}</div>
+              <div className="font-medium text-gray-900">
+                {bankDetails.routingNumber}
+              </div>
             </div>
             <button className="text-gray-400 hover:text-blue-500 transition">
               {copiedField === "routing" ? (
@@ -196,16 +183,20 @@ export function BankTransfer({
         )}
 
         {/* Bank Address for USD Bank Payments */}
-        {isUSDBank && 'bankAddress' in bankDetails && (
+        {isUSDBank && "bankAddress" in bankDetails && (
           <div
             className="flex justify-between items-center group cursor-pointer"
-            onClick={() => copyToClipboard(bankDetails.bankAddress!, "bank-address")}
+            onClick={() =>
+              copyToClipboard(bankDetails.bankAddress!, "bank-address")
+            }
           >
             <div>
               <div className="text-xs text-gray-500 uppercase mb-1">
                 BANK ADDRESS
               </div>
-              <div className="font-medium text-gray-900">{bankDetails.bankAddress}</div>
+              <div className="font-medium text-gray-900">
+                {bankDetails.bankAddress}
+              </div>
             </div>
             <button className="text-gray-400 hover:text-blue-500 transition">
               {copiedField === "bank-address" ? (
@@ -242,83 +233,8 @@ export function BankTransfer({
         <div className="flex justify-between items-center group cursor-pointer">
           <div>
             <div className="text-xs text-gray-500 uppercase mb-1">AMOUNT</div>
-            <div className="font-medium text-gray-900">{bankDetails.amount}</div>
+            <div className="font-bold text-[#003DFF]">{bankDetails.amount}</div>
           </div>
-        </div>
-      </div>
-
-      {/* Sender Information Form */}
-      <div className="space-y-4 mb-6">
-        <div>
-          <label htmlFor="senderName" className="block text-sm font-medium text-gray-700 mb-1">
-            Your Name
-          </label>
-          <input
-            type="text"
-            id="senderName"
-            value={senderName}
-            onChange={(e) => setSenderName(e.target.value)}
-            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              validationErrors.find(e => e.field === 'name') 
-                ? 'border-red-500' 
-                : 'border-gray-300'
-            }`}
-            placeholder="Enter your full name"
-          />
-          {validationErrors.find(e => e.field === 'name') && (
-            <p className="text-red-500 text-xs mt-1">
-              {validationErrors.find(e => e.field === 'name')?.message}
-            </p>
-          )}
-        </div>
-
-        <div>
-          <label htmlFor="senderPhone" className="block text-sm font-medium text-gray-700 mb-1">
-            Phone Number
-          </label>
-          <input
-            type="tel"
-            id="senderPhone"
-            value={senderPhone}
-            onChange={(e) => setSenderPhone(e.target.value)}
-            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              validationErrors.find(e => e.field === 'phone') 
-                ? 'border-red-500' 
-                : 'border-gray-300'
-            }`}
-            placeholder="Enter your phone number"
-          />
-          {validationErrors.find(e => e.field === 'phone') && (
-            <p className="text-red-500 text-xs mt-1">
-              {validationErrors.find(e => e.field === 'phone')?.message}
-            </p>
-          )}
-        </div>
-
-        <div>
-          <label htmlFor="senderEmail" className="block text-sm font-medium text-gray-700 mb-1">
-            Email Address
-          </label>
-          <input
-            type="email"
-            id="senderEmail"
-            value={senderEmail}
-            onChange={(e) => setSenderEmail(e.target.value)}
-            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              validationErrors.find(e => e.field === 'email') 
-                ? 'border-red-500' 
-                : 'border-gray-300'
-            }`}
-            placeholder="your.email@example.com"
-          />
-          {validationErrors.find(e => e.field === 'email') && (
-            <p className="text-red-500 text-xs mt-1">
-              {validationErrors.find(e => e.field === 'email')?.message}
-            </p>
-          )}
-          <p className="text-xs text-gray-500 mt-1">
-            We'll send your receipt to this email
-          </p>
         </div>
       </div>
 
@@ -326,17 +242,17 @@ export function BankTransfer({
         onClick={onSent}
         disabled={isSubmitting}
         className={`w-full py-4 rounded-xl font-medium text-white transition-all mb-4 ${
-          isSubmitting 
-            ? 'bg-gray-400 cursor-not-allowed' 
-            : 'bg-[#003DFF] hover:bg-[#002dbf] shadow-lg shadow-blue-500/20'
+          isSubmitting
+            ? "bg-gray-400 cursor-not-allowed"
+            : "bg-[#003DFF] hover:bg-[#002dbf] shadow-lg shadow-blue-500/20"
         }`}
       >
-        {isSubmitting ? 'Processing...' : "I've sent the money"}
+        {isSubmitting ? "Processing..." : "I've sent the money"}
       </button>
 
       <button
         onClick={onChangeMethod}
-        className="w-full py-2 text-sm text-gray-500 hover:text-gray-900 transition"
+        className="w-full py-2 text-sm text-gray-500 hover:text-gray-900 transition mb-8"
       >
         Change Payment Method
       </button>
