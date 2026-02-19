@@ -84,7 +84,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <body className={`${manrope.className} ${manrope.variable}`}>
-        <ErrorBoundary>
+        {/* <ErrorBoundary> */}
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -93,7 +93,7 @@ export default function RootLayout({
           >
             {children}
           </ThemeProvider>
-        </ErrorBoundary>
+        {/* </ErrorBoundary> */}
       </body>
     </html>
   );
