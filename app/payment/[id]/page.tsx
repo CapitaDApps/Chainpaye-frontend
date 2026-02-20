@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from "react";
 import { PaymentLayout } from "@/components/v2/payment/payment-layout";
-import { MethodSelection } from "@/components/v2/payment/method-selection";
 import { SenderDetails } from "@/components/v2/payment/sender-details";
 import { BankTransfer } from "@/components/v2/payment/bank-transfer";
 import {
@@ -86,6 +85,7 @@ export default function PaymentPage() {
   const [paymentData, setPaymentData] = useState<PaymentData | null>(null);
   const [error, setError] = useState<string>("");
   const [senderName, setSenderName] = useState<string>("");
+  const [senderCountryCode, setSenderCountryCode] = useState<string>("+234");
   const [senderPhone, setSenderPhone] = useState<string>("");
   const [senderEmail, setSenderEmail] = useState<string>("");
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>(
@@ -98,61 +98,6 @@ export default function PaymentPage() {
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const params = useParams();
   const paymentId = params?.id as string;
-
-  // Handle success redirect with POST request
-  const handleSuccessRedirect = async (
-    paymentData: PaymentData,
-    transactionData: {
-      transactionId: string;
-      senderName: string;
-      senderPhone: string;
-    },
-  ) => {
-    try {
-      console.log("Posting to success endpoint:", paymentData.successUrl);
-
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 8000); // 8-second timeout
-
-      const response = await fetch(paymentData.successUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          paymentLinkId: paymentId,
-          transactionId: transactionData.transactionId,
-          amount: paymentData.amount,
-          currency: paymentData.currency,
-          senderName: transactionData.senderName,
-          senderPhone: transactionData.senderPhone,
-          paymentMethod: paymentData.paymentType,
-          status: "completed",
-          paidAt: new Date().toISOString(),
-          name: paymentData.name,
-        }),
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (response.ok) {
-        console.log("Success endpoint notified successfully");
-      } else {
-        console.error("Failed to notify success endpoint:", response.status);
-      }
-    } catch (error) {
-      if (error instanceof Error && error.name === "AbortError") {
-        console.error("Success endpoint request timed out after 8 seconds");
-      } else {
-        console.error("Error calling success endpoint:", error);
-      }
-    } finally {
-      // Always redirect regardless of POST success/failure since payment was successful
-      console.log("Redirecting to success page:", paymentData.successUrl);
-      window.location.href = paymentData.successUrl;
-    }
-  };
 
   // Initialize session, performance monitoring, and service worker
   useEffect(() => {
@@ -219,7 +164,7 @@ export default function PaymentPage() {
           if (cachedData) {
             console.log("Using cached payment data");
             setPaymentData(cachedData);
-            setStep("method");
+            setStep("sender-details");
             trackEvent("payment_data_cached", { paymentId });
             return;
           }
@@ -366,7 +311,7 @@ export default function PaymentPage() {
         paymentCache.set(cacheKey, data, 5 * 60 * 1000); // Cache for 5 minutes
 
         setPaymentData(data);
-        setStep("method");
+        setStep("sender-details");
 
         trackEvent("payment_data_loaded", {
           paymentId,
@@ -444,80 +389,6 @@ export default function PaymentPage() {
   }, [paymentData, selectedMethod]);
 
   // Define functions before early returns
-  const handlePay = () => {
-    console.log("handlePay called with:", { selectedMethod, paymentData });
-
-    trackEvent("payment_method_selected", {
-      method: selectedMethod,
-      paymentId,
-      currency: paymentData?.currency,
-      amount: paymentData?.amount,
-    });
-
-    if (selectedMethod === "bank") {
-      setStep("sender-details");
-    } else if (selectedMethod === "card") {
-      // Check if payment initialization was successful
-      if (paymentData?.paymentInitialization?.status === "FAILED") {
-        const errorMsg =
-          paymentData.paymentInitialization.toronetResponse?.message ||
-          paymentData.paymentInitialization.toronetResponse?.error ||
-          "Payment initialization failed";
-        console.error(
-          "Cannot proceed with card payment - initialization failed:",
-          errorMsg,
-        );
-        alert(
-          `Payment setup failed: ${errorMsg}. Please try creating a new payment link.`,
-        );
-        return;
-      }
-
-      // Get redirect URL from payment data
-      const redirectUrl =
-        paymentData?.paymentInitialization?.toronetResponse?.url;
-
-      console.log("Card payment redirect URL:", redirectUrl);
-      console.log("Payment data for debugging:", {
-        redirectUrl: paymentData?.redirectUrl,
-        toronetUrl: paymentData?.paymentInitialization?.toronetResponse?.url,
-        initializationStatus: paymentData?.paymentInitialization?.status,
-        fullToronetResponse:
-          paymentData?.paymentInitialization?.toronetResponse,
-      });
-
-      if (redirectUrl) {
-        console.log("Redirecting to card payment provider:", redirectUrl);
-        trackEvent("card_payment_redirect", {
-          paymentId,
-          redirectUrl,
-          currency: paymentData?.currency,
-        });
-        // Redirect to external card payment provider
-        window.location.href = redirectUrl;
-      } else {
-        // Fallback if no redirect URL is provided
-        console.error("No redirect URL found for card payment");
-        console.error("Available payment data:", paymentData);
-
-        // Check if this is due to failed initialization
-        if (paymentData?.paymentInitialization?.status === "FAILED") {
-          const errorMsg =
-            "Payment setup failed. Please try creating a new payment link.";
-          alert(errorMsg);
-        } else {
-          const errorMsg =
-            "Card payment redirect URL not available. Please contact support.";
-          reportError(new Error(errorMsg), {
-            context: "card_payment_redirect",
-            paymentId,
-            paymentData,
-          });
-          alert(errorMsg);
-        }
-      }
-    }
-  };
 
   // Check transaction status (for polling)
   const checkTransactionStatus = async () => {
@@ -571,7 +442,19 @@ export default function PaymentPage() {
   };
 
   const handleSenderNext = () => {
-    const errors = validateSenderInfo(senderName, senderPhone, senderEmail);
+    const fullPhone = senderCountryCode + senderPhone;
+
+    console.log("---- FINAL SENDER DETAILS ----");
+    console.log({
+      senderName,
+      senderCountryCode,
+      senderPhone: senderPhone,
+      concatenatedPhone: fullPhone,
+      senderEmail,
+    });
+    console.log("------------------------------");
+
+    const errors = validateSenderInfo(senderName, fullPhone, senderEmail);
     if (errors.length > 0) {
       setValidationErrors(errors);
       trackEvent("validation_error", {
@@ -586,9 +469,10 @@ export default function PaymentPage() {
   const handleBankTransferSent = async () => {
     try {
       console.log("Submitting payment verification request...");
-      console.log("Sender info:", {
+      const fullPhone = senderCountryCode + senderPhone;
+      console.log("Sender info for verification:", {
         name: sanitizeName(senderName),
-        phone: sanitizePhoneNumber(senderPhone),
+        phone: sanitizePhoneNumber(fullPhone),
         email: sanitizeEmail(senderEmail),
       });
 
@@ -618,7 +502,7 @@ export default function PaymentPage() {
             method: "POST",
             data: {
               senderName: sanitizeName(senderName),
-              senderPhone: sanitizePhoneNumber(senderPhone),
+              senderPhone: sanitizePhoneNumber(senderCountryCode + senderPhone),
               senderEmail: sanitizeEmail(senderEmail),
               currency: paymentData?.currency,
               txid: paymentData?.paymentInitialization?.toronetResponse?.txid,
@@ -790,35 +674,27 @@ export default function PaymentPage() {
         </div>
       )}
 
-      {step === "method" && paymentData && (
-        <MethodSelection
-          selectedMethod={selectedMethod}
-          onSelectMethod={setSelectedMethod}
-          onPay={handlePay}
-          paymentData={paymentData}
-          availableMethods={availableMethods}
-        />
-      )}
-
       {step === "sender-details" && paymentData && (
         <SenderDetails
           onNext={handleSenderNext}
-          onBack={() => setStep("method")}
           senderName={senderName}
           setSenderName={handleSenderNameChange}
+          senderCountryCode={senderCountryCode}
+          setSenderCountryCode={setSenderCountryCode}
           senderPhone={senderPhone}
           setSenderPhone={handleSenderPhoneChange}
           senderEmail={senderEmail}
           setSenderEmail={handleSenderEmailChange}
           validationErrors={validationErrors}
           isSubmitting={isSubmitting}
+          paymentData={paymentData}
         />
       )}
 
       {step === "bank-details" && paymentData && (
         <BankTransfer
+          onBack={() => setStep("sender-details")}
           onSent={handleBankTransferSent}
-          onChangeMethod={() => setStep("sender-details")}
           paymentData={paymentData}
           isSubmitting={isSubmitting}
         />
