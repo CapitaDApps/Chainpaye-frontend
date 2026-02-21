@@ -93,6 +93,7 @@ export function SenderDetails({
             <input
               type="text"
               id="senderName"
+              maxLength={50}
               value={senderName}
               onChange={(e) => setSenderName(e.target.value)}
               className={`w-full p-4.5 bg-[#F3F4F6] text-gray-700 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all ${
@@ -133,6 +134,7 @@ export function SenderDetails({
               <input
                 type="tel"
                 id="senderPhone"
+                maxLength={10}
                 value={senderPhone}
                 onChange={(e) => setSenderPhone(e.target.value)}
                 className={`w-full p-4.5 bg-[#F3F4F6] text-gray-700 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all ${
@@ -155,6 +157,7 @@ export function SenderDetails({
             <input
               type="email"
               id="senderEmail"
+              maxLength={50}
               value={senderEmail}
               onChange={(e) => setSenderEmail(e.target.value)}
               className={`w-full p-4.5 bg-[#F3F4F6] text-gray-700 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all ${
