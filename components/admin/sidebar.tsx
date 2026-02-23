@@ -4,13 +4,19 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Logo from "@/components/ui/logo";
 import Image from "next/image";
-import { LayoutGrid, History, Users, LogOut, Bell, X } from "lucide-react";
+import { LogOut, Bell, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+import {
+  OverviewIcon,
+  TransactionsIcon,
+  UsersIcon,
+} from "@/components/ui/icons";
+
 const NAV_ITEMS = [
-  { name: "Overview", href: "/admin", icon: LayoutGrid },
-  { name: "Transactions", href: "/admin/transactions", icon: History },
-  { name: "Users", href: "/admin/users", icon: Users },
+  { name: "Overview", href: "/admin", icon: OverviewIcon },
+  { name: "Transactions", href: "/admin/transactions", icon: TransactionsIcon },
+  { name: "Users", href: "/admin/users", icon: UsersIcon },
 ];
 
 interface SidebarProps {
@@ -90,8 +96,8 @@ export function Sidebar({ isOpen, onClose, isCollapsed }: SidebarProps) {
                 )}
               >
                 <item.icon
-                  size={20}
-                  className={cn(isActive ? "text-[#003DFF]" : "text-[#667085]")}
+                  className={cn(!isActive && "opacity-70", "w-5 h-5")}
+                  isActive={isActive}
                 />
                 {!isCollapsed && <span>{item.name}</span>}
 

@@ -17,11 +17,7 @@ export default function AdminLayout({
   useEffect(() => {
     // Check authentication on mount
     const authStatus = localStorage.getItem("admin_authenticated");
-    if (authStatus === "true") {
-      setIsAuthenticated(true);
-    } else {
-      setIsAuthenticated(false);
-    }
+    setIsAuthenticated(authStatus === "true");
   }, []);
 
   // Show nothing while checking auth to avoid flickering
@@ -43,7 +39,7 @@ export default function AdminLayout({
           onMenuClick={() => setIsSidebarOpen(true)}
           onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
         />
-        <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-6 lg:p-8">
+        <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-6 lg:p-8 bg-[#F8F8F8]">
           {children}
         </main>
       </div>
