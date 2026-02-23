@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { ErrorBoundary } from "@/components/error-boundary";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -25,7 +24,7 @@ export const metadata: Metadata = {
     "crypto cashout",
     "CAPITDAPPS",
     "CAPITDAPPS BRIDGE LIMITED",
-    "capital"
+    "capital",
   ],
   openGraph: {
     title: "Chainpaye - Global Payments for Africa",
@@ -84,16 +83,14 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <body className={`${manrope.className} ${manrope.variable}`}>
-        {/* <ErrorBoundary> */}
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-          </ThemeProvider>
-        {/* </ErrorBoundary> */}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
