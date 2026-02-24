@@ -26,14 +26,12 @@ export function TransactionsTable({
 }: TransactionsTableProps) {
   return (
     <div className="bg-white rounded-2xl border border-[#E3E3E3] overflow-hidden flex flex-col h-full">
-      {/* Header inside card */}
       <div className="px-6 pt-6 pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
         {!hideTitle && (
           <h2 className="text-base font-medium text-[#5A5F73]">
             Recent Transactions
           </h2>
         )}
-        {/* Search */}
         <div
           className={cn(
             "relative w-full",
@@ -54,7 +52,6 @@ export function TransactionsTable({
         </div>
       </div>
 
-      {/* Filter Pills */}
       <div className="px-6 pb-4 flex flex-wrap items-center gap-2">
         {filters.map((filter) => (
           <button
@@ -72,7 +69,6 @@ export function TransactionsTable({
         ))}
       </div>
 
-      {/* Table or Empty State */}
       {transactions.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 px-6">
           <div className="relative w-36 h-36 mb-4">

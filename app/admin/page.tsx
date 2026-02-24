@@ -11,7 +11,6 @@ import {
   RECENT_TRANSACTIONS,
 } from "@/lib/utils/mock-data";
 
-// Extracted Components
 import { TopStatsGrid } from "@/components/admin/overview/top-stats-grid";
 import { CashflowChart } from "@/components/admin/overview/cashflow-chart";
 import { RevenueChart } from "@/components/admin/overview/revenue-chart";
@@ -57,8 +56,6 @@ export default function OverviewPage() {
       return PLATFORM_REVENUE_CHART_DATA.slice(0, 6);
     return PLATFORM_REVENUE_CHART_DATA;
   }, [chartDateRange]);
-
-  // Filter transactions — cap at 5 most recent for the Overview snapshot
   const filteredTransactions = useMemo(() => {
     return RECENT_TRANSACTIONS.filter((tx) => {
       if (activeFilter !== "All") {
@@ -80,19 +77,15 @@ export default function OverviewPage() {
         );
       }
       return true;
-    }).slice(0, 5); // Only 5 most recent for overview
+    }).slice(0, 5);
   }, [activeFilter, searchQuery]);
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      {/* Top Stats Grid */}
       <TopStatsGrid stats={OVERVIEW_STATS} />
 
-      {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6 pt-2 items-start">
-        {/* Main Chart Card */}
         <div className="bg-white p-6 rounded-2xl border border-[#E3E3E3] flex flex-col h-[480px]">
-          {/* Tabs */}
           <div className="flex bg-gray-100 p-1 w-fit rounded-lg border border-gray-100 mb-6">
             <button
               onClick={() => setActiveTab("Total Cashflow")}
@@ -144,7 +137,6 @@ export default function OverviewPage() {
           </div>
         </div>
 
-        {/* Sidebar Donut */}
         <div className="flex flex-col gap-6 h-full">
           <TransactionsDonut
             dateRange={donutDateRange}
@@ -153,7 +145,6 @@ export default function OverviewPage() {
         </div>
       </div>
 
-      {/* Transactions Table Row */}
       <div className="pt-2">
         <TransactionsTable
           transactions={filteredTransactions}

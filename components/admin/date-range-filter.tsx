@@ -16,8 +16,8 @@ export type DateRangeOption =
 
 export interface DateRange {
   option: DateRangeOption;
-  startDate?: string; // ISO yyyy-mm
-  endDate?: string; // ISO yyyy-mm
+  startDate?: string;
+  endDate?: string;
 }
 
 const PRESET_OPTIONS: { value: DateRangeOption; label: string }[] = [
@@ -47,14 +47,13 @@ function getLabel(range: DateRange): string {
   return found?.label ?? "Jan 2025 - Dec 2025";
 }
 
-// Simple month-year picker
 function MonthPicker({
   label,
   value,
   onChange,
 }: {
   label: string;
-  value: string; // yyyy-mm
+  value: string;
   onChange: (v: string) => void;
 }) {
   const [year, setYear] = useState(() =>
@@ -92,12 +91,11 @@ function MonthPicker({
   return (
     <div className="space-y-2">
       <p className="text-[12px] font-medium text-[#374151]">{label}</p>
-      {/* Display value box */}
       <div className="flex items-center justify-between border border-gray-200 rounded-lg px-3 py-2.5 bg-white">
         <span className="text-sm text-[#374151] font-medium">{display}</span>
         <Calendar size={15} className="text-gray-400" />
       </div>
-      {/* Month nav */}
+
       <div className="flex items-center justify-between px-1">
         <button
           onClick={prev}
@@ -138,7 +136,6 @@ export function DateRangeFilter({
   const [customEnd, setCustomEnd] = useState(value.endDate ?? "");
   const ref = useRef<HTMLDivElement>(null);
 
-  // Close on outside click
   useEffect(() => {
     function handler(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) {
@@ -152,7 +149,6 @@ export function DateRangeFilter({
   const handlePresetSelect = (opt: DateRangeOption) => {
     setPendingOption(opt);
     if (opt !== "custom") {
-      // Apply immediately for presets
       onChange({ option: opt });
       setIsOpen(false);
     }
@@ -175,18 +171,15 @@ export function DateRangeFilter({
         <span className="text-[10px] text-gray-400 ml-0.5">▼</span>
       </button>
 
-      {/* Dropdown Panel */}
       {isOpen && (
         <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 overflow-hidden">
           <div className="p-4 space-y-2">
-            {/* Preset options */}
             {PRESET_OPTIONS.map((opt) => (
               <label
                 key={opt.value}
                 className="flex items-center gap-3 cursor-pointer group"
                 onClick={() => handlePresetSelect(opt.value)}
               >
-                {/* Custom checkbox */}
                 <div
                   className={cn(
                     "w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 transition-colors",
@@ -213,7 +206,6 @@ export function DateRangeFilter({
               </label>
             ))}
 
-            {/* Custom option — no checkbox, just text */}
             <div
               className="pl-7 cursor-pointer"
               onClick={() => setPendingOption("custom")}
@@ -230,7 +222,6 @@ export function DateRangeFilter({
               </span>
             </div>
 
-            {/* Custom date pickers — only shown when "custom" is selected */}
             {pendingOption === "custom" && (
               <div className="mt-3 space-y-4 pt-3 border-t border-gray-100">
                 <MonthPicker

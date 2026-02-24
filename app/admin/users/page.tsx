@@ -40,10 +40,8 @@ export default function UsersPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500 flex flex-col min-h-full">
-      {/* Stats Cards */}
       <UserStatsGrid stats={USER_STATS} />
 
-      {/* Demography Chart - Top row, but not full width */}
       <div className="w-full lg:w-[400px]">
         <UserDemographyChart
           dateRange={demoDateRange}
@@ -51,7 +49,6 @@ export default function UsersPage() {
         />
       </div>
 
-      {/* Users Table - Bottom row, full width */}
       <div className="w-full flex-1">
         <UsersTable
           users={filteredUsers}

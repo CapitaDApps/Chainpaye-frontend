@@ -15,12 +15,10 @@ export default function AdminLayout({
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   useEffect(() => {
-    // Check authentication on mount
     const authStatus = localStorage.getItem("admin_authenticated");
     setIsAuthenticated(authStatus === "true");
   }, []);
 
-  // Show nothing while checking auth to avoid flickering
   if (isAuthenticated === null) return null;
 
   if (!isAuthenticated) {

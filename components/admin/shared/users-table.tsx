@@ -39,7 +39,6 @@ export function UsersTable({
         </div>
       </div>
 
-      {/* Filters */}
       <div className="px-6 pb-4 flex flex-wrap items-center gap-2">
         {filters.map((filter) => (
           <button

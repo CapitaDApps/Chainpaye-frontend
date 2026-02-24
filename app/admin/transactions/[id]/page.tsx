@@ -45,7 +45,6 @@ export default function TransactionDetailPage() {
         </h2>
 
         <div className="space-y-10">
-          {/* Status Row */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="flex flex-col gap-2">
               <p className="text-[12px] text-[#9CA3AF]">Status</p>
@@ -76,7 +75,6 @@ export default function TransactionDetailPage() {
               </div>
             </div>
 
-            {/* Actions */}
             <div className="flex items-center gap-3">
               {tx.status === "Pending" && (
                 <>
@@ -98,7 +96,6 @@ export default function TransactionDetailPage() {
 
           <div className="w-full border-t border-[#E3E3E3]" />
 
-          {/* Amount / Type / Time */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             <div className="flex flex-col gap-1.5">
               <p className="text-[12px] text-[#9CA3AF]">Total Amount</p>
@@ -122,7 +119,6 @@ export default function TransactionDetailPage() {
 
           <div className="w-full border-t border-[#E3E3E3]" />
 
-          {/* From / To Users */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             <div className="flex flex-col gap-2">
               <p className="text-[12px] text-[#9CA3AF]">From</p>
@@ -156,7 +152,6 @@ export default function TransactionDetailPage() {
 
           <div className="w-full border-t border-[#E3E3E3]" />
 
-          {/* Gross / Fee / Net */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             <div className="flex flex-col gap-1.5">
               <p className="text-[12px] text-[#9CA3AF]">Gross</p>
@@ -180,7 +175,6 @@ export default function TransactionDetailPage() {
 
           <div className="w-full border-t border-[#E3E3E3]" />
 
-          {/* Network Addresses */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             <div className="flex flex-col gap-1.5">
               <p className="text-[12px] text-[#9CA3AF]">From</p>
@@ -208,7 +202,6 @@ export default function TransactionDetailPage() {
             </div>
           </div>
 
-          {/* Transaction ID */}
           <div className="flex flex-col gap-1.5">
             <p className="text-[12px] text-[#9CA3AF]">Transaction ID</p>
             <p className="text-[14px] font-sans text-[#111528] break-all max-w-125">

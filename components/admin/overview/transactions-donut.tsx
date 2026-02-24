@@ -59,7 +59,6 @@ export function TransactionsDonut({
             </ResponsiveContainer>
           </div>
 
-          {/* Center Text */}
           <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-center pointer-events-none">
             <div className="text-[36px] font-semibold text-[#3D3D3D] leading-none mb-1">
               {DONUT_STATS.total}
@@ -68,7 +67,6 @@ export function TransactionsDonut({
           </div>
         </div>
 
-        {/* Legend */}
         <div className="w-full mt-auto">
           <div className="w-full divide-y divide-[#E3E3E3] flex flex-col">
             <div className="flex items-center justify-between py-4 text-[15px]">

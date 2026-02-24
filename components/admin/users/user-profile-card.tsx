@@ -11,7 +11,6 @@ export function UserProfileCard({ user }: UserProfileCardProps) {
   return (
     <div className="bg-[#FFFFFF] rounded-2xl border border-[#E3E3E3] p-6 flex items-start justify-between gap-4">
       <div className="flex items-center gap-4">
-        {/* Avatar */}
         <div className="w-16 h-16 rounded-full bg-[#EDE9FE] flex items-center justify-center text-[#7C3AED] font-medium text-xl shrink-0">
           {initials}
         </div>
@@ -24,8 +23,7 @@ export function UserProfileCard({ user }: UserProfileCardProps) {
               <BadgeCheck size={18} className="text-[#003DFF] fill-blue-50" />
             )}
           </div>
-          <p className="text-sm text-[#999999]">00012</p>{" "}
-          {/* Updated to match design as per instruction */}
+          <p className="text-sm text-[#999999]">00012</p>
           <p className="text-sm text-[#999999]">{user.country}</p>
         </div>
       </div>

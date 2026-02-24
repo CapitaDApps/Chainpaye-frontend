@@ -15,7 +15,6 @@ export function UserStatsGrid({ stats }: UserStatsGridProps) {
           key={i}
           className="bg-white rounded-2xl border border-[#E3E3E3] flex flex-col overflow-hidden"
         >
-          {/* Content Area */}
           <div className="p-5 flex flex-col gap-4 border-b border-[#E3E3E3]">
             <div className="flex items-start justify-between">
               <span className="text-base font-medium text-[#5A5F73]">
@@ -32,11 +31,9 @@ export function UserStatsGrid({ stats }: UserStatsGridProps) {
                 {stat.iconType === "wallet" && (
                   <Wallet size={20} strokeWidth={2} />
                 )}
-                {stat.iconType === "users" && (
-                  <Users />
-                )}
+                {stat.iconType === "users" && <Users />}
                 {!["dollar", "wallet", "users"].includes(
-                  stat.iconType || ""
+                  stat.iconType || "",
                 ) && <LayoutGrid size={16} strokeWidth={2} />}
               </div>
             </div>
@@ -46,13 +43,12 @@ export function UserStatsGrid({ stats }: UserStatsGridProps) {
             </h3>
           </div>
 
-          {/* Footer Area */}
           <div className="px-5 py-3.5 bg-[#F9FAFB] border-t border-[#F3F4F6] mt-auto">
             <div className="flex items-center gap-2 text-[13px] mx-auto w-fit">
               <span
                 className={cn(
                   "flex items-center gap-1 font-semibold",
-                  stat.isPositive ? "text-[#10B981]" : "text-[#EF4444]"
+                  stat.isPositive ? "text-[#10B981]" : "text-[#EF4444]",
                 )}
               >
                 <svg

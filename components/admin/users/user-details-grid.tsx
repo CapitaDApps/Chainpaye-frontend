@@ -11,7 +11,6 @@ export function UserDetailsGrid({ user }: UserDetailsGridProps) {
         User Details
       </h3>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-8">
-        {/* Row 1 */}
         <div className="flex flex-col gap-1.5">
           <p className="text-[12px] text-[#5A5F73]">First Name</p>
           <p className="text-[15px] font-medium text-[#3D3D3D]">
@@ -29,7 +28,6 @@ export function UserDetailsGrid({ user }: UserDetailsGridProps) {
           <p className="text-[15px] font-medium text-[#3D3D3D]">{user.dob}</p>
         </div>
 
-        {/* Row 2 */}
         <div className="flex flex-col gap-1.5">
           <p className="text-[12px] text-[#5A5F73]">Account number</p>
           <p className="text-[15px] font-medium text-[#3D3D3D]">

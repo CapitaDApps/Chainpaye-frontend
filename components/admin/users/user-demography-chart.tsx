@@ -58,7 +58,6 @@ export function UserDemographyChart({
             </ResponsiveContainer>
           </div>
 
-          {/* Center Text */}
           <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-center pointer-events-none">
             <div className="text-[32px] font-bold text-[#111528] leading-none mb-1">
               {USER_DEMOGRAPHY.total}
@@ -67,7 +66,6 @@ export function UserDemographyChart({
           </div>
         </div>
 
-        {/* Legend */}
         <div className="w-full space-y-4 mt-8 pb-4 divide-y divide-[#E3E3E3]">
           {USER_DEMOGRAPHY.breakdown.map((item, i) => (
             <div
@@ -86,7 +84,6 @@ export function UserDemographyChart({
           ))}
         </div>
 
-        {/* View All */}
         <button className="flex items-center gap-2 text-[#667085] text-[13px] font-medium mt-4 hover:text-[#111528] transition-colors">
           View all <MoveRight size={14} />
         </button>
