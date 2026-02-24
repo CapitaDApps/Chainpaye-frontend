@@ -12,6 +12,7 @@ import {
   DateRange,
 } from "@/components/admin/date-range-filter";
 import { BarChartDataPoint } from "@/lib/utils/mock-data";
+import { ArrowUpRight } from "lucide-react";
 
 export const BarTooltip = ({
   active,
@@ -64,8 +65,8 @@ export function RevenueChart({
           </h3>
           <div className="flex items-end gap-2 mt-1">
             <span className="text-2xl font-bold text-[#111528]">$20,800</span>
-            <span className="text-[13px] font-medium text-green-500 mb-1">
-              +12.5%
+            <span className="text-[13px] font-medium text-[#22A753] mb-1 bg-[#DDFBE7] px-2 py-1 flex items-center gap-1">
+              +12.5% <ArrowUpRight size={14} />
             </span>
           </div>
         </div>

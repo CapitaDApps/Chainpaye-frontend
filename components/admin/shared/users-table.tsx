@@ -34,7 +34,7 @@ export function UsersTable({
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search by Username or wallet address"
-            className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#003DFF]/20 focus:border-[#003DFF] placeholder:text-[#9CA3AF] transition-all"
+            className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-0 text-[#5A5F73]  placeholder:text-[#9CA3AF] transition-all"
           />
         </div>
       </div>

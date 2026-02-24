@@ -1,6 +1,7 @@
-import { DollarSign, Wallet, Users, LayoutGrid } from "lucide-react";
+import { DollarSign, Wallet, LayoutGrid } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { StatCard } from "@/lib/utils/mock-data";
+import { Users } from "@/components/ui/icons";
 
 interface TopStatsGridProps {
   stats: StatCard[];
@@ -31,7 +32,7 @@ export function TopStatsGrid({ stats }: TopStatsGridProps) {
                   <Wallet size={20} strokeWidth={2} />
                 )}
                 {stat.iconType === "users" && (
-                  <Users size={20} strokeWidth={2} />
+                  <Users />
                 )}
                 {!["dollar", "wallet", "users"].includes(
                   stat.iconType || ""

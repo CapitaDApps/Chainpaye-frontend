@@ -164,7 +164,7 @@ export function DateRangeFilter({
   };
 
   return (
-    <div ref={ref} className={cn("relative", className)}>
+    <div ref={ref} className={cn(" border-[#E3E3E3] relative", className)}>
       {/* Trigger button */}
       <button
         onClick={() => setIsOpen((o) => !o)}

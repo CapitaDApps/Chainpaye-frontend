@@ -68,11 +68,11 @@ export function UserDemographyChart({
         </div>
 
         {/* Legend */}
-        <div className="w-full space-y-4 mt-8 pb-4 border-b border-gray-50">
+        <div className="w-full space-y-4 mt-8 pb-4 divide-y divide-[#E3E3E3]">
           {USER_DEMOGRAPHY.breakdown.map((item, i) => (
             <div
               key={i}
-              className="flex items-center justify-between text-[14px]"
+              className="flex items-center justify-between text-[14px] py-1"
             >
               <span className="flex items-center gap-2.5 text-[#667085]">
                 <span

@@ -12,6 +12,7 @@ import {
   DateRange,
 } from "@/components/admin/date-range-filter";
 import { LineChartDataPoint } from "@/lib/utils/mock-data";
+import { ArrowUpRight } from "lucide-react";
 
 export const LineTooltip = ({
   active,
@@ -59,13 +60,10 @@ export function CashflowChart({
     <div className="flex flex-col flex-1 min-h-0 w-full">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h3 className="text-sm font-semibold text-[#374151]">
-            Total Cashflow
-          </h3>
           <div className="flex items-end gap-2 mt-1">
             <span className="text-2xl font-bold text-[#111528]">$240,800</span>
-            <span className="text-[13px] font-medium text-green-500 mb-1">
-              +12.5%
+            <span className="text-[13px] font-medium text-[#22A753] mb-1 bg-[#DDFBE7] px-2 py-1 flex items-center gap-1">
+              +12.5% <ArrowUpRight size={14} />
             </span>
           </div>
         </div>

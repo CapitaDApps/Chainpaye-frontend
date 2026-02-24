@@ -70,7 +70,7 @@ export function TransactionsDonut({
 
         {/* Legend */}
         <div className="w-full mt-auto">
-          <div className="w-full divide-y divide-gray-100 flex flex-col">
+          <div className="w-full divide-y divide-[#E3E3E3] flex flex-col">
             <div className="flex items-center justify-between py-4 text-[15px]">
               <span className="flex items-center gap-2.5 text-[#667085]">
                 <span

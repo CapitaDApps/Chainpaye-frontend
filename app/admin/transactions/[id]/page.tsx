@@ -80,10 +80,10 @@ export default function TransactionDetailPage() {
             <div className="flex items-center gap-3">
               {tx.status === "Pending" && (
                 <>
-                  <button className="flex items-center gap-2 bg-[#6366F1] hover:bg-[#4F46E5] text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-colors">
+                  <button className="flex items-center gap-2 bg-[#6C63FF] text-white px-5 py-2.5 rounded-xl text-base font-medium transition-colors">
                     Retry transaction <RefreshCw size={16} />
                   </button>
-                  <button className="flex items-center gap-2 bg-[#10B981] hover:bg-[#059669] text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-colors">
+                  <button className="flex items-center gap-2 bg-[#22A753] text-white px-5 py-2.5 rounded-xl text-base font-medium transition-colors">
                     Mark as completed <Check size={16} />
                   </button>
                 </>
@@ -96,13 +96,13 @@ export default function TransactionDetailPage() {
             </div>
           </div>
 
-          <div className="w-full border-t border-gray-100" />
+          <div className="w-full border-t border-[#E3E3E3]" />
 
           {/* Amount / Type / Time */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             <div className="flex flex-col gap-1.5">
               <p className="text-[12px] text-[#9CA3AF]">Total Amount</p>
-              <p className="text-[20px] font-bold text-[#111528]">
+              <p className="text-[18px] font-bold text-[#3D3D3D]">
                 {tx.amount}
               </p>
             </div>
@@ -120,20 +120,20 @@ export default function TransactionDetailPage() {
             </div>
           </div>
 
-          <div className="w-full border-t border-gray-100" />
+          <div className="w-full border-t border-[#E3E3E3]" />
 
           {/* From / To Users */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             <div className="flex flex-col gap-2">
               <p className="text-[12px] text-[#9CA3AF]">From</p>
               <div className="flex items-center gap-2">
-                <span className="text-[15px] font-medium text-[#111528]">
+                <span className="text-base font-medium text-[#111528]">
                   {tx.fromUser?.name || "Blessing Jeremiah"}
                 </span>
-                <span className="text-[13px] font-medium text-[#10B981]">
+                <span className="text-base font-medium text-[#10B981]">
                   verified
                 </span>
-                <button className="ml-2 text-[13px] font-medium text-[#003DFF] hover:underline">
+                <button className="ml-2 text-base font-medium text-[#003DFF] hover:underline">
                   View Profile
                 </button>
               </div>
@@ -141,20 +141,20 @@ export default function TransactionDetailPage() {
             <div className="flex flex-col gap-2">
               <p className="text-[12px] text-[#9CA3AF]">To</p>
               <div className="flex items-center gap-2">
-                <span className="text-[15px] font-medium text-[#111528]">
+                <span className="text-base font-medium text-[#111528]">
                   {tx.toUser?.name || "Josiah Dennis"}
                 </span>
-                <span className="text-[13px] font-medium text-[#EF4444]">
+                <span className="text-base font-medium text-[#EF4444]">
                   unverified
                 </span>
-                <button className="ml-2 text-[13px] font-medium text-[#003DFF] hover:underline">
+                <button className="ml-2 text-base font-medium text-[#003DFF] hover:underline">
                   View Profile
                 </button>
               </div>
             </div>
           </div>
 
-          <div className="w-full border-t border-gray-100" />
+          <div className="w-full border-t border-[#E3E3E3]" />
 
           {/* Gross / Fee / Net */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
@@ -178,31 +178,31 @@ export default function TransactionDetailPage() {
             </div>
           </div>
 
-          <div className="w-full border-t border-gray-100" />
+          <div className="w-full border-t border-[#E3E3E3]" />
 
           {/* Network Addresses */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             <div className="flex flex-col gap-1.5">
               <p className="text-[12px] text-[#9CA3AF]">From</p>
-              <p className="text-[14px] font-mono text-[#374151] break-all leading-relaxed">
+              <p className="text-[14px] font-sans text-[#3D3D3D] break-all leading-relaxed">
                 {tx.fromAddress || "0x19188ce63b174028A7690a0C9984Ac86EDb4B325"}
               </p>
             </div>
             <div className="flex flex-col gap-1.5">
               <p className="text-[12px] text-[#9CA3AF]">To</p>
-              <p className="text-[14px] font-mono text-[#374151] break-all leading-relaxed">
+              <p className="text-[14px] font-sans text-[#3D3D3D] break-all leading-relaxed">
                 {tx.toAddress || "0x19188ce63b174028A7690a0C9984Ac86EDb4B325"}
               </p>
             </div>
             <div className="flex flex-col gap-1.5">
               <p className="text-[12px] text-[#9CA3AF]">From</p>
-              <p className="text-[14px] font-mono text-[#374151] break-all leading-relaxed">
+              <p className="text-[14px]  font-sans text-[#3D3D3D] break-all leading-relaxed">
                 {tx.fromAddress || "0x19188ce63b174028A7690a0C9984Ac86EDb4B325"}
               </p>
             </div>
             <div className="flex flex-col gap-1.5">
               <p className="text-[12px] text-[#9CA3AF]">To</p>
-              <p className="text-[14px] font-mono text-[#374151] break-all leading-relaxed">
+              <p className="text-[14px] font-sans text-[#374151] break-all leading-relaxed">
                 016810999 GTBANK
               </p>
             </div>
@@ -211,7 +211,7 @@ export default function TransactionDetailPage() {
           {/* Transaction ID */}
           <div className="flex flex-col gap-1.5">
             <p className="text-[12px] text-[#9CA3AF]">Transaction ID</p>
-            <p className="text-[14px] font-mono text-[#111528] break-all max-w-125">
+            <p className="text-[14px] font-sans text-[#111528] break-all max-w-125">
               010455757583839_aec43bdjfhr87hghghfg4678sbsbn
             </p>
           </div>
