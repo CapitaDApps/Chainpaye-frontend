@@ -1,12 +1,11 @@
-export default function XIcon() {
+export default function XIcon({size = 32}: {size?: number}) {
   return (
     <svg
-      width="32"
-      height="32"
+      width={size}
+      height={size}
       viewBox="0 0 32 32"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className="w-5 md:w-10 "
     >
       <mask
         id="mask0_1905_1930"

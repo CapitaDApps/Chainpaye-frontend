@@ -1,15 +1,15 @@
 "use client";
 
-import { Code2, Globe, Headset, Eye, EyeOff } from "lucide-react";
+import { Globe, Headset } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { AnimatedApiUi } from "../animations/animated-api-ui";
 
 export function Features() {
   const [step, setStep] = useState(0);
   const [supportStep, setSupportStep] = useState(0);
   const [apiStep, setApiStep] = useState(0);
-  const [globalApiStep, setGlobalApiStep] = useState(0);
 
   // Chat Loop Logic
   useEffect(() => {
@@ -89,30 +89,7 @@ export function Features() {
     return () => clearTimeout(timeout);
   }, []);
 
-  // Global Payment API Animation Loop
-  useEffect(() => {
-    let timeout: NodeJS.Timeout;
 
-    const runGlobalApiSequence = () => {
-      setGlobalApiStep(0);
-      timeout = setTimeout(() => {
-        setGlobalApiStep(1);
-        timeout = setTimeout(() => {
-          setGlobalApiStep(2);
-          timeout = setTimeout(() => {
-            setGlobalApiStep(3);
-            timeout = setTimeout(() => {
-              runGlobalApiSequence();
-            }, 3000);
-          }, 1000);
-        }, 1500);
-      }, 1500);
-    };
-
-    runGlobalApiSequence();
-
-    return () => clearTimeout(timeout);
-  }, []);
 
   return (
     <section id="about" className="pt-24 pb-8 md:py-24 px-4 bg-[#EFEFF1]">
@@ -271,90 +248,7 @@ export function Features() {
 
             <div className="md:p-8 rounded-[32px] flex flex-col justify-between">
               <div className="h-44 bg-[#F5F7FA] rounded-t-xl mb-6 relative overflow-hidden flex flex-col justify-center items-center p-6">
-                {/* API Key View */}
-                <div
-                  className={`w-full p-5 transition-all duration-500 absolute ${
-                    globalApiStep < 2
-                      ? "opacity-100 scale-100"
-                      : "opacity-0 scale-95 pointer-events-none"
-                  }`}
-                >
-                  <div className="text-sm font-medium text-gray-500 mb-2">
-                    API Key
-                  </div>
-                  <div className="border border-gray-600 rounded-lg p-3 flex items-center justify-between">
-                    <div
-                      className={`font-mono text-sm text-gray-600 transition-all duration-300 ${
-                        globalApiStep === 0 ? "blur-[4px]" : "blur-0"
-                      }`}
-                    >
-                      pk_live_51Msz...
-                    </div>
-                    {globalApiStep === 0 ? (
-                      <EyeOff className="w-4 h-4 text-gray-400" />
-                    ) : (
-                      <Eye className="w-4 h-4 text-gray-400" />
-                    )}
-                  </div>
-                </div>
-
-                {/* Notifications View */}
-                {/* Deposit 1: Bethy */}
-                <div
-                  className={`absolute left-4 right-4 rounded-xl p-3 flex items-center gap-3  transition-all duration-500 ${
-                    globalApiStep >= 2
-                      ? "opacity-100 top-4"
-                      : "opacity-0 -top-full"
-                  }`}
-                >
-                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0 text-blue-600 font-bold text-xs">
-                    B
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-xs text-gray-500">
-                      From Bethy/Vendor
-                    </div>
-                    <div className="text-xs text-gray-400">22 April</div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-sm font-bold text-gray-900">
-                      +$10,000.00
-                    </div>
-                    <div className="text-[10px] text-green-500 font-medium">
-                      Successful
-                    </div>
-                  </div>
-                </div>
-
-                {/* Deposit 2: Chris */}
-                <div
-                  className={`absolute left-4 right-4  rounded-xl p-3 flex items-center gap-3  transition-all duration-500 ${
-                    globalApiStep >= 3
-                      ? "opacity-100 top-24" // Moved down visually
-                      : globalApiStep === 2
-                        ? "opacity-0 top-4" // Starts from first position?
-                        : "opacity-0 -top-full"
-                  }`}
-                  style={{
-                    zIndex: globalApiStep >= 3 ? 10 : 0,
-                  }}
-                >
-                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0 text-blue-600 font-bold text-xs">
-                    C
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-xs text-gray-500">From Chris/User</div>
-                    <div className="text-xs text-gray-400">24 April</div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-sm font-bold text-gray-900">
-                      +£245.00
-                    </div>
-                    <div className="text-[10px] text-green-500 font-medium">
-                      Successful
-                    </div>
-                  </div>
-                </div>
+                <AnimatedApiUi />
               </div>
               <div>
                 <h3 className="font-bold text-lg mb-2 text-[#111528]">

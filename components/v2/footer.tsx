@@ -2,22 +2,14 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
 import InstagramIcon from "../instagram";
 import XIcon from "../x";
 import TictokIcon from "../tictok";
 import GmailIcon from "../gmail";
 
 export function Footer() {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setMounted(true);
-  }, []);
-
   return (
-    <footer className="bg-gradient-to-b from-[#FFFFFF] to-[#CCD9F8] md:pt-20 pb-8 px-4 overflow-hidden text-[#111528]">
+    <footer className="bg-linear-to-b from-[#FFFFFF] to-[#CCD9F8] md:pt-20 pb-8 px-4 overflow-hidden text-[#111528]">
       <div className="container mx-auto ">
         <div className="flex flex-col lg:flex-row justify-between items-start md:gap-12 mb-5 md:pb-12 border-b border-[#E3E3E3]">
           <div className="lg:w-1/2">
@@ -49,13 +41,13 @@ export function Footer() {
             <a href="#" className=" transition-colors">
               Products
             </a>
-            <a href="#" className=" transition-colors">
+            <a href="/businesses" className=" transition-colors">
               Businesses
             </a>
             <a href="#" className=" transition-colors">
               How it works
             </a>
-            <a href="#" className=" transition-colors">
+            <a href="/company" className=" transition-colors">
               Company
             </a>
             <a

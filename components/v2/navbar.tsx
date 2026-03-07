@@ -3,16 +3,21 @@
 import Link from "next/link";
 import Image from "next/image";
 
-import { Menu, X, MessageCircle } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useState } from "react";
 
 import WhatsappIcon from "../whatsapp-icon";
 
-export function Navbar() {
+interface NavbarProps {
+  variant?: "default" | "dark";
+}
+
+export function Navbar({ variant = "default" }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const isDark = variant === "dark";
 
   return (
-    <header className="fixed top-0 z-50 w-full bg-[#EFEFF1]/80 backdrop-blur-md">
+    <header className={`fixed top-0 z-50 w-full ${isDark ? "bg-[#0B3C6D]" : "bg-[#EFEFF1]/80 backdrop-blur-md"}`}>
       <div className="container mx-auto flex h-20 items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center gap-2">
           <Image
@@ -20,7 +25,7 @@ export function Navbar() {
             alt="Chainpaye"
             width={140}
             height={40}
-            className="h-8 w-auto object-contain"
+            className={`h-8 w-auto object-contain ${isDark ? "brightness-0 invert" : ""}`}
             priority
           />
         </Link>
@@ -28,27 +33,27 @@ export function Navbar() {
         <nav className="hidden md:flex items-center gap-8">
           <Link
             href="#visacard"
-            className="text-sm font-medium text-[#111528]/80 hover:text-[#111528]"
+            className={`text-sm font-medium ${isDark ? "text-white/80 hover:text-white" : "text-[#111528]/80 hover:text-[#111528]"}`}
           >
-            VisaCards
+Products
           </Link>
           <Link
-            href="#off-ramp"
-            className="text-sm font-medium text-[#111528]/80 hover:text-[#111528]"
+            href="/businesses"
+            className={`text-sm font-medium ${isDark ? "text-white/80 hover:text-white" : "text-[#111528]/80 hover:text-[#111528]"}`}
           >
-            Off-ramp
+      Businesses
           </Link>
           <Link
             href="#use-cases"
-            className="text-sm font-medium text-[#111528]/80 hover:text-[#111528]"
+            className={`text-sm font-medium ${isDark ? "text-white/80 hover:text-white" : "text-[#111528]/80 hover:text-[#111528]"}`}
           >
-            Use cases
+        How it works
           </Link>
           <Link
-            href="#about"
-            className="text-sm font-medium text-[#111528]/80 hover:text-[#111528]"
+            href="/company"
+            className={`text-sm font-medium ${isDark ? "text-white/80 hover:text-white" : "text-[#111528]/80 hover:text-[#111528]"}`}
           >
-            About
+           Company
           </Link>
         </nav>
 
@@ -57,7 +62,7 @@ export function Navbar() {
             href="https://wa.me/message/RB4AEJEFPZE7G1"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 rounded-lg bg-[#003DFF] px-8 py-3.5 text-base font-medium text-[#FFFFFF] transition-colors"
+            className="flex  relative items-center gap-2 rounded-lg bg-[#003DFF] px-8 py-3.5 text-base font-medium text-[#FFFFFF] transition-colors"
           >
             <WhatsappIcon />
             Start on WhatsApp
@@ -65,7 +70,7 @@ export function Navbar() {
         </div>
 
         <button
-          className="md:hidden p-2 text-[#111528]"
+          className={`md:hidden p-2 ${isDark ? "text-white" : "text-[#111528]"}`}
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           {mobileMenuOpen ? (
@@ -77,35 +82,35 @@ export function Navbar() {
       </div>
 
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-black/10 bg-[#EFEFF1] px-4 py-6">
+        <div className={`md:hidden border-t ${isDark ? "border-white/10 bg-[#0B3C6D]" : "border-black/10 bg-[#EFEFF1]"} px-4 py-6`}>
           <div className="flex flex-col space-y-4">
             <Link
               href="#visacard"
-              className="text-base font-medium text-[#111528]"
+              className={`text-base font-medium ${isDark ? "text-white" : "text-[#111528]"}`}
               onClick={() => setMobileMenuOpen(false)}
             >
               VisaCards
             </Link>
             <Link
-              href="#off-ramp"
-              className="text-base font-medium text-[#111528]"
+              href="/businesses"
+              className={`text-base font-medium ${isDark ? "text-white" : "text-[#111528]"}`}
               onClick={() => setMobileMenuOpen(false)}
             >
-              Off-ramp
+              Businesses
             </Link>
             <Link
               href="#use-cases"
-              className="text-base font-medium text-[#111528]"
+              className={`text-base font-medium ${isDark ? "text-white" : "text-[#111528]"}`}
               onClick={() => setMobileMenuOpen(false)}
             >
               Use cases
             </Link>
             <Link
-              href="#about"
-              className="text-base font-medium text-[#111528]"
+              href="/company"
+              className={`text-base font-medium ${isDark ? "text-white" : "text-[#111528]"}`}
               onClick={() => setMobileMenuOpen(false)}
             >
-              About
+              Company
             </Link>
             <Link
               href="https://wa.link/m25oou"
