@@ -5,7 +5,7 @@ import { CardSelection } from "@/components/v2/visa-cards/card-selection";
 
 export default function VisaCardsPage() {
   return (
-    <div className="min-h-screen bg-[#EFEFF1] text-[#111528] dark:bg-[#202024] dark:text-[#FFFFFF] transition-colors duration-300">
+    <div className="min-h-screen bg-[#EFEFF1] text-[#111528] transition-colors duration-300">
       <Navbar />
       <div className="pt-20">
         <VisaCard />

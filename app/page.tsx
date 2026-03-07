@@ -10,7 +10,7 @@ import { Footer } from "@/components/v2/footer";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#EFEFF1] text-[#111528] dark:bg-[#202024] dark:text-[#FFFFFF] transition-colors duration-300">
+    <div className="min-h-screen bg-[#EFEFF1] text-[#111528] transition-colors duration-300">
       <Navbar />
       <Hero />
       <WhatsappFeature />

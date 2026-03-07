@@ -17,14 +17,14 @@ class Cache {
 
   get<T>(key: string): T | null {
     const item = this.cache.get(key);
-    
+
     if (!item) return null;
-    
+
     if (Date.now() > item.expiresAt) {
       this.cache.delete(key);
       return null;
     }
-    
+
     return item.data as T;
   }
 
@@ -50,7 +50,7 @@ class Cache {
 export const paymentCache = new Cache();
 
 // Run cleanup every 5 minutes
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   setInterval(() => paymentCache.cleanup(), 5 * 60 * 1000);
 }
 
@@ -62,7 +62,7 @@ export const CACHE_KEYS = {
 export async function cachedFetch<T>(
   key: string,
   fetcher: () => Promise<T>,
-  ttl?: number
+  ttl?: number,
 ): Promise<T> {
   const cached = paymentCache.get<T>(key);
   if (cached) return cached;

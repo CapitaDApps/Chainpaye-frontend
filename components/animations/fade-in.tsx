@@ -22,10 +22,10 @@ export function FadeIn({
     direction === "up"
       ? 40
       : direction === "down"
-      ? -40
-      : direction === "left"
-      ? 40
-      : -40;
+        ? -40
+        : direction === "left"
+          ? 40
+          : -40;
 
   const axis = direction === "left" || direction === "right" ? "x" : "y";
 

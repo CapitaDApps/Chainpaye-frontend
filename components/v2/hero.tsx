@@ -35,8 +35,8 @@ export function Hero() {
   }, [index]);
 
   return (
-    <section className="relative flex min-h-screen flex-col items-center pt-32 pb-16 px-4 overflow-hidden dark:bg-[#202024]">
-      <div className="absolute top-72 md:top-25 inset-0 z-0 opacity-40 mt-60 dark:opacity-50 pointer-events-none flex items-center justify-center">
+    <section className="relative flex min-h-screen flex-col items-center pt-32 pb-16 px-4 overflow-hidden">
+      <div className="absolute top-72 md:top-25 inset-0 z-0 opacity-40 mt-60 pointer-events-none flex items-center justify-center">
         <div className="relative w-[1200px] h-[600px]">
           <Image
             src="/assets/world-map.png"
@@ -48,7 +48,7 @@ export function Hero() {
       </div>
 
       <div className="container relative z-10 mx-auto text-center">
-        <h1 className="mb-6 text-4xl font-semibold leading-tight tracking-tight text-[#111528] dark:text-white">
+        <h1 className="mb-6 text-4xl font-semibold leading-tight tracking-tight text-[#111528]">
           Pay, Send and Receive <br />
           Money{" "}
           <span className="relative inline-flex justify-center w-[150px]">
@@ -62,7 +62,7 @@ export function Hero() {
           as simple as a chat.
         </h1>
 
-        <p className="mb-8 text-xl font-medium text-[#5A5F73] dark:text-[#BDBFC7] md:text-lg max-w-2xl mx-auto flex items-center justify-center gap-2">
+        <p className="mb-8 text-xl font-medium text-[#5A5F73] md:text-lg max-w-2xl mx-auto flex items-center justify-center gap-2">
           Send and receive money worldwide 🇬🇧🇺🇸🇳🇬 — instantly on WhatsApp
         </p>
 
@@ -71,7 +71,7 @@ export function Hero() {
             href="https://wa.me/message/RB4AEJEFPZE7G1"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 rounded-lg bg-[#003DFF] dark:text-[#00174F] dark:bg-[#7DA2FF] px-8 py-3.5 text-base font-medium text-[#FFFFFF] transition-colors"
+            className="flex items-center gap-2 rounded-lg bg-[#003DFF] px-8 py-3.5 text-base font-medium text-[#FFFFFF] transition-colors"
           >
             <WhatsappIcon />
             Start on WhatsApp
@@ -93,10 +93,10 @@ export function Hero() {
           </div>
 
           <div className="absolute top-[40%] -left-8 sm:left-0 lg:-left-[10%] scale-[0.6] sm:scale-100 z-30 flex flex-col items-start gap-0 animate-in fade-in slide-in-from-left-4 duration-1000">
-            <div className=" rounded-full text-sm  font-normal text-[#00174F] dark:text-[#E8EDFF] transform text-center">
+            <div className=" rounded-full text-sm  font-normal text-[#00174F] transform text-center">
               Sent! 🚀
             </div>
-            <div className="p-3 rounded-xl shadow-xl flex items-center gap-3 min-w-40 bg-white dark:bg-[#2A2A33]">
+            <div className="p-3 rounded-xl shadow-xl flex items-center gap-3 min-w-40 bg-white">
               <Image
                 src="/assets/us.png"
                 alt="US"
@@ -104,7 +104,7 @@ export function Hero() {
                 height={24}
                 className="rounded-full"
               />
-              <span className="font-normal text-xl text-[#3D3D3D] dark:text-white">
+              <span className="font-normal text-xl text-[#3D3D3D]">
                 -$25,000
               </span>
             </div>
@@ -119,10 +119,10 @@ export function Hero() {
           </div>
 
           <div className="absolute top-[30%] -right-16 sm:right-0 lg:-right-[10%] scale-[0.6] sm:scale-100 z-30 flex flex-col items-start gap-0 animate-in fade-in slide-in-from-right-4 duration-1000 delay-200">
-            <div className=" rounded-full text-sm  font-normal text-[#00174F] dark:text-[#E8EDFF] transform text-center">
+            <div className=" rounded-full text-sm  font-normal text-[#00174F] transform text-center">
               Received, Chris 👌
             </div>
-            <div className="p-3 rounded-xl shadow-xl flex items-center gap-3 min-w-40 bg-white dark:bg-[#2A2A33]">
+            <div className="p-3 rounded-xl shadow-xl flex items-center gap-3 min-w-40 bg-white">
               <Image
                 src="/assets/ng.png"
                 alt="NG"
@@ -130,7 +130,7 @@ export function Hero() {
                 height={24}
                 className="rounded-full"
               />
-              <span className="font-normal text-xl text-[#3D3D3D] dark:text-white">
+              <span className="font-normal text-xl text-[#3D3D3D]">
                 ₦35,000,000
               </span>
             </div>

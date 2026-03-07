@@ -3,6 +3,7 @@
 ## Issue: 404 Transaction Not Found
 
 The frontend is calling:
+
 ```
 POST http://localhost:4000/api/v1/transactions/698ea653d1e33d0de161e7ad/verify
 ```
@@ -14,12 +15,15 @@ But getting 404 error.
 ## Possible Causes
 
 ### 1. Route Not Registered
+
 The `/verify` endpoint might not be registered in your Express/Fastify app.
 
 ### 2. Wrong Route Path
+
 The route might be registered with a different path pattern.
 
 ### 3. Transaction Doesn't Exist
+
 The transaction with that reference ID doesn't exist in the database.
 
 ---
@@ -32,15 +36,16 @@ The transaction with that reference ID doesn't exist in the database.
 
 ```typescript
 // Make sure you're importing and using the transactions router
-import transactionRoutes from './routes/transactions';
+import transactionRoutes from "./routes/transactions";
 
 // Register the routes
-app.use('/api/v1', transactionRoutes);
+app.use("/api/v1", transactionRoutes);
 // OR
-app.use('/api/v1/transactions', transactionRoutes);
+app.use("/api/v1/transactions", transactionRoutes);
 ```
 
 **Important:** Check if your route is:
+
 - `/api/v1/transactions/:id/verify` (if using `app.use('/api/v1/transactions', ...)`)
 - OR `/:id/verify` (if using `app.use('/api/v1', ...)`)
 
@@ -66,6 +71,7 @@ curl -X POST http://localhost:4000/api/v1/transactions/TEST123/verify \
 ```
 
 Expected responses:
+
 - 404: Route not found (route not registered)
 - 401: Unauthorized (route exists, auth failed)
 - 404 with "Transaction not found": Route exists, transaction doesn't exist
@@ -78,13 +84,13 @@ Check if this transaction exists:
 
 ```javascript
 // In MongoDB shell or your database client
-db.transactions.findOne({ reference: "698ea653d1e33d0de161e7ad" })
+db.transactions.findOne({ reference: "698ea653d1e33d0de161e7ad" });
 ```
 
 Or check what the actual reference field looks like:
 
 ```javascript
-db.transactions.findOne({ _id: ObjectId("698ea653d1e33d0de161e7ad") })
+db.transactions.findOne({ _id: ObjectId("698ea653d1e33d0de161e7ad") });
 ```
 
 ---
@@ -96,6 +102,7 @@ db.transactions.findOne({ _id: ObjectId("698ea653d1e33d0de161e7ad") })
 **Problem:** Route is registered as `/transactions/:id/verify` but app.use already has `/api/v1/transactions`
 
 **Fix:**
+
 ```typescript
 // In routes/transactions.ts
 router.post('/:id/verify', async (req, res) => { ... });
@@ -104,23 +111,22 @@ router.post('/:id/verify', async (req, res) => { ... });
 app.use('/api/v1/transactions', transactionRoutes);
 ```
 
-### Issue 2: Transaction Reference vs _id
+### Issue 2: Transaction Reference vs \_id
 
 **Problem:** Frontend sends transaction `_id` but backend looks for `reference` field
 
 **Fix Option A - Update Backend:**
+
 ```typescript
 // Try both reference and _id
 const transaction = await Transaction.findOne({
-  $or: [
-    { reference: id },
-    { _id: id }
-  ]
+  $or: [{ reference: id }, { _id: id }],
 });
 ```
 
 **Fix Option B - Check What Frontend Sends:**
 The frontend sends `paymentData.transactionId`. Check what this value is:
+
 - Is it the MongoDB `_id`?
 - Is it the `reference` field?
 
@@ -129,12 +135,13 @@ The frontend sends `paymentData.transactionId`. Check what this value is:
 **Problem:** Forgot to register the router in main server file
 
 **Fix:**
+
 ```typescript
 // server.ts
-import transactionRoutes from './routes/transactions';
+import transactionRoutes from "./routes/transactions";
 
 // Add this line
-app.use('/api/v1/transactions', transactionRoutes);
+app.use("/api/v1/transactions", transactionRoutes);
 ```
 
 ---
@@ -145,12 +152,13 @@ Add this simple test endpoint to verify routing works:
 
 ```typescript
 // In routes/transactions.ts
-router.get('/test', (req, res) => {
-  res.json({ message: 'Transactions route is working!' });
+router.get("/test", (req, res) => {
+  res.json({ message: "Transactions route is working!" });
 });
 ```
 
 Then test:
+
 ```bash
 curl http://localhost:4000/api/v1/transactions/test
 ```

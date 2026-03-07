@@ -29,7 +29,10 @@ class PerformanceMonitor {
     metric.endTime = endTime;
     metric.duration = duration;
 
-    console.log(`[Performance] ${name}: ${duration.toFixed(2)}ms`, metric.metadata);
+    console.log(
+      `[Performance] ${name}: ${duration.toFixed(2)}ms`,
+      metric.metadata,
+    );
 
     return duration;
   }
@@ -52,7 +55,7 @@ export const performanceMonitor = new PerformanceMonitor();
 export async function measureAsync<T>(
   name: string,
   fn: () => Promise<T>,
-  metadata?: Record<string, any>
+  metadata?: Record<string, any>,
 ): Promise<T> {
   performanceMonitor.startTiming(name, metadata);
   try {

@@ -1,7 +1,9 @@
 # Complete Backend Implementation Guide - Option B
 
 ## Overview
+
 Backend handles all payment verification with two phases:
+
 1. **Immediate verification**: 15 minutes, checks every 3 seconds
 2. **Hourly cron job**: After 15 minutes, checks every 1 hour until 24 hours
 3. **Status endpoint**: For frontend polling
@@ -12,11 +14,17 @@ Backend handles all payment verification with two phases:
 ## Files to Create/Modify
 
 ### 1. Update Transaction Model
+
 ### 2. Create Verification Service
-### 3. Create Email Service  
+
+### 3. Create Email Service
+
 ### 4. Add Transaction Routes
+
 ### 5. Create Cron Job
+
 ### 6. Update Server Entry Point
+
 ### 7. Configure Environment Variables
 
 ---
@@ -61,4 +69,3 @@ Create this new file with shared verification logic.
 See full implementation in next section.
 
 ---
-

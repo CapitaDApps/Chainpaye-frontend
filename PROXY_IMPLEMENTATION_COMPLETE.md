@@ -9,9 +9,11 @@ Successfully implemented a secure backend API proxy to keep credentials server-s
 ## 📋 Changes Made
 
 ### 1. Created Backend Proxy Route
+
 **File:** `app/api/proxy/toronet/route.ts` (NEW)
 
 This is a Next.js API route that runs on the server. It:
+
 - Receives requests from the frontend (browser)
 - Adds admin credentials from server-side environment variables
 - Forwards the request to your backend API
@@ -20,47 +22,56 @@ This is a Next.js API route that runs on the server. It:
 **Key Point:** The credentials never leave the server!
 
 ### 2. Updated Frontend API Calls
+
 **File:** `app/payment/[id]/page.tsx` (MODIFIED)
 
 Updated 3 API calls to use the proxy:
 
 #### Before (Insecure):
+
 ```typescript
-fetch('https://backend.com/api/transactions', {
+fetch("https://backend.com/api/transactions", {
   headers: {
-    'admin': process.env.NEXT_PUBLIC_TORONET_ADMIN,  // ❌ Exposed!
-    'adminpwd': process.env.NEXT_PUBLIC_TORONET_ADMIN_PWD  // ❌ Exposed!
-  }
-})
+    admin: process.env.NEXT_PUBLIC_TORONET_ADMIN, // ❌ Exposed!
+    adminpwd: process.env.NEXT_PUBLIC_TORONET_ADMIN_PWD, // ❌ Exposed!
+  },
+});
 ```
 
 #### After (Secure):
+
 ```typescript
-fetch('/api/proxy/toronet', {
+fetch("/api/proxy/toronet", {
   body: JSON.stringify({
-    endpoint: 'https://backend.com/api/transactions',
-    method: 'POST',
-    data: { /* your data */ }
-  })
-})
+    endpoint: "https://backend.com/api/transactions",
+    method: "POST",
+    data: {
+      /* your data */
+    },
+  }),
+});
 // ✅ No credentials in frontend code!
 ```
 
 **Changes:**
+
 1. **Status Check** (Line ~428) - Polling for payment confirmation
 2. **Verification Submission** (Line ~507) - When user submits "I've sent money"
 3. **Transaction Recording** (Line ~635) - Saving transaction to database
 
 ### 3. Updated Environment Variables
+
 **Files:** `.env.local` and `.env.example` (MODIFIED)
 
 #### Before:
+
 ```env
 NEXT_PUBLIC_TORONET_ADMIN=0x...  # ❌ Exposed to browser
 NEXT_PUBLIC_TORONET_ADMIN_PWD=...  # ❌ Exposed to browser
 ```
 
 #### After:
+
 ```env
 TORONET_ADMIN=0x...  # ✅ Server-side only
 TORONET_ADMIN_PWD=...  # ✅ Server-side only
@@ -117,13 +128,14 @@ TORONET_ADMIN_PWD=...  # ✅ Server-side only
 1. **Browser never sees credentials** - They're only in server-side environment variables
 2. **Proxy validates endpoints** - Only allows requests to your backend
 3. **Credentials added server-side** - The proxy adds them before forwarding
-4. **No NEXT_PUBLIC_ prefix** - Tells Next.js to keep them server-only
+4. **No NEXT*PUBLIC* prefix** - Tells Next.js to keep them server-only
 
 ---
 
 ## 🧪 Testing
 
 ### Build Status:
+
 ✅ **Build Successful** - No TypeScript errors
 
 ### What to Test:
@@ -154,12 +166,14 @@ TORONET_ADMIN_PWD=...  # ✅ Server-side only
 ## 🔒 Security Improvements
 
 ### Before:
+
 - ❌ Credentials visible in browser DevTools
 - ❌ Credentials in JavaScript bundle
 - ❌ Anyone could extract and use them
 - ❌ High security risk
 
 ### After:
+
 - ✅ Credentials only on server
 - ✅ Not in JavaScript bundle
 - ✅ Not visible in DevTools
@@ -193,9 +207,10 @@ TORONET_ADMIN_PWD=your-new-password-here
 ```
 
 **IMPORTANT:**
-- ✅ DO use `TORONET_ADMIN` (no NEXT_PUBLIC_)
-- ✅ DO use `TORONET_ADMIN_PWD` (no NEXT_PUBLIC_)
-- ❌ DON'T add NEXT_PUBLIC_ prefix to credentials
+
+- ✅ DO use `TORONET_ADMIN` (no NEXT*PUBLIC*)
+- ✅ DO use `TORONET_ADMIN_PWD` (no NEXT*PUBLIC*)
+- ❌ DON'T add NEXT*PUBLIC* prefix to credentials
 - ❌ DON'T commit `.env.local` to git
 
 ---
@@ -203,14 +218,17 @@ TORONET_ADMIN_PWD=your-new-password-here
 ## 📁 Files Modified
 
 ### Created:
+
 - ✅ `app/api/proxy/toronet/route.ts` - Backend proxy route
 
 ### Modified:
+
 - ✅ `app/payment/[id]/page.tsx` - Updated 3 API calls
-- ✅ `.env.local` - Removed NEXT_PUBLIC_ prefix
+- ✅ `.env.local` - Removed NEXT*PUBLIC* prefix
 - ✅ `.env.example` - Updated template
 
 ### Verified:
+
 - ✅ No more `NEXT_PUBLIC_TORONET` references in code
 - ✅ Build successful
 - ✅ TypeScript errors resolved
@@ -220,16 +238,19 @@ TORONET_ADMIN_PWD=your-new-password-here
 ## 🎯 What This Achieves
 
 ### Security:
+
 - Credentials never exposed to browser
 - Production-ready security implementation
 - Follows industry best practices
 
 ### Functionality:
+
 - All payment flows work the same
 - No breaking changes to user experience
 - Backend API calls work through proxy
 
 ### Maintainability:
+
 - Clean separation of concerns
 - Easy to update credentials
 - Clear code structure
@@ -250,7 +271,7 @@ TORONET_ADMIN_PWD=your-new-password-here
 - [x] Backend proxy route created
 - [x] Frontend API calls updated
 - [x] Environment variables updated
-- [x] NEXT_PUBLIC_ prefix removed
+- [x] NEXT*PUBLIC* prefix removed
 - [x] Build successful
 - [x] No TypeScript errors
 - [ ] **TODO: Rotate credentials** (change password)
@@ -272,6 +293,7 @@ const admin = process.env.NEXT_PUBLIC_TORONET_ADMIN;
 ```
 
 Anyone can:
+
 1. Open DevTools → Sources
 2. Search for "NEXT_PUBLIC_TORONET"
 3. Find your credentials

@@ -25,11 +25,11 @@ const CARDS = [
     title: "For Businesses",
     content: (
       <>
-        <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">
+        <p className="text-sm text-gray-600 mb-4 leading-relaxed">
           Leverage our APIs to scale your business while accepting global
           payments in USD 🇺🇸, EUR 🇪🇺, GBP 🇬🇧 — and more coming soon.
         </p>
-        <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+        <p className="text-sm text-gray-600 leading-relaxed">
           Funds are automatically converted into NGN 🇳🇬, GHS 🇬🇭, or KES 🇰🇪 at
           real-time rates.
         </p>
@@ -87,23 +87,23 @@ export function RealWorld() {
     if (diff === 0) {
       return clsx(
         "z-30 scale-110 translate-x-0 translate-y-8 rotate-0 opacity-100",
-        "bg-white dark:bg-[#1A1A1E] border-gray-200 dark:border-gray-700",
+        "bg-white border-gray-200",
         "w-[340px] md:w-[420px] h-[280px]",
-        shadowClass
+        shadowClass,
       );
     } else if (diff === 1) {
       return clsx(
         "z-20 scale-95 translate-x-[10%] md:translate-x-[105%] translate-y-4 -rotate-12 opacity-100",
-        "bg-gray-50 dark:bg-[#151518] border-gray-100 dark:border-gray-800",
+        "bg-gray-50 border-gray-100",
         "w-[340px] md:w-[400px] h-[250px] cursor-pointer hover:z-25",
-        shadowClass
+        shadowClass,
       );
     } else if (diff === len - 1) {
       return clsx(
         "z-20 scale-95 -translate-x-[10%] md:-translate-x-[105%] translate-y-4 rotate-12 opacity-100",
-        "bg-gray-50 dark:bg-[#151518] border-gray-100 dark:border-gray-800",
+        "bg-gray-50 border-gray-100",
         "w-[340px] md:w-[400px] h-[250px] cursor-pointer hover:z-25",
-        shadowClass
+        shadowClass,
       );
     } else {
       return "z-10 scale-75 opacity-0 pointer-events-none translate-y-10 w-[300px]";
@@ -120,13 +120,13 @@ export function RealWorld() {
   return (
     <section
       id="use-cases"
-      className="pt-24 md:pt-10 px-4 overflow-hidden bg-[#F8F9FA] dark:bg-[#202024]"
+      className="pt-24 md:pt-10 px-4 overflow-hidden bg-[#F8F9FA]"
     >
       <div className="container mx-auto max-w-6xl text-center">
-        <h2 className="text-3xl font-bold mb-4 text-[#111528] dark:text-white">
+        <h2 className="text-3xl font-bold mb-4 text-[#111528]">
           Real world application
         </h2>
-        <p className="dark:text-[#BDBFC7] text-[#5A5F73]">
+        <p className=" text-[#5A5F73]">
           Chainpaye by CAPITDAPPS BRIDGE LIMITED
         </p>
       </div>
@@ -139,13 +139,13 @@ export function RealWorld() {
               onClick={() => handleCardClick(index)}
               className={clsx(
                 "absolute p-6 rounded-[32px] border transition-all duration-700 ease-in-out flex flex-col justify-start text-left",
-                getCardStyle(index)
+                getCardStyle(index),
               )}
             >
               <h4 className="font-bold mb-4 text-xl md:text-2xl">
                 {card.title}
               </h4>
-              <div className="text-sm font-medium md:text-base text-gray-[#111528] dark:text-gray-400 leading-relaxed">
+              <div className="text-sm font-medium md:text-base text-gray-[#111528] leading-relaxed">
                 {card.content}
               </div>
             </div>
@@ -156,17 +156,17 @@ export function RealWorld() {
         <div className="flex justify-center gap-4 mt-2 md:mt-4 md:mb-32">
           <button
             onClick={prevCard}
-            className="w-11 h-11 rounded-full bg-[#EFEFF1] dark:bg-[#4C4C4C] flex items-center justify-center hover:bg-gray-200 dark:hover:bg-white/20 transition-colors"
+            className="w-11 h-11 rounded-full bg-[#EFEFF1] flex items-center justify-center hover:bg-gray-200 transition-colors"
             aria-label="Previous card"
           >
-            <ArrowLeft className="w-6 h-6 text-gray-600 dark:text-white" />
+            <ArrowLeft className="w-6 h-6 text-gray-600" />
           </button>
           <button
             onClick={nextCard}
-            className="w-11 h-11 rounded-full bg-[#EFEFF1] dark:bg-[#4C4C4C] flex items-center justify-center hover:bg-gray-200 dark:hover:bg-white/20 transition-colors"
+            className="w-11 h-11 rounded-full bg-[#EFEFF1] flex items-center justify-center hover:bg-gray-200 transition-colors"
             aria-label="Next card"
           >
-            <ArrowRight className="w-6 h-6 text-gray-600 dark:text-white" />
+            <ArrowRight className="w-6 h-6 text-gray-600" />
           </button>
         </div>
       </div>

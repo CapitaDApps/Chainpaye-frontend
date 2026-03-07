@@ -3,12 +3,14 @@
 ## 📊 Current Status
 
 ### ✅ What's Done:
+
 - Documentation files cleaned of credentials
 - Security audit completed
 - `.env.local` is not tracked in git
 - Security documentation created
 
 ### ⚠️ What Needs Attention:
+
 - Frontend exposes credentials via `NEXT_PUBLIC_` prefix
 - Credentials need to be rotated (password was exposed)
 - Backend API proxy needs to be implemented
@@ -18,22 +20,26 @@
 ## 🎯 Implementation Plan
 
 ### Option 1: Quick Fix (Recommended for Now)
+
 **Keep current architecture, just rotate credentials**
 
 **Time:** 5 minutes
 **Risk:** Medium (credentials still exposed, but at least they're new)
 
 **Steps:**
+
 1. Change Toronet admin password
 2. Update `.env.local` with new password
 3. Test payment flows
 
 **Pros:**
+
 - Quick to implement
 - No code changes needed
 - Reduces immediate risk
 
 **Cons:**
+
 - Credentials still visible in browser
 - Not production-ready
 - Still vulnerable to abuse
@@ -41,12 +47,14 @@
 ---
 
 ### Option 2: Full Security Fix (Recommended for Production)
+
 **Implement backend API proxy**
 
 **Time:** 1-2 hours
 **Risk:** Low (proper security implementation)
 
 **Steps:**
+
 1. Create backend proxy route
 2. Remove `NEXT_PUBLIC_` prefix
 3. Update frontend API calls
@@ -54,11 +62,13 @@
 5. Test thoroughly
 
 **Pros:**
+
 - Production-ready security
 - Credentials never exposed to browser
 - Industry best practice
 
 **Cons:**
+
 - Requires code changes
 - Needs testing
 - Takes more time
@@ -72,59 +82,57 @@
 **Create `app/api/proxy/toronet/route.ts`:**
 
 ```typescript
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 
 // This route proxies requests to your backend API
 // Credentials stay server-side and never reach the browser
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { endpoint, method = 'POST', data } = body;
-    
+    const { endpoint, method = "POST", data } = body;
+
     // Server-side only credentials (no NEXT_PUBLIC_)
     const admin = process.env.TORONET_ADMIN;
     const adminpwd = process.env.TORONET_ADMIN_PWD;
-    
+
     if (!admin || !adminpwd) {
-      console.error('Missing Toronet credentials in environment');
+      console.error("Missing Toronet credentials in environment");
       return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 500 }
+        { error: "Server configuration error" },
+        { status: 500 },
       );
     }
-    
+
     // Validate endpoint is from your backend
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://chainpaye-backend.onrender.com';
+    const apiBaseUrl =
+      process.env.NEXT_PUBLIC_API_BASE_URL ||
+      "https://chainpaye-backend.onrender.com";
     if (!endpoint.startsWith(apiBaseUrl)) {
-      return NextResponse.json(
-        { error: 'Invalid endpoint' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Invalid endpoint" }, { status: 400 });
     }
-    
+
     console.log(`Proxying ${method} request to:`, endpoint);
-    
+
     // Make request to your backend with credentials
     const response = await fetch(endpoint, {
       method,
       headers: {
-        'Content-Type': 'application/json',
-        'admin': admin,
-        'adminpwd': adminpwd,
+        "Content-Type": "application/json",
+        admin: admin,
+        adminpwd: adminpwd,
       },
       body: data ? JSON.stringify(data) : undefined,
     });
-    
+
     const result = await response.json();
-    
+
     // Return the response from your backend
     return NextResponse.json(result, { status: response.status });
-    
   } catch (error) {
-    console.error('Proxy error:', error);
+    console.error("Proxy error:", error);
     return NextResponse.json(
-      { error: 'Failed to process request' },
-      { status: 500 }
+      { error: "Failed to process request" },
+      { status: 500 },
     );
   }
 }
@@ -133,52 +141,50 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const url = new URL(request.url);
-    const endpoint = url.searchParams.get('endpoint');
-    
+    const endpoint = url.searchParams.get("endpoint");
+
     if (!endpoint) {
       return NextResponse.json(
-        { error: 'Endpoint parameter required' },
-        { status: 400 }
+        { error: "Endpoint parameter required" },
+        { status: 400 },
       );
     }
-    
+
     const admin = process.env.TORONET_ADMIN;
     const adminpwd = process.env.TORONET_ADMIN_PWD;
-    
+
     if (!admin || !adminpwd) {
       return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 500 }
+        { error: "Server configuration error" },
+        { status: 500 },
       );
     }
-    
+
     // Validate endpoint
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://chainpaye-backend.onrender.com';
+    const apiBaseUrl =
+      process.env.NEXT_PUBLIC_API_BASE_URL ||
+      "https://chainpaye-backend.onrender.com";
     if (!endpoint.startsWith(apiBaseUrl)) {
-      return NextResponse.json(
-        { error: 'Invalid endpoint' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Invalid endpoint" }, { status: 400 });
     }
-    
-    console.log('Proxying GET request to:', endpoint);
-    
+
+    console.log("Proxying GET request to:", endpoint);
+
     const response = await fetch(endpoint, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'admin': admin,
-        'adminpwd': adminpwd,
+        admin: admin,
+        adminpwd: adminpwd,
       },
     });
-    
+
     const result = await response.json();
     return NextResponse.json(result, { status: response.status });
-    
   } catch (error) {
-    console.error('Proxy error:', error);
+    console.error("Proxy error:", error);
     return NextResponse.json(
-      { error: 'Failed to process request' },
-      { status: 500 }
+      { error: "Failed to process request" },
+      { status: 500 },
     );
   }
 }
@@ -214,41 +220,44 @@ TORONET_ADMIN_PWD=your-new-password-here
 #### Change 1: Status Check (Line ~432)
 
 **Before:**
+
 ```typescript
 const response = await fetch(
   `${apiBaseUrl}/api/v1/transactions/${transactionRef}/status`,
   {
-    method: 'GET',
+    method: "GET",
     headers: {
-      'admin': process.env.NEXT_PUBLIC_TORONET_ADMIN || '',
-      'adminpwd': process.env.NEXT_PUBLIC_TORONET_ADMIN_PWD || '',
+      admin: process.env.NEXT_PUBLIC_TORONET_ADMIN || "",
+      adminpwd: process.env.NEXT_PUBLIC_TORONET_ADMIN_PWD || "",
     },
-  }
+  },
 );
 ```
 
 **After:**
+
 ```typescript
 const response = await fetch(
   `/api/proxy/toronet?endpoint=${encodeURIComponent(`${apiBaseUrl}/api/v1/transactions/${transactionRef}/status`)}`,
   {
-    method: 'GET',
-  }
+    method: "GET",
+  },
 );
 ```
 
 #### Change 2: Verification Submission (Line ~512)
 
 **Before:**
+
 ```typescript
 const response = await fetchWithRetry(
   `${apiBaseUrl}/api/v1/transactions/${transactionRef}/verify`,
   {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      'admin': process.env.NEXT_PUBLIC_TORONET_ADMIN || '',
-      'adminpwd': process.env.NEXT_PUBLIC_TORONET_ADMIN_PWD || '',
+      "Content-Type": "application/json",
+      admin: process.env.NEXT_PUBLIC_TORONET_ADMIN || "",
+      adminpwd: process.env.NEXT_PUBLIC_TORONET_ADMIN_PWD || "",
     },
     body: JSON.stringify({
       senderName: sanitizeName(senderName),
@@ -262,22 +271,23 @@ const response = await fetchWithRetry(
       paymentLinkId: paymentId,
     }),
   },
-  2
+  2,
 );
 ```
 
 **After:**
+
 ```typescript
 const response = await fetchWithRetry(
   `/api/proxy/toronet`,
   {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({
       endpoint: `${apiBaseUrl}/api/v1/transactions/${transactionRef}/verify`,
-      method: 'POST',
+      method: "POST",
       data: {
         senderName: sanitizeName(senderName),
         senderPhone: sanitizePhoneNumber(senderPhone),
@@ -291,38 +301,48 @@ const response = await fetchWithRetry(
       },
     }),
   },
-  2
+  2,
 );
 ```
 
 #### Change 3: Transaction Recording (Line ~639)
 
 **Before:**
+
 ```typescript
-return await fetchWithRetry(`${apiBaseUrl}/api/v1/record-transaction/${paymentData.transactionId}`, {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'admin': process.env.NEXT_PUBLIC_TORONET_ADMIN || '',
-    'adminpwd': process.env.NEXT_PUBLIC_TORONET_ADMIN_PWD || '',
+return await fetchWithRetry(
+  `${apiBaseUrl}/api/v1/record-transaction/${paymentData.transactionId}`,
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      admin: process.env.NEXT_PUBLIC_TORONET_ADMIN || "",
+      adminpwd: process.env.NEXT_PUBLIC_TORONET_ADMIN_PWD || "",
+    },
+    body: JSON.stringify(transactionData),
   },
-  body: JSON.stringify(transactionData),
-}, 2);
+  2,
+);
 ```
 
 **After:**
+
 ```typescript
-return await fetchWithRetry(`/api/proxy/toronet`, {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
+return await fetchWithRetry(
+  `/api/proxy/toronet`,
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      endpoint: `${apiBaseUrl}/api/v1/record-transaction/${paymentData.transactionId}`,
+      method: "POST",
+      data: transactionData,
+    }),
   },
-  body: JSON.stringify({
-    endpoint: `${apiBaseUrl}/api/v1/record-transaction/${paymentData.transactionId}`,
-    method: 'POST',
-    data: transactionData,
-  }),
-}, 2);
+  2,
+);
 ```
 
 ---
@@ -330,6 +350,7 @@ return await fetchWithRetry(`/api/proxy/toronet`, {
 ### Step 4: Test Everything
 
 **Test Cases:**
+
 1. ✅ NGN bank transfer payment
 2. ✅ USD bank transfer payment
 3. ✅ Card payment redirect
@@ -340,6 +361,7 @@ return await fetchWithRetry(`/api/proxy/toronet`, {
 8. ✅ Error handling
 
 **Verification:**
+
 1. Open browser DevTools → Network tab
 2. Make a payment
 3. Check requests - should NOT see credentials in headers
@@ -351,6 +373,7 @@ return await fetchWithRetry(`/api/proxy/toronet`, {
 ### Step 5: Deploy to Production
 
 **Environment Variables in Vercel/Hosting:**
+
 ```
 NEXT_PUBLIC_API_BASE_URL=https://your-backend.com
 TORONET_ADMIN=0x...
@@ -358,6 +381,7 @@ TORONET_ADMIN_PWD=your-new-password
 ```
 
 **Important:**
+
 - Do NOT use `NEXT_PUBLIC_` prefix for credentials
 - Set these in your hosting platform's environment variables
 - Never commit `.env.local` or `.env.production`
@@ -384,13 +408,16 @@ After implementing the proxy:
 ## 📋 Quick Reference
 
 ### Files to Create:
+
 - `app/api/proxy/toronet/route.ts` - NEW proxy route
 
 ### Files to Modify:
+
 - `app/payment/[id]/page.tsx` - Update 3 API calls
 - `.env.local` - Remove `NEXT_PUBLIC_` prefix
 
 ### Environment Variables:
+
 ```env
 # Before (Insecure)
 NEXT_PUBLIC_TORONET_ADMIN=...

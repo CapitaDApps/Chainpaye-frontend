@@ -1,6 +1,7 @@
 # Payment Verification Flow Documentation
 
 ## Overview
+
 The payment verification system uses SWR (Stale-While-Revalidate) library to automatically poll the Toronet API until payment is confirmed, then saves the transaction to the database and notifies the success URL.
 
 ## Flow Diagram
@@ -55,6 +56,7 @@ User Clicks "I've Sent the Money"
 **Hook**: `usePaymentVerification` in `lib/hooks/usePaymentVerification.ts`
 
 **Configuration**:
+
 ```typescript
 {
   refreshInterval: 5000,        // Poll every 5 seconds
@@ -73,6 +75,7 @@ User Clicks "I've Sent the Money"
 **Method**: POST
 
 **Headers**:
+
 ```typescript
 {
   'Content-Type': 'application/json',
@@ -82,28 +85,31 @@ User Clicks "I've Sent the Money"
 ```
 
 **Request Body**:
+
 ```json
 {
   "op": "recordfiattransaction",
   "params": [
-    {"name": "currency", "value": "NGN"},
-    {"name": "txid", "value": "0101848843_987ba537551348e3814e866350c368e1"},
-    {"name": "paymenttype", "value": "bank"}
+    { "name": "currency", "value": "NGN" },
+    { "name": "txid", "value": "0101848843_987ba537551348e3814e866350c368e1" },
+    { "name": "paymenttype", "value": "bank" }
   ]
 }
 ```
 
 **Success Response**:
+
 ```json
 {
   "success": true,
   "result": true,
-  "status": "completed",
+  "status": "completed"
   // ... other fields
 }
 ```
 
 **Success Criteria**:
+
 - `success === true` OR
 - `result === true` OR
 - `status === 'completed'`
@@ -113,6 +119,7 @@ User Clicks "I've Sent the Money"
 **Endpoint**: `POST {API_BASE_URL}/api/v1/record-transaction/{transactionId}`
 
 **Headers**:
+
 ```typescript
 {
   'Content-Type': 'application/json',
@@ -122,6 +129,7 @@ User Clicks "I've Sent the Money"
 ```
 
 **Request Body**:
+
 ```json
 {
   "amount": "5000",
@@ -133,6 +141,7 @@ User Clicks "I've Sent the Money"
 ```
 
 **Error Handling**:
+
 - If response contains "already recorded" → Treat as success
 - Log errors but don't block success flow
 - Continue to next step regardless
@@ -146,6 +155,7 @@ User Clicks "I've Sent the Money"
 **Timeout**: 8 seconds
 
 **Request Body**:
+
 ```json
 {
   "paymentLinkId": "697ecadd88e5e54e39285e80",
@@ -162,6 +172,7 @@ User Clicks "I've Sent the Money"
 ```
 
 **Behavior**:
+
 - Always redirect to success URL after timeout or completion
 - Don't block on POST failure (payment was successful)
 - Log errors for monitoring
@@ -171,6 +182,7 @@ User Clicks "I've Sent the Money"
 **Component**: `SuccessReceipt` in `components/v2/payment/confirmation-success.tsx`
 
 **Data Displayed**:
+
 - Amount and currency
 - Transaction ID (reference number)
 - Date and time
@@ -179,6 +191,7 @@ User Clicks "I've Sent the Money"
 - Recipient details
 
 **Actions**:
+
 - Download PDF receipt
 - Automatic redirect to success URL after 3 seconds
 
@@ -196,7 +209,9 @@ User Clicks "I've Sent the Money"
 ### Key State Variables
 
 ```typescript
-const [step, setStep] = useState<"method" | "bank-details" | "confirming" | "success" | "loading" | "error">("loading");
+const [step, setStep] = useState<
+  "method" | "bank-details" | "confirming" | "success" | "loading" | "error"
+>("loading");
 const [isVerifying, setIsVerifying] = useState(false);
 const [senderName, setSenderName] = useState<string>("");
 const [senderPhone, setSenderPhone] = useState<string>("");
@@ -208,15 +223,21 @@ const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
 **Verification Timeout**: 15 minutes
 
 ```typescript
-const timeout = setTimeout(() => {
-  console.log("Payment verification timeout reached");
-  setIsVerifying(false);
-  setError("Payment verification timed out. Please contact support if your payment was successful.");
-  setStep("error");
-}, 15 * 60 * 1000); // 15 minutes
+const timeout = setTimeout(
+  () => {
+    console.log("Payment verification timeout reached");
+    setIsVerifying(false);
+    setError(
+      "Payment verification timed out. Please contact support if your payment was successful.",
+    );
+    setStep("error");
+  },
+  15 * 60 * 1000,
+); // 15 minutes
 ```
 
 **Cleanup**: Timeout is cleared on:
+
 - Successful verification
 - Component unmount
 - User navigates away
@@ -224,16 +245,19 @@ const timeout = setTimeout(() => {
 ## Error Handling
 
 ### Verification Errors
+
 - **Network errors**: Continue polling (SWR handles retries)
 - **Timeout errors**: Show error message after 15 minutes
 - **API errors**: Log and continue polling
 
 ### Transaction Save Errors
+
 - **Already recorded**: Treat as success, continue flow
 - **Network errors**: Log but don't block success
 - **Server errors**: Log but don't block success
 
 ### Success URL POST Errors
+
 - **Timeout**: Continue to redirect anyway
 - **Network errors**: Log and redirect
 - **Server errors**: Log and redirect
@@ -249,6 +273,7 @@ NEXT_PUBLIC_TORONET_ADMIN_PWD=//
 ## Testing Scenarios
 
 ### 1. Successful Payment Flow
+
 1. User enters sender details
 2. Clicks "I've sent the money"
 3. System polls Toronet API
@@ -259,6 +284,7 @@ NEXT_PUBLIC_TORONET_ADMIN_PWD=//
 8. Redirect to success URL
 
 ### 2. Delayed Payment Confirmation
+
 1. User enters sender details
 2. Clicks "I've sent the money"
 3. System polls for 5 minutes
@@ -266,6 +292,7 @@ NEXT_PUBLIC_TORONET_ADMIN_PWD=//
 5. Continue normal flow
 
 ### 3. Timeout Scenario
+
 1. User enters sender details
 2. Clicks "I've sent the money"
 3. System polls for 15 minutes
@@ -274,6 +301,7 @@ NEXT_PUBLIC_TORONET_ADMIN_PWD=//
 6. User can contact support
 
 ### 4. Already Recorded Transaction
+
 1. Payment confirmed
 2. Transaction save returns "already recorded"
 3. Treat as success
@@ -283,6 +311,7 @@ NEXT_PUBLIC_TORONET_ADMIN_PWD=//
 ## Performance Considerations
 
 ### SWR Benefits
+
 - **Automatic polling**: No manual interval management
 - **Deduplication**: Prevents duplicate requests
 - **Error retry**: Automatic retry on failures
@@ -290,6 +319,7 @@ NEXT_PUBLIC_TORONET_ADMIN_PWD=//
 - **Focus revalidation**: Optional revalidation on window focus
 
 ### Network Optimization
+
 - **5-second polling interval**: Balance between responsiveness and server load
 - **2-second deduplication**: Prevent rapid duplicate requests
 - **Timeout handling**: Prevent infinite polling
@@ -298,6 +328,7 @@ NEXT_PUBLIC_TORONET_ADMIN_PWD=//
 ## Monitoring and Analytics
 
 ### Events Tracked
+
 - `payment_verification_started`: When polling begins
 - `payment_verification_success`: When payment confirmed
 - `payment_verification_timeout`: When timeout reached
@@ -306,7 +337,9 @@ NEXT_PUBLIC_TORONET_ADMIN_PWD=//
 - `validation_error`: When sender info validation fails
 
 ### Error Reporting
+
 All errors are reported with context:
+
 - Payment ID
 - Transaction ID
 - Error message

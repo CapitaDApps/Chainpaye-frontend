@@ -115,13 +115,10 @@ export function Features() {
   }, []);
 
   return (
-    <section
-      id="about"
-      className="pt-24 pb-8 md:py-24 px-4 bg-[#EFEFF1] dark:bg-[#202024]"
-    >
+    <section id="about" className="pt-24 pb-8 md:py-24 px-4 bg-[#EFEFF1]">
       <div className="container mx-auto max-w-112.5  md:max-w-7xl">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold mb-4 text-[#111528] dark:text-white">
+          <h2 className="text-3xl md:text-5xl font-bold mb-4 text-[#111528]">
             Transforming cross-border <br /> payments in Africa
           </h2>
           <p className="text-gray-500">Simple instant and low fees</p>
@@ -214,7 +211,7 @@ export function Features() {
 
           <div className="lg:col-span-2 grid md:grid-cols-2 gap-6">
             <div className=" md:p-8 rounded-[32px] flex flex-col justify-between">
-              <div className="h-44 bg-[#F5F7FA] dark:bg-zinc-800 rounded-t-xl mb-6 relative overflow-hidden flex items-center justify-center">
+              <div className="h-44 bg-[#F5F7FA] rounded-t-xl mb-6 relative overflow-hidden flex items-center justify-center">
                 <div
                   className={`absolute inset-0 transition-opacity duration-500 ${
                     step >= 1 ? "opacity-100" : "opacity-0"
@@ -263,17 +260,17 @@ export function Features() {
                 </div>
               </div>
               <div>
-                <h3 className="font-bold text-lg mb-2 text-[#111528] dark:text-white">
+                <h3 className="font-bold text-lg mb-2 text-[#111528]">
                   Seamless WhatsApp Payments
                 </h3>
-                <p className="text-sm text-[#5A5F73] dark:text-[#BDBFC7]">
+                <p className="text-sm text-[#5A5F73]">
                   Send and receive payments inside WhatsApp — chat, tap, done.
                 </p>
               </div>
             </div>
 
             <div className="md:p-8 rounded-[32px] flex flex-col justify-between">
-              <div className="h-44 bg-[#F5F7FA] dark:bg-zinc-800 rounded-t-xl mb-6 relative overflow-hidden flex flex-col justify-center items-center p-6">
+              <div className="h-44 bg-[#F5F7FA] rounded-t-xl mb-6 relative overflow-hidden flex flex-col justify-center items-center p-6">
                 {/* API Key View */}
                 <div
                   className={`w-full p-5 transition-all duration-500 absolute ${
@@ -285,9 +282,9 @@ export function Features() {
                   <div className="text-sm font-medium text-gray-500 mb-2">
                     API Key
                   </div>
-                  <div className="border border-gray-600 dark:border-zinc-700 rounded-lg p-3 flex items-center justify-between">
+                  <div className="border border-gray-600 rounded-lg p-3 flex items-center justify-between">
                     <div
-                      className={`font-mono text-sm text-gray-600 dark:text-gray-300 transition-all duration-300 ${
+                      className={`font-mono text-sm text-gray-600 transition-all duration-300 ${
                         globalApiStep === 0 ? "blur-[4px]" : "blur-0"
                       }`}
                     >
@@ -320,7 +317,7 @@ export function Features() {
                     <div className="text-xs text-gray-400">22 April</div>
                   </div>
                   <div className="text-right">
-                    <div className="text-sm font-bold text-gray-900 dark:text-white">
+                    <div className="text-sm font-bold text-gray-900">
                       +$10,000.00
                     </div>
                     <div className="text-[10px] text-green-500 font-medium">
@@ -335,8 +332,8 @@ export function Features() {
                     globalApiStep >= 3
                       ? "opacity-100 top-24" // Moved down visually
                       : globalApiStep === 2
-                      ? "opacity-0 top-4" // Starts from first position?
-                      : "opacity-0 -top-full"
+                        ? "opacity-0 top-4" // Starts from first position?
+                        : "opacity-0 -top-full"
                   }`}
                   style={{
                     zIndex: globalApiStep >= 3 ? 10 : 0,
@@ -350,7 +347,7 @@ export function Features() {
                     <div className="text-xs text-gray-400">24 April</div>
                   </div>
                   <div className="text-right">
-                    <div className="text-sm font-bold text-gray-900 dark:text-white">
+                    <div className="text-sm font-bold text-gray-900">
                       +£245.00
                     </div>
                     <div className="text-[10px] text-green-500 font-medium">
@@ -360,10 +357,10 @@ export function Features() {
                 </div>
               </div>
               <div>
-                <h3 className="font-bold text-lg mb-2 text-[#111528] dark:text-white">
+                <h3 className="font-bold text-lg mb-2 text-[#111528]">
                   Global Payment API
                 </h3>
-                <p className="text-sm text-[#5A5F73] dark:text-[#BDBFC7]">
+                <p className="text-sm text-[#5A5F73]">
                   Accept global payments easily and focus on growth with quick
                   Chainpaye integration.
                 </p>
@@ -371,7 +368,7 @@ export function Features() {
             </div>
 
             <div className="md:p-8 rounded-[32px] flex flex-col justify-between">
-              <div className="h-44 bg-[#F5F7FA] dark:bg-zinc-800 rounded-t-xl mb-6 p-4 relative overflow-hidden flex justify-center">
+              <div className="h-44 bg-[#F5F7FA] rounded-t-xl mb-6 p-4 relative overflow-hidden flex justify-center">
                 {/* iPhone Mockup */}
                 <div className="absolute bottom-[-40px] left-1/2 -translate-x-1/2 w-40 h-full">
                   <Image
@@ -385,7 +382,7 @@ export function Features() {
 
                 {/* Notification 1: USD */}
                 <div
-                  className={`absolute top-8 left-1/2 -translate-x-1/2 w-[85%] bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md p-2 rounded-2xl shadow-xl flex items-center gap-3 border border-gray-100 dark:border-zinc-700 z-10 transition-all duration-500 ${
+                  className={`absolute top-8 left-1/2 -translate-x-1/2 w-[85%] bg-white/90 backdrop-blur-md p-2 rounded-2xl shadow-xl flex items-center gap-3 border border-gray-100 z-10 transition-all duration-500 ${
                     apiStep >= 1
                       ? "opacity-100 translate-y-0 scale-100"
                       : "opacity-0 -translate-y-10 scale-80"
@@ -401,7 +398,7 @@ export function Features() {
                     />
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-gray-900 dark:text-white">
+                    <div className="text-xs font-bold text-gray-900">
                       USD Received
                     </div>
                     <div className="text-[10px] text-gray-500">
@@ -413,7 +410,7 @@ export function Features() {
 
                 {/* Notification 2: GBP */}
                 <div
-                  className={`absolute top-6 left-1/2 -translate-x-1/2 w-[85%] bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md p-3 rounded-2xl shadow-xl flex items-center gap-3 border border-gray-100 dark:border-zinc-700 z-20 transition-all duration-500 ${
+                  className={`absolute top-6 left-1/2 -translate-x-1/2 w-[85%] bg-white/90 backdrop-blur-md p-3 rounded-2xl shadow-xl flex items-center gap-3 border border-gray-100 z-20 transition-all duration-500 ${
                     apiStep >= 2
                       ? "opacity-100 translate-y-0 scale-100"
                       : "opacity-0 -translate-y-10 scale-95"
@@ -429,7 +426,7 @@ export function Features() {
                     />
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-gray-900 dark:text-white">
+                    <div className="text-xs font-bold text-gray-900">
                       GBP Received
                     </div>
                     <div className="text-[10px] text-gray-500">
@@ -441,7 +438,7 @@ export function Features() {
 
                 {/* Notification 3: EUR */}
                 <div
-                  className={`absolute top-5 left-1/2 -translate-x-1/2 w-[85%] bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md p-3 rounded-2xl shadow-xl flex items-center gap-3 border border-gray-100 dark:border-zinc-700 z-30 transition-all duration-500 ${
+                  className={`absolute top-5 left-1/2 -translate-x-1/2 w-[85%] bg-white/90 backdrop-blur-md p-3 rounded-2xl shadow-xl flex items-center gap-3 border border-gray-100 z-30 transition-all duration-500 ${
                     apiStep >= 3
                       ? "opacity-100 translate-y-0 scale-100"
                       : "opacity-0 -translate-y-10 scale-95"
@@ -451,7 +448,7 @@ export function Features() {
                     <Globe className="w-6 h-6 text-blue-600" />
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-gray-900 dark:text-white">
+                    <div className="text-xs font-bold text-gray-900">
                       EUR Received
                     </div>
                     <div className="text-[10px] text-gray-500">
@@ -462,10 +459,10 @@ export function Features() {
                 </div>
               </div>
               <div>
-                <h3 className="font-bold text-lg mb-2 text-[#111528] dark:text-white">
+                <h3 className="font-bold text-lg mb-2 text-[#111528]">
                   Multi-Currency Support
                 </h3>
-                <p className="text-sm text-[#5A5F73] dark:text-[#BDBFC7]">
+                <p className="text-sm text-[#5A5F73]">
                   Receive funds in NGN, GHS, ZAR, KES, USD and convert
                   seamlessly.
                 </p>
@@ -473,11 +470,11 @@ export function Features() {
             </div>
 
             <div className="md:p-8 rounded-[32px] flex flex-col justify-between">
-              <div className="h-44 bg-[#F5F7FA] dark:bg-zinc-800 rounded-t-xl mb-6 flex items-center justify-center">
+              <div className="h-44 bg-[#F5F7FA] rounded-t-xl mb-6 flex items-center justify-center">
                 <div className="flex items-center gap-6">
                   {/* Headset in Circle */}
                   <div
-                    className={`bg-white dark:bg-zinc-700 p-3 rounded-full transition-all duration-500 transform ${
+                    className={`bg-white p-3 rounded-full transition-all duration-500 transform ${
                       supportStep >= 1
                         ? "opacity-100 scale-100"
                         : "opacity-0 scale-50"
@@ -489,21 +486,21 @@ export function Features() {
                   {/* Lines */}
                   <div className="space-y-3">
                     <div
-                      className={`h-1 w-24 bg-gray-200 dark:bg-zinc-600 rounded-full transition-all duration-500 ${
+                      className={`h-1 w-24 bg-gray-200 rounded-full transition-all duration-500 ${
                         supportStep >= 2
                           ? "opacity-100 translate-x-0"
                           : "opacity-0 -translate-x-4"
                       }`}
                     ></div>
                     <div
-                      className={`h-1 w-32 bg-gray-200 dark:bg-zinc-600 rounded-full transition-all duration-500 ${
+                      className={`h-1 w-32 bg-gray-200 rounded-full transition-all duration-500 ${
                         supportStep >= 3
                           ? "opacity-100 translate-x-0"
                           : "opacity-0 -translate-x-4"
                       }`}
                     ></div>
                     <div
-                      className={`h-1 w-20 bg-gray-200 dark:bg-zinc-600 rounded-full transition-all duration-500 ${
+                      className={`h-1 w-20 bg-gray-200 rounded-full transition-all duration-500 ${
                         supportStep >= 4
                           ? "opacity-100 translate-x-0"
                           : "opacity-0 -translate-x-4"
@@ -513,10 +510,10 @@ export function Features() {
                 </div>
               </div>
               <div>
-                <h3 className="font-bold text-lg mb-2 text-[#111528] dark:text-white">
+                <h3 className="font-bold text-lg mb-2 text-[#111528]">
                   24/7 customer support
                 </h3>
-                <p className="text-sm text-[#5A5F73] dark:text-[#BDBFC7]">
+                <p className="text-sm text-[#5A5F73]">
                   Our customer support team is readily available to assist you
                   whenever needed.
                 </p>

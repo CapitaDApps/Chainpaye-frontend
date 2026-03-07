@@ -3,56 +3,53 @@ import { Check, ArrowRight, Settings, Code2, Clock } from "lucide-react";
 
 export function DeveloperSection() {
   return (
-    <section
-      id="developers"
-      className="py-24 bg-blue-50/50 dark:bg-blue-900/10"
-    >
+    <section id="developers" className="py-24 bg-blue-50/50">
       <div className="container mx-auto px-4 md:px-6">
         <div className="grid gap-12 lg:grid-cols-2 items-center">
           {/* Left Content */}
           <div className="space-y-8">
-            <h2 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-white md:text-5xl">
+            <h2 className="text-3xl font-bold tracking-tight text-zinc-900 md:text-5xl">
               Get ready to scale <br /> with our payment APIs
             </h2>
 
             <div className="space-y-6">
               <div className="flex gap-4">
-                <div className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
+                <div className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
                   <Settings className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-zinc-900 dark:text-white">
+                  <h3 className="font-semibold text-zinc-900">
                     Quick setup, easy integration
                   </h3>
-                  <p className="text-zinc-600 dark:text-zinc-400 text-sm">
+                  <p className="text-zinc-600 text-sm">
                     Get up and running with just a few lines of code.
                   </p>
                 </div>
               </div>
 
               <div className="flex gap-4">
-                <div className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400">
+                <div className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-600">
                   <Code2 className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-zinc-900 dark:text-white">
+                  <h3 className="font-semibold text-zinc-900">
                     Flexible APIs for any use case
                   </h3>
-                  <p className="text-zinc-600 dark:text-zinc-400 text-sm">
+                  <p className="text-zinc-600 text-sm">
                     Build custom payment flows that suit your needs.
                   </p>
                 </div>
               </div>
 
               <div className="flex gap-4">
-                <div className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400">
+                <div className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-100 text-orange-600">
                   <Clock className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-zinc-900 dark:text-white">
+                  <h3 className="font-semibold text-zinc-900">
                     Production-ready in under 30 minutes
                   </h3>
-                  <p className="text-zinc-600 dark:text-zinc-400 text-sm">
+                  <p className="text-zinc-600 text-sm">
                     Launch faster with our robust infrastructure.
                   </p>
                 </div>
@@ -83,14 +80,17 @@ export function DeveloperSection() {
                 <span className="text-[#79c0ff]">ChainpayeWidget</span>({`{`}{" "}
                 <br />
                 &nbsp;&nbsp;<span className="text-[#79c0ff]">env</span>:{" "}
-                <span className="text-[#a5d6ff]">&quot;production&quot;</span>,<br />
+                <span className="text-[#a5d6ff]">&quot;production&quot;</span>,
+                <br />
                 &nbsp;&nbsp;<span className="text-[#79c0ff]">action</span>:{" "}
-                <span className="text-[#a5d6ff]">&quot;send_payment&quot;</span>,<br />
+                <span className="text-[#a5d6ff]">&quot;send_payment&quot;</span>
+                ,<br />
                 &nbsp;&nbsp;<span className="text-[#79c0ff]">fromCurrency</span>
                 : <span className="text-[#a5d6ff]">&quot;USD&quot;</span>,<br />
                 &nbsp;&nbsp;<span className="text-[#79c0ff]">
                   toCurrency
-                </span>: <span className="text-[#a5d6ff]">&quot;NGN&quot;</span>,<br />
+                </span>: <span className="text-[#a5d6ff]">&quot;NGN&quot;</span>
+                ,<br />
                 &nbsp;&nbsp;<span className="text-[#79c0ff]">apiKey</span>:{" "}
                 <span className="text-[#a5d6ff]">
                   &quot;ck_live_8911JK90sPqA00217x&quot;

@@ -3,24 +3,16 @@
 import Link from "next/link";
 import Image from "next/image";
 
-import { Menu, X, Moon, Sun, MessageCircle } from "lucide-react";
-import { useState, useEffect } from "react";
-import { useTheme } from "next-themes";
+import { Menu, X, MessageCircle } from "lucide-react";
+import { useState } from "react";
 
 import WhatsappIcon from "../whatsapp-icon";
 
 export function Navbar() {
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setMounted(true);
-  }, []);
-
   return (
-    <header className="fixed top-0 z-50 w-full bg-[#EFEFF1]/80 backdrop-blur-md dark:bg-[#202024]/80">
+    <header className="fixed top-0 z-50 w-full bg-[#EFEFF1]/80 backdrop-blur-md">
       <div className="container mx-auto flex h-20 items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center gap-2">
           <Image
@@ -28,7 +20,7 @@ export function Navbar() {
             alt="Chainpaye"
             width={140}
             height={40}
-            className="h-8 w-auto object-contain dark:brightness-0 dark:invert"
+            className="h-8 w-auto object-contain"
             priority
           />
         </Link>
@@ -36,48 +28,36 @@ export function Navbar() {
         <nav className="hidden md:flex items-center gap-8">
           <Link
             href="#visacard"
-            className="text-sm font-medium text-[#111528]/80 hover:text-[#111528] dark:text-white/80 dark:hover:text-white"
+            className="text-sm font-medium text-[#111528]/80 hover:text-[#111528]"
           >
             VisaCards
           </Link>
           <Link
             href="#off-ramp"
-            className="text-sm font-medium text-[#111528]/80 hover:text-[#111528] dark:text-white/80 dark:hover:text-white"
+            className="text-sm font-medium text-[#111528]/80 hover:text-[#111528]"
           >
             Off-ramp
           </Link>
           <Link
             href="#use-cases"
-            className="text-sm font-medium text-[#111528]/80 hover:text-[#111528] dark:text-white/80 dark:hover:text-white"
+            className="text-sm font-medium text-[#111528]/80 hover:text-[#111528]"
           >
             Use cases
           </Link>
           <Link
             href="#about"
-            className="text-sm font-medium text-[#111528]/80 hover:text-[#111528] dark:text-white/80 dark:hover:text-white"
+            className="text-sm font-medium text-[#111528]/80 hover:text-[#111528]"
           >
             About
           </Link>
         </nav>
 
         <div className="hidden md:flex items-center gap-4">
-          <button
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="rounded-full p-2 hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
-            aria-label="Toggle theme"
-          >
-            {mounted && theme === "dark" ? (
-              <Moon className="h-5 w-5" />
-            ) : (
-              <Sun className="h-5 w-5" />
-            )}
-          </button>
-
           <Link
             href="https://wa.me/message/RB4AEJEFPZE7G1"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 rounded-lg bg-[#003DFF] dark:text-[#00174F] dark:bg-[#7DA2FF] px-8 py-3.5 text-base font-medium text-[#FFFFFF] transition-colors"
+            className="flex items-center gap-2 rounded-lg bg-[#003DFF] px-8 py-3.5 text-base font-medium text-[#FFFFFF] transition-colors"
           >
             <WhatsappIcon />
             Start on WhatsApp
@@ -85,7 +65,7 @@ export function Navbar() {
         </div>
 
         <button
-          className="md:hidden p-2 text-[#111528] dark:text-white"
+          className="md:hidden p-2 text-[#111528]"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           {mobileMenuOpen ? (
@@ -97,32 +77,32 @@ export function Navbar() {
       </div>
 
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-black/10 bg-[#EFEFF1] px-4 py-6 dark:border-white/10 dark:bg-[#202024]">
+        <div className="md:hidden border-t border-black/10 bg-[#EFEFF1] px-4 py-6">
           <div className="flex flex-col space-y-4">
             <Link
               href="#visacard"
-              className="text-base font-medium text-[#111528] dark:text-white"
+              className="text-base font-medium text-[#111528]"
               onClick={() => setMobileMenuOpen(false)}
             >
               VisaCards
             </Link>
             <Link
               href="#off-ramp"
-              className="text-base font-medium text-[#111528] dark:text-white"
+              className="text-base font-medium text-[#111528]"
               onClick={() => setMobileMenuOpen(false)}
             >
               Off-ramp
             </Link>
             <Link
               href="#use-cases"
-              className="text-base font-medium text-[#111528] dark:text-white"
+              className="text-base font-medium text-[#111528]"
               onClick={() => setMobileMenuOpen(false)}
             >
               Use cases
             </Link>
             <Link
               href="#about"
-              className="text-base font-medium text-[#111528] dark:text-white"
+              className="text-base font-medium text-[#111528]"
               onClick={() => setMobileMenuOpen(false)}
             >
               About
@@ -131,7 +111,7 @@ export function Navbar() {
               href="https://wa.link/m25oou"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 rounded-lg bg-[#003DFF] dark:text-[#00174F] dark:bg-[#7DA2FF] px-8 py-3.5 text-base font-medium text-[#FFFFFF] transition-colors"
+              className="flex items-center gap-2 rounded-lg bg-[#003DFF] px-8 py-3.5 text-base font-medium text-[#FFFFFF] transition-colors"
             >
               <WhatsappIcon />
               Start on WhatsApp
