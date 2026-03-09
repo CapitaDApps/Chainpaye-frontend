@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
 // Get API key from environment variables
-const getApiKey = () => process.env.RESEND_API || process.env.NEXT_PUBLIC_RESEND_API;
+const getApiKey = () =>
+  process.env.RESEND_API || process.env.NEXT_PUBLIC_RESEND_API;
 
 // Initialize Resend lazily to avoid build-time errors
 let resend: Resend | null = null;
@@ -28,7 +29,7 @@ export async function POST(request: Request) {
       console.error("Validation failed: Name or Phone missing");
       return NextResponse.json(
         { error: "Name and Phone are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -37,7 +38,7 @@ export async function POST(request: Request) {
       console.error("RESEND_API_KEY is missing");
       return NextResponse.json(
         { error: "Server configuration error" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -146,18 +147,19 @@ export async function POST(request: Request) {
     //   apiKey ? `...${apiKey.slice(-4)}` : "MISSING"
     // );
 
-    const { data: adminData, error: adminError } = await resendInstance.emails.send({
-      from: "Chainpaye Admin <onboarding@resend.dev>",
-      to: [adminEmail],
-      subject: `New Visa Card Request: ${name}`,
-      html: adminHtmlContent,
-    });
+    const { data: adminData, error: adminError } =
+      await resendInstance.emails.send({
+        from: "Chainpaye Admin <onboarding@resend.dev>",
+        to: [adminEmail],
+        subject: `New Visa Card Request: ${name}`,
+        html: adminHtmlContent,
+      });
 
     if (adminError) {
       console.error("Admin Email Failed:", adminError);
       return NextResponse.json(
         { error: "Failed to notify admin: " + adminError.message },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -184,7 +186,7 @@ export async function POST(request: Request) {
     console.error("Internal Server Error:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

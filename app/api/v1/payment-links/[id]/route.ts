@@ -1,20 +1,22 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
-    
+
     if (!id) {
       return NextResponse.json(
-        { success: false, message: 'Payment link ID is required' },
-        { status: 400 }
+        { success: false, message: "Payment link ID is required" },
+        { status: 400 },
       );
     }
 
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://chainpaye-backend.onrender.com';
+    const apiBaseUrl =
+      process.env.NEXT_PUBLIC_API_BASE_URL ||
+      "https://chainpaye-backend.onrender.com";
     const url = `${apiBaseUrl}/api/v1/payment-links/${id}`;
 
     // Get server-side credentials (no NEXT_PUBLIC_ prefix)
@@ -22,70 +24,71 @@ export async function POST(
     const adminpwd = process.env.TORONET_ADMIN_PWD;
 
     if (!admin || !adminpwd) {
-      console.error('Missing Toronet credentials in environment variables');
+      console.error("Missing Toronet credentials in environment variables");
       return NextResponse.json(
-        { 
-          success: false, 
-          message: 'Server configuration error: Missing credentials'
+        {
+          success: false,
+          message: "Server configuration error: Missing credentials",
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
-    console.log('Fetching payment link from:', url);
+    console.log("Fetching payment link from:", url);
 
     const response = await fetch(url, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'admin': admin,
-        'adminpwd': adminpwd,
+        "Content-Type": "application/json",
+        admin: admin,
+        adminpwd: adminpwd,
       },
     });
 
     const data = await response.json();
 
     if (!response.ok) {
-      console.error('Payment link fetch failed:', data);
-      
+      console.error("Payment link fetch failed:", data);
+
       // Return specific error messages based on status code
-      let errorMessage = data.message || 'Failed to fetch payment link';
-      
+      let errorMessage = data.message || "Failed to fetch payment link";
+
       if (response.status === 404) {
-        errorMessage = 'Payment link not found';
+        errorMessage = "Payment link not found";
       } else if (response.status === 410) {
-        errorMessage = 'Payment link has expired';
+        errorMessage = "Payment link has expired";
       } else if (response.status === 400) {
-        errorMessage = 'Invalid payment link';
+        errorMessage = "Invalid payment link";
       } else if (response.status === 500) {
-        errorMessage = 'Payment service error';
+        errorMessage = "Payment service error";
       } else if (response.status === 503) {
-        errorMessage = 'Payment service temporarily unavailable';
+        errorMessage = "Payment service temporarily unavailable";
       }
-      
+
       return NextResponse.json(
-        { 
-          success: false, 
+        {
+          success: false,
           message: errorMessage,
           statusCode: response.status,
-          debug: data
+          debug: data,
         },
-        { status: response.status }
+        { status: response.status },
       );
     }
 
-    console.log('Payment link fetched successfully:', data);
+    console.log("Payment link fetched successfully:", data);
 
     return NextResponse.json(data, { status: 200 });
   } catch (error) {
-    console.error('Error fetching payment link:', error);
+    console.error("Error fetching payment link:", error);
     return NextResponse.json(
-      { 
-        success: false, 
-        message: error instanceof Error ? error.message : 'Internal server error',
-        error: String(error)
+      {
+        success: false,
+        message:
+          error instanceof Error ? error.message : "Internal server error",
+        error: String(error),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -6,15 +6,16 @@ Your frontend code was doing this:
 
 ```typescript
 // ❌ BAD: Credentials in browser code
-fetch('https://backend.com/api/transactions', {
+fetch("https://backend.com/api/transactions", {
   headers: {
-    'admin': 'my-secret-admin-key',      // 😱 Visible in browser!
-    'adminpwd': 'my-secret-password'     // 😱 Visible in browser!
-  }
-})
+    admin: "my-secret-admin-key", // 😱 Visible in browser!
+    adminpwd: "my-secret-password", // 😱 Visible in browser!
+  },
+});
 ```
 
 **Why is this bad?**
+
 - Anyone can open Chrome DevTools
 - Go to Network tab
 - See your credentials in the request headers
@@ -26,12 +27,14 @@ Now your frontend does this:
 
 ```typescript
 // ✅ GOOD: No credentials in browser code
-fetch('/api/proxy/toronet', {
+fetch("/api/proxy/toronet", {
   body: JSON.stringify({
-    endpoint: 'https://backend.com/api/transactions',
-    data: { /* payment info */ }
-  })
-})
+    endpoint: "https://backend.com/api/transactions",
+    data: {
+      /* payment info */
+    },
+  }),
+});
 ```
 
 **What happens behind the scenes:**
@@ -102,7 +105,7 @@ Solution: Credentials only on server! 🎉
 
 ## 🔑 Key Concepts
 
-### 1. NEXT_PUBLIC_ Prefix
+### 1. NEXT*PUBLIC* Prefix
 
 ```env
 # ❌ BAD - Exposed to browser
@@ -118,7 +121,7 @@ TORONET_ADMIN=my-secret-key
 
 ```typescript
 // This runs in the BROWSER (client-side)
-'use client'
+"use client";
 export default function PaymentPage() {
   const admin = process.env.NEXT_PUBLIC_ADMIN; // ❌ Exposed!
 }
@@ -143,13 +146,17 @@ The middleman (proxy) handles the sensitive stuff (credentials) so you don't hav
 ## 📝 Real-World Analogy
 
 ### Before (Insecure):
+
 Imagine you're ordering food online:
+
 - You type your credit card number directly on the restaurant's website
 - Everyone in the coffee shop can see your screen
 - 😱 Not safe!
 
 ### After (Secure):
+
 Now you use a payment service (like PayPal):
+
 - You tell PayPal "pay the restaurant"
 - PayPal handles your credit card (securely)
 - The restaurant gets paid
@@ -161,36 +168,45 @@ Now you use a payment service (like PayPal):
 ## 🧪 How to Verify It's Working
 
 ### 1. Open Chrome DevTools
+
 Press `F12` or right-click → Inspect
 
 ### 2. Go to Network Tab
+
 Click "Network" at the top
 
 ### 3. Make a Payment
+
 Go through the payment flow
 
 ### 4. Check Requests
+
 Look for requests to `/api/proxy/toronet`
 
 **What you should see:**
+
 - ✅ Request URL: `/api/proxy/toronet`
 - ✅ Request Headers: No `admin` or `adminpwd`
 - ✅ Request Body: Just `endpoint` and `data`
 
 **What you should NOT see:**
+
 - ❌ Your admin credentials
 - ❌ Your password
 - ❌ Any sensitive keys
 
 ### 5. Check Console
+
 Look for any logged credentials
 
 **What you should see:**
+
 - ✅ Normal log messages
 - ✅ Transaction IDs
 - ✅ Status updates
 
 **What you should NOT see:**
+
 - ❌ Admin credentials
 - ❌ Passwords
 - ❌ Secret keys
@@ -198,16 +214,19 @@ Look for any logged credentials
 ## 🎯 Summary
 
 ### What Changed:
+
 1. Created `/api/proxy/toronet/route.ts` - A middleman on your server
 2. Updated frontend to call the middleman instead of backend directly
 3. Removed `NEXT_PUBLIC_` from credentials - Keeps them server-side
 
 ### Why It Matters:
+
 - **Security:** Credentials never reach the browser
 - **Safety:** Can't be stolen from DevTools
 - **Professional:** Industry standard practice
 
 ### What You Need to Do:
+
 1. ✅ Code is already updated
 2. ⚠️ Change your password (it was exposed before)
 3. ✅ Test the payment flows
@@ -218,6 +237,7 @@ Look for any logged credentials
 Your credentials are safe on the server where they belong. The browser only talks to your Next.js API, which then talks to your backend with credentials.
 
 **Think of it like this:**
+
 - Browser = Customer
 - Next.js Proxy = Trusted Employee
 - Backend = Secure Vault

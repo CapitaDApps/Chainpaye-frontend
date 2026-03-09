@@ -13,7 +13,17 @@ interface ReceiptData {
 }
 
 export const generateReceiptPDF = async (data: ReceiptData) => {
-  const { amount, refNumber, date, method, senderName, recipientName, recipientBank, recipientAccount, logoSrc } = data;
+  const {
+    amount,
+    refNumber,
+    date,
+    method,
+    senderName,
+    recipientName,
+    recipientBank,
+    recipientAccount,
+    logoSrc,
+  } = data;
 
   const pdfHeight = 540;
   const doc = new jsPDF({
@@ -242,10 +252,11 @@ export const generateReceiptPDF = async (data: ReceiptData) => {
     }
   };
 
-  const recipientDetails = recipientName || 'N/A';
-  const recipientSubDetails = (recipientBank && recipientAccount) 
-    ? `${recipientBank} | ${recipientAccount}`
-    : recipientBank || recipientAccount || '';
+  const recipientDetails = recipientName || "N/A";
+  const recipientSubDetails =
+    recipientBank && recipientAccount
+      ? `${recipientBank} | ${recipientAccount}`
+      : recipientBank || recipientAccount || "";
 
   drawRow(
     listStartY,

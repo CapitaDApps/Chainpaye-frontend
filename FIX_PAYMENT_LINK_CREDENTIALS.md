@@ -15,6 +15,7 @@ When we implemented the backend proxy pattern, we updated the payment page API c
 Added server-side credentials to the payment link initialization endpoint.
 
 ### File Changed:
+
 `app/api/v1/payment-links/[id]/route.ts`
 
 ### What Was Added:
@@ -25,23 +26,23 @@ const admin = process.env.TORONET_ADMIN;
 const adminpwd = process.env.TORONET_ADMIN_PWD;
 
 if (!admin || !adminpwd) {
-  console.error('Missing Toronet credentials in environment variables');
+  console.error("Missing Toronet credentials in environment variables");
   return NextResponse.json(
-    { 
-      success: false, 
-      message: 'Server configuration error: Missing credentials'
+    {
+      success: false,
+      message: "Server configuration error: Missing credentials",
     },
-    { status: 500 }
+    { status: 500 },
   );
 }
 
 // Add credentials to request headers
 const response = await fetch(url, {
-  method: 'POST',
+  method: "POST",
   headers: {
-    'Content-Type': 'application/json',
-    'admin': admin,
-    'adminpwd': adminpwd,
+    "Content-Type": "application/json",
+    admin: admin,
+    adminpwd: adminpwd,
   },
 });
 ```
@@ -49,6 +50,7 @@ const response = await fetch(url, {
 ## 🔒 Security Note
 
 This is still secure because:
+
 - This is a Next.js API route (runs on server, not browser)
 - Credentials are accessed without `NEXT_PUBLIC_` prefix
 - They never reach the browser
@@ -104,9 +106,11 @@ This is still secure because:
 ## 🧪 Testing
 
 ### Build Status:
+
 ✅ **Build Successful** - No errors
 
 ### Test Checklist:
+
 - [ ] Visit a payment link (e.g., `/payment/123`)
 - [ ] Verify payment page loads without "admin missing" error
 - [ ] Complete NGN payment flow
@@ -117,49 +121,57 @@ This is still secure because:
 ## 🔍 How to Verify Fix
 
 ### 1. Check Server Logs
+
 When you visit a payment link, you should see:
+
 ```
 Fetching payment link from: http://localhost:4000/api/v1/payment-links/123
 Payment link fetched successfully: {...}
 ```
 
 ### 2. Check Browser Console
+
 Should NOT see:
+
 - ❌ "Payment Setup Error: header 'admin' is missing"
 
 Should see:
+
 - ✅ Payment data loaded successfully
 - ✅ Payment page renders correctly
 
 ### 3. Check Network Tab
+
 - Request to `/api/v1/payment-links/[id]` should succeed (200 OK)
 - Should NOT see credentials in request headers (they're added server-side)
 
 ## 📝 Summary
 
 ### Before:
+
 ```typescript
 // Missing credentials
 const response = await fetch(url, {
-  method: 'POST',
+  method: "POST",
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 ```
 
 ### After:
+
 ```typescript
 // Credentials added server-side
 const admin = process.env.TORONET_ADMIN;
 const adminpwd = process.env.TORONET_ADMIN_PWD;
 
 const response = await fetch(url, {
-  method: 'POST',
+  method: "POST",
   headers: {
-    'Content-Type': 'application/json',
-    'admin': admin,
-    'adminpwd': adminpwd,
+    "Content-Type": "application/json",
+    admin: admin,
+    adminpwd: adminpwd,
   },
 });
 ```

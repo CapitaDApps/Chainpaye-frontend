@@ -1,7 +1,13 @@
 // Progress indicator for payment flow
 
 interface PaymentProgressProps {
-  step: "method" | "bank-details" | "verifying" | "success" | "loading" | "error";
+  step:
+    | "method"
+    | "bank-details"
+    | "verifying"
+    | "success"
+    | "loading"
+    | "error";
 }
 
 export function PaymentProgress({ step }: PaymentProgressProps) {
@@ -29,8 +35,8 @@ export function PaymentProgress({ step }: PaymentProgressProps) {
                     isCompleted
                       ? "bg-green-500 text-white"
                       : isActive
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200 text-gray-500"
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-200 text-gray-500"
                   }`}
                 >
                   {isCompleted ? (

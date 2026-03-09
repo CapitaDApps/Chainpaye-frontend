@@ -58,10 +58,10 @@ export function WaitlistModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="relative w-full max-w-lg bg-white dark:bg-[#1A1A1E] rounded-3xl p-8 shadow-2xl animate-in fade-in zoom-in duration-300">
+      <div className="relative w-full max-w-lg bg-white rounded-3xl p-8 shadow-2xl animate-in fade-in zoom-in duration-300">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+          className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
@@ -72,16 +72,16 @@ export function WaitlistModal({
             alt="Chainpaye"
             width={120}
             height={32}
-            className="mb-6 dark:invert"
+            className="mb-6"
           />
-          <h3 className="text-xl font-medium text-center text-[#202024] dark:text-white">
+          <h3 className="text-xl font-medium text-center text-[#202024]">
             Request your Chainpaye Visa Card
           </h3>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-medium text-[#202024] dark:text-gray-300 mb-1">
+            <label className="block text-xs font-medium text-[#202024] mb-1">
               Name on card<span className="text-red-500">*</span>
             </label>
             <input
@@ -89,12 +89,12 @@ export function WaitlistModal({
               name="name"
               type="text"
               placeholder="Bless!"
-              className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#2A2A33] text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+              className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[#202024] dark:text-gray-300 mb-1">
+            <label className="block text-xs font-medium text-[#202024] mb-1">
               Whatsapp phone number<span className="text-red-500">*</span>
             </label>
             <input
@@ -102,12 +102,12 @@ export function WaitlistModal({
               name="phone"
               type="tel"
               placeholder="234 916 810 3963"
-              className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#2A2A33] text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+              className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[#202024] dark:text-gray-300 mb-1">
+            <label className="block text-xs font-medium text-[#202024] mb-1">
               Email<span className="text-red-500">*</span>
             </label>
             <input
@@ -115,7 +115,7 @@ export function WaitlistModal({
               name="email"
               type="email"
               placeholder="e.g useremail@gmail.com"
-              className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#2A2A33] text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+              className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
             />
           </div>
 

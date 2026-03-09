@@ -77,8 +77,8 @@ export function CardSelection() {
 
   return (
     <section className="py-16 px-4 ">
-      <div className="container mx-auto bg-[#FDFDFD] rounded-2xl md:p-10 p-6 dark:bg-[#2A2A33]">
-        <h2 className="text-3xl md:text-4xl font-medium text-center mb-16 text-[#111528] dark:text-white">
+      <div className="container mx-auto bg-[#FDFDFD] rounded-2xl md:p-10 p-6">
+        <h2 className="text-3xl md:text-4xl font-medium text-center mb-16 text-[#111528]">
           Select Your Card Tier
         </h2>
 
@@ -87,7 +87,7 @@ export function CardSelection() {
           <div
             className={clsx(
               "w-full md:w-2/5  relative rounded-[21px] md:rounded-3xl p-8 lg:min-h-[600px] flex flex-col gap-12 xl:gap-0 justify-between overflow-hidden transition-colors duration-500",
-              selectedTier.bg
+              selectedTier.bg,
             )}
           >
             {/* Grid Background Effect */}
@@ -111,12 +111,12 @@ export function CardSelection() {
             </div>
 
             <div className="relative z-10 mt-auto">
-              <div className="w-20 h-1 bg-black/10 dark:bg-white/10 rounded-full mx-auto mb-8 blur-[1px]"></div>
+              <div className="w-20 h-1 bg-black/10 rounded-full mx-auto mb-8 blur-[1px]"></div>
 
               <h3
                 className={clsx(
                   "text-xl md:text-2xl font-medium mb-6",
-                  selectedTier.textColor
+                  selectedTier.textColor,
                 )}
               >
                 {selectedTier.headline}
@@ -128,7 +128,7 @@ export function CardSelection() {
                     key={i}
                     className={clsx(
                       "flex items-center gap-3",
-                      selectedTier.subTextColor
+                      selectedTier.subTextColor,
                     )}
                   >
                     <span className={selectedTier.checkColor}>
@@ -150,8 +150,8 @@ export function CardSelection() {
                 className={clsx(
                   "relative p-4 rounded-2xl border-2 transition-all cursor-pointer border-[#E5E7EB] flex items-center justify-between",
                   selectedTier.id === tier.id
-                    ? "bg-[#E8EDFF] dark:bg-blue-900/10 dark:border-zinc-800 "
-                    : "border-gray-100 bg-white dark:border-zinc-800 dark:bg-[#151518] hover:border-gray-200 dark:hover:border-zinc-700"
+                    ? "bg-[#E8EDFF] "
+                    : "border-gray-100 bg-white hover:border-gray-200",
                 )}
               >
                 <div className="flex items-center gap-4">
@@ -160,7 +160,7 @@ export function CardSelection() {
                       "w-6 h-6 rounded border flex items-center justify-center transition-colors",
                       selectedTier.id === tier.id
                         ? "bg-blue-600 border-blue-600"
-                        : "border-gray-300 dark:border-zinc-600"
+                        : "border-gray-300",
                     )}
                   >
                     {selectedTier.id === tier.id && (
@@ -168,7 +168,7 @@ export function CardSelection() {
                     )}
                   </div>
                   <div>
-                    <h3 className="font-medium text-xl text-[#5A5F73] dark:text-white">
+                    <h3 className="font-medium text-xl text-[#5A5F73]">
                       {tier.name}
                     </h3>
                     <p className="text-sm font-medium text-[#9CA3AF]">
@@ -193,7 +193,7 @@ export function CardSelection() {
             <div className="pt-8 flex justify-end">
               <button
                 onClick={() => setIsWaitlistOpen(true)}
-                className="w-fit px-20  bg-[#003DFF] dark:bg-[#7DA2FF] dark:text-[#00174F] text-white font-bold py-4 rounded-xl transition-all shadow-lg hover:shadow-xl active:scale-[0.99]"
+                className="w-fit px-20  bg-[#003DFF] text-white font-bold py-4 rounded-xl transition-all shadow-lg hover:shadow-xl active:scale-[0.99]"
               >
                 Request Card
               </button>

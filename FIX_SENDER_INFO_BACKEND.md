@@ -1,6 +1,7 @@
 # Fix: Sender Info Not Saving to Database
 
 ## Problem
+
 Frontend sends sender info (name, phone, email) but it's not being saved to the database.
 
 ---
@@ -8,6 +9,7 @@ Frontend sends sender info (name, phone, email) but it's not being saved to the 
 ## Frontend is Sending (✅ Confirmed)
 
 The frontend now logs and sends:
+
 ```javascript
 {
   senderName: "John Doe",
@@ -32,63 +34,63 @@ Make sure your `/verify` endpoint saves the sender info correctly:
 
 ```typescript
 // POST /api/v1/transactions/:id/verify
-router.post('/:id/verify', async (req, res) => {
+router.post("/:id/verify", async (req, res) => {
   try {
     const { id } = req.params;
-    const { 
-      senderName, 
-      senderPhone, 
+    const {
+      senderName,
+      senderPhone,
       senderEmail,
       currency,
       txid,
       paymentType,
       amount,
       successUrl,
-      paymentLinkId
+      paymentLinkId,
     } = req.body;
-    
-    console.log('=== VERIFY ENDPOINT DEBUG ===');
-    console.log('Transaction ID:', id);
-    console.log('Sender Info:', { senderName, senderPhone, senderEmail });
-    console.log('Request body:', req.body);
-    
+
+    console.log("=== VERIFY ENDPOINT DEBUG ===");
+    console.log("Transaction ID:", id);
+    console.log("Sender Info:", { senderName, senderPhone, senderEmail });
+    console.log("Request body:", req.body);
+
     // Parse Authorization header
     const auth = parseBasicAuth(req.headers.authorization);
-    
+
     if (!auth) {
       return res.status(401).json({
         success: false,
-        message: 'Admin credentials required'
+        message: "Admin credentials required",
       });
     }
-    
+
     // Find transaction by reference
     const transaction = await Transaction.findOne({ reference: id });
-    
+
     if (!transaction) {
       console.error(`Transaction not found with reference: ${id}`);
       return res.status(404).json({
         success: false,
-        message: 'Transaction not found'
+        message: "Transaction not found",
       });
     }
-    
-    console.log('Found transaction:', transaction._id);
-    
+
+    console.log("Found transaction:", transaction._id);
+
     // IMPORTANT: Save sender info to payerInfo field
     transaction.payerInfo = {
       name: senderName,
       phone: senderPhone,
       email: senderEmail,
     };
-    
+
     // Save toronet reference
     transaction.toronetReference = txid;
-    
+
     // Set verification timestamps
     transaction.verificationStartedAt = new Date();
     transaction.expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
-    
+
     // Save metadata
     transaction.metadata = {
       ...transaction.metadata,
@@ -96,32 +98,31 @@ router.post('/:id/verify', async (req, res) => {
       successUrl,
       paymentLinkId,
     };
-    
+
     // SAVE TO DATABASE
     await transaction.save();
-    
-    console.log('Transaction updated with sender info');
-    console.log('Saved payerInfo:', transaction.payerInfo);
-    
+
+    console.log("Transaction updated with sender info");
+    console.log("Saved payerInfo:", transaction.payerInfo);
+
     // Start immediate verification
     startImmediateVerification(transaction);
-    
+
     return res.status(200).json({
       success: true,
-      message: 'Verification started. You will receive an email confirmation.',
+      message: "Verification started. You will receive an email confirmation.",
       data: {
         transactionId: transaction.reference,
         email: senderEmail,
         payerInfo: transaction.payerInfo, // Return to confirm it was saved
-      }
+      },
     });
-    
   } catch (error) {
-    console.error('Error submitting verification:', error);
+    console.error("Error submitting verification:", error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to submit verification request',
-      error: error.message
+      message: "Failed to submit verification request",
+      error: error.message,
     });
   }
 });
@@ -143,48 +144,51 @@ export interface IPayerInfo {
   metadata?: Record<string, any>;
 }
 
-const PayerInfoSchema: Schema = new Schema({
-  email: {
-    type: String,
-    trim: true,
-    lowercase: true,
+const PayerInfoSchema: Schema = new Schema(
+  {
+    email: {
+      type: String,
+      trim: true,
+      lowercase: true,
+    },
+    phone: {
+      type: String,
+      trim: true,
+    },
+    name: {
+      type: String,
+      trim: true,
+    },
+    metadata: {
+      type: Schema.Types.Mixed,
+      default: {},
+    },
   },
-  phone: {
-    type: String,
-    trim: true,
-  },
-  name: {
-    type: String,
-    trim: true,
-  },
-  metadata: {
-    type: Schema.Types.Mixed,
-    default: {}
-  }
-}, { _id: false });
+  { _id: false },
+);
 
 const TransactionSchema: Schema = new Schema({
   // ... other fields ...
-  
+
   payerInfo: {
     type: PayerInfoSchema,
-    default: {}
+    default: {},
   },
-  
+
   toronetReference: {
     type: String,
     trim: true,
   },
-  
+
   verificationStartedAt: {
     type: Date,
   },
-  
+
   expiresAt: {
     type: Date,
     index: true,
   },
-  
+
   // ... other fields ...
 });
 ```
@@ -196,6 +200,7 @@ const TransactionSchema: Schema = new Schema({
 ### Step 1: Check Backend Logs
 
 After submitting the form, check your backend console for:
+
 ```
 === VERIFY ENDPOINT DEBUG ===
 Transaction ID: TXN_MLKDW0K2_175DB93D
@@ -208,11 +213,13 @@ Saved payerInfo: { name: 'John Doe', phone: '+1234567890', email: 'john@example.
 ### Step 2: Check Database
 
 Query the transaction in MongoDB:
+
 ```javascript
-db.transactions.findOne({ reference: "TXN_MLKDW0K2_175DB93D" })
+db.transactions.findOne({ reference: "TXN_MLKDW0K2_175DB93D" });
 ```
 
 You should see:
+
 ```json
 {
   "_id": ObjectId("698ea793d1e33d0de161e7ba"),
@@ -232,6 +239,7 @@ You should see:
 ### Step 3: Check Frontend Response
 
 In browser console, you should see:
+
 ```
 Verification request submitted: {
   success: true,

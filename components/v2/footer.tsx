@@ -2,50 +2,55 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
 import InstagramIcon from "../instagram";
 import XIcon from "../x";
 import TictokIcon from "../tictok";
 import GmailIcon from "../gmail";
 
 export function Footer() {
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setMounted(true);
-  }, []);
-
   return (
-    <footer className="bg-gradient-to-b from-[#EFEFF1] dark:from-[#202024] dark:to-[#0B1837] to-[#CCD9F8] md:pt-20 pb-8 px-4 overflow-hidden text-[#111528] dark:text-white">
+    <footer className="bg-linear-to-b from-[#FFFFFF] to-[#CCD9F8] md:pt-20 pb-8 px-4 overflow-hidden text-[#111528]">
       <div className="container mx-auto ">
-        <div className="flex flex-col lg:flex-row justify-between items-start md:gap-12 mb-5 md:mb-24">
+        <div className="flex flex-col lg:flex-row justify-between items-start md:gap-12 mb-5 md:pb-12 md:border-b border-[#E3E3E3]">
           <div className="lg:w-1/2">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
-              Unlock Borderless Payments <br /> With Chainpaye
+            <h2 className="text-[25px] md:text-[40px] font-medium mb-6 leading-tight text-[#111528]">
+              Unlock Borderless Payments <br className="hidden md:block" /> With
+              Chainpaye
             </h2>
+            <h5 className="text-[#5A5F73] font-medium text-[18px]">
+              Contact us at{" "}
+              <span className="text-[#003DFF]">support@chainpaye.com</span>
+            </h5>
           </div>
 
           <div className="lg:w-1/2 flex flex-col items-start">
-            <p className="text-[18px] text-[#5A5F73] dark:text-[#BDBFC7] mb-8 max-w-md">
-              Add seamless global and on-chain payments to your business with
-              one lightweight integration — we handle compliance, settlement,
-              liquidity, and infrastructure so you can focus on growth.
+            <p className="text-[18px] text-[#5A5F73] mb-8">
+              Join our Community to get latest News and updates about Chainpaye
             </p>
             <Link
               href="#"
-              className="bg-[#003DFF] dark:bg-[#7DA2FF] dark:text-[#00174F] text-white px-8 py-3 rounded-md font-bold text-sm transition-colors whitespace-nowrap flex items-center gap-2"
+              className="bg-[#003DFF] text-white px-8 py-3 rounded-md font-bold text-sm transition-colors whitespace-nowrap flex items-center gap-2"
             >
-              Get in touch with us →
+              Join our community →
             </Link>
           </div>
         </div>
 
         {/* Middle: Links & Socials */}
-        <div className="flex flex-col-reverse md:flex-row justify-between md:items-center mb-2 gap-4 md:gap-8 pt-4  md:dark:border-[#4C4C4C] md:dark:border-t ">
-          <div className="flex gap-8 text-sm font-medium text-gray-[#5A5F73] dark:text-[#BDBFC7] flex-col md:flex-row md:border-none pt-3 md:pt-0 dark:border-[#4C4C4C] dark:border-t">
+        <div className="flex flex-col-reverse md:flex-row justify-between md:items-center mb-2 gap-4 md:gap-8 pt-4  md: md: ">
+          <div className="flex gap-8 text-sm font-medium text-gray-[#5A5F73] flex-col md:flex-row md:border-none pt-3 md:pt-0 w-full">
+            <Link href="/products" className=" transition-colors">
+              Products
+            </Link>
+            <a href="/businesses" className=" transition-colors">
+              Businesses
+            </a>
+            <a href="#how-it-works" className=" transition-colors">
+              How it works
+            </a>
+            <a href="/company" className=" transition-colors">
+              Company
+            </a>
             <a
               href="https://windy-pocket-e02.notion.site/chainpaye-privacy-policy-2efda843c27c805bb749fdec52e22308?pvs=74"
               className=" transition-colors"
@@ -53,33 +58,9 @@ export function Footer() {
             >
               Privacy policy
             </a>
-            <a href="#" className=" transition-colors">
-              Developers
-            </a>
-            <a href="#" className=" transition-colors">
-              Use cases
-            </a>
-            <div className="flex items-center gap-2">
-              <span>Theme</span>
-              <button
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="w-10 h-5 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center px-1 cursor-pointer transition-colors relative"
-                aria-label="Toggle theme"
-              >
-                {mounted && (
-                  <div
-                    className={`w-3 h-3 rounded-full shadow-sm transition-transform duration-200 ${
-                      theme === "dark"
-                        ? "bg-white translate-x-5"
-                        : "bg-orange-400 translate-x-0"
-                    }`}
-                  />
-                )}
-              </button>
-            </div>
           </div>
 
-          <div className="flex gap-6 text-gray-600 dark:text-gray-400">
+          <div className="flex gap-6 text-gray-600 w-full">
             <a
               href="https://www.instagram.com/chainpaye?igsh=djQxM2x4eTRmMGx0&utm_source=qr"
               target="_blank"
@@ -109,7 +90,7 @@ export function Footer() {
         </div>
 
         {/* Bottom: Giant Text & Copyright */}
-        <div className="text-center relative">
+        <div className="text-center relative mt-16">
           <div className="absolute left-1/2 -translate-x-1/2 top-8 z-0 w-full px-4 pointer-events-none flex justify-center">
             <Image
               src="/assets/CHAINPAYE.svg"
@@ -123,19 +104,10 @@ export function Footer() {
 
           <div className="h-24 md:h-48"></div>
 
-          <div className="flex justify-between text-base text-[#5A5F73] dark:text-[#BDBFC7] font-medium px-2 py-4 relative z-10 flex-col md:flex-row items-start gap-4">
-            <div className="flex flex-col items-start text-start">
-              <span>
-                © 2025 Chainpaye <br />
-                By
-              </span>
-              <span>CAPITDAPPS BRIDGE LIMITED</span>
-            </div>
-            <div className="flex flex-col items-start text-start">
-              <span>All Rights Reserved.</span>
-              <span>CAPITDAPPS BRIDGE LIMITED</span>
-            </div>
-            {/* <span></span> */}
+          <div className="flex justify-between text-base text-[#5A5F73] font-medium px-2 py-4 relative z-10 flex-col md:flex-row items-start gap-4">
+            <h3>©{new Date().getFullYear()} Chainpaye</h3>
+            <h3>Chainpaye is a product of Capita Dapps Bridge Limited</h3>
+            <h3>All Rights Reserved.</h3>
           </div>
         </div>
       </div>

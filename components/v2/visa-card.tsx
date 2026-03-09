@@ -6,7 +6,7 @@ import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import clsx from "clsx";
 
-const HIGHLIGHTED_CELLS = [20, 21, 41,42, 13, 6];
+const HIGHLIGHTED_CELLS = [20, 21, 41, 42, 13, 6];
 
 const THEMES = [
   {
@@ -55,7 +55,7 @@ export function VisaCard() {
       <div
         className={clsx(
           "relative xl:container mx-auto p-4 md:p-16 md:rounded-2xl md:max-h-[528px] overflow-hidden transition-colors duration-700 ease-in-out  flex flex-col md:flex-row items-center justify-evenly gap-12",
-          theme.bg
+          theme.bg,
         )}
       >
         <div className="absolute inset-0 grid grid-cols-[repeat(20,1fr)] grid-rows-6 pointer-events-none">
@@ -66,7 +66,7 @@ export function VisaCard() {
                 "border-[0.5px] border-black/5 transition-colors duration-700",
                 HIGHLIGHTED_CELLS.includes(i)
                   ? theme.gridHighlight
-                  : theme.gridColor
+                  : theme.gridColor,
               )}
             />
           ))}
@@ -93,7 +93,7 @@ export function VisaCard() {
           <div
             className={clsx(
               "w-full md:w-1/2 transition-colors duration-700",
-              theme.textColor
+              theme.textColor,
             )}
           >
             <h2 className="text-4xl md:text-[40px] font-bold mb-3 leading-tight">
@@ -103,7 +103,7 @@ export function VisaCard() {
             <p
               className={clsx(
                 "text-base md:text-lg mb-3 font-medium transition-colors duration-700",
-                theme.subTextColor
+                theme.subTextColor,
               )}
             >
               Spend your stablecoins like cash in over 80+ countries{" "}
@@ -113,7 +113,7 @@ export function VisaCard() {
             <p
               className={clsx(
                 "text-lg font-bold mb-8 transition-colors duration-700",
-                theme.subTextColor
+                theme.subTextColor,
               )}
             >
               No need for Offramps

@@ -3,67 +3,41 @@
 import { useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import clsx from "clsx";
+import Image from "next/image";
 
 const CARDS = [
   {
-    id: "individuals",
-    title: "For Individuals",
-    content: (
-      <>
-        <p className="text-xs text-gray-500 mb-4 leading-relaxed">
-          Send and receive money instantly, no extra apps needed.
-        </p>
-        <p className="text-xs text-gray-500 leading-relaxed">
-          Pay friends, family, or split bills with Chainpaye fast, secure, and
-          easy.
-        </p>
-      </>
-    ),
-  },
-  {
-    id: "businesses",
-    title: "For Businesses",
-    content: (
-      <>
-        <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">
-          Leverage our APIs to scale your business while accepting global
-          payments in USD 🇺🇸, EUR 🇪🇺, GBP 🇬🇧 — and more coming soon.
-        </p>
-        <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-          Funds are automatically converted into NGN 🇳🇬, GHS 🇬🇭, or KES 🇰🇪 at
-          real-time rates.
-        </p>
-      </>
-    ),
+    id: "families",
+    title: "For Families",
+    titleColor: "text-[#3D5AFE]",
+    bgColor: "bg-[#D9EBED]",
+    image: "/assets/family.svg",
+    description: "Receive remittances instantly.",
   },
   {
     id: "freelancers",
     title: "For Freelancers & Creators",
-    content: (
-      <>
-        <p className="text-xs text-gray-500 mb-4 leading-relaxed">
-          Generate a payment link using Chainpaye and get settled in less than a
-          minute.
-        </p>
-        <p className="text-xs text-gray-500 leading-relaxed">
-          Clients pay through a bank card or bank transfers for US 🇺🇸 while EUR
-          🇪🇺 and GBP 🇬🇧 users. Bank card strictly
-        </p>
-      </>
-    ),
+    titleColor: "text-[#189A00]",
+    bgColor: "bg-[#F0E6CB]",
+    image: "/assets/freelancer.svg",
+    description:
+      "Generate a payment link using Chainpaye and get settled in less than a minute.",
   },
   {
-    id: "developers",
-    title: "For Developers",
-    content: (
-      <>
-        <p className="text-xs text-gray-500 mb-4 leading-relaxed">
-          Integrate payments in a few lines of code. Access full API
-          documentation, webhooks, and sandbox testing to power global
-          transactions securely.
-        </p>
-      </>
-    ),
+    id: "businesses",
+    title: "For Businesses",
+    titleColor: "text-[#FF4421]",
+    bgColor: "bg-[#FFEFE2]",
+    image: "/assets/business.svg",
+    description: "Collect international payments with payment links.",
+  },
+  {
+    id: "crypto",
+    title: "Crypto Holders",
+    titleColor: "text-[#189A00]",
+    bgColor: "bg-[#F0F9F9]", // Mint
+    image: "/assets/crypto.svg",
+    description: "Off-ramp safely into local currency.",
   },
 ];
 
@@ -82,31 +56,29 @@ export function RealWorld() {
     const len = CARDS.length;
     const diff = (index - activeIndex + len) % len;
 
-    const shadowClass = "shadow-[0_-20px_60px_-15px_rgba(0,0,0,0.3)]";
+    const shadowClass = "shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)]";
 
     if (diff === 0) {
       return clsx(
-        "z-30 scale-110 translate-x-0 translate-y-8 rotate-0 opacity-100",
-        "bg-white dark:bg-[#1A1A1E] border-gray-200 dark:border-gray-700",
-        "w-[340px] md:w-[420px] h-[280px]",
-        shadowClass
+        "z-30 scale-90 translate-x-0 translate-y-4 rotate-0 opacity-100",
+        "w-[340px] md:w-[420px] h-[450px] shadow-2xl",
+        shadowClass,
       );
     } else if (diff === 1) {
       return clsx(
-        "z-20 scale-95 translate-x-[10%] md:translate-x-[105%] translate-y-4 -rotate-12 opacity-100",
-        "bg-gray-50 dark:bg-[#151518] border-gray-100 dark:border-gray-800",
-        "w-[340px] md:w-[400px] h-[250px] cursor-pointer hover:z-25",
-        shadowClass
+        "z-20 scale-80 translate-x-[40%] md:translate-x-[75%] translate-y-0 -rotate-6 opacity-80",
+        "w-[340px] md:w-[400px] h-[420px] cursor-pointer hover:z-25",
+        shadowClass,
       );
     } else if (diff === len - 1) {
       return clsx(
-        "z-20 scale-95 -translate-x-[10%] md:-translate-x-[105%] translate-y-4 rotate-12 opacity-100",
-        "bg-gray-50 dark:bg-[#151518] border-gray-100 dark:border-gray-800",
-        "w-[340px] md:w-[400px] h-[250px] cursor-pointer hover:z-25",
-        shadowClass
+        "z-20 scale-80 -translate-x-[40%] md:-translate-x-[75%] translate-y-0 rotate-6 opacity-80",
+        "w-[340px] md:w-[400px] h-[420px] cursor-pointer hover:z-25",
+        shadowClass,
       );
     } else {
-      return "z-10 scale-75 opacity-0 pointer-events-none translate-y-10 w-[300px]";
+      // The 4th card (opposite of active)
+      return "z-10 scale-50 opacity-0 pointer-events-none translate-y-20 w-[300px]";
     }
   };
 
@@ -118,55 +90,80 @@ export function RealWorld() {
   };
 
   return (
-    <section
-      id="use-cases"
-      className="pt-24 md:pt-10 px-4 overflow-hidden bg-[#F8F9FA] dark:bg-[#202024]"
-    >
+    <section className="pt-24 md:pb-12 px-4 overflow-hidden bg-white">
       <div className="container mx-auto max-w-6xl text-center">
-        <h2 className="text-3xl font-bold mb-4 text-[#111528] dark:text-white">
-          Real world application
+        <div className="inline-flex items-center px-4 py-1.5 rounded-full border border-[#D1D5DB] bg-white text-[#5A5F73] text-lg font-medium shadow-sm mb-6 uppercase tracking-wider">
+          USE CASES
+        </div>
+        <h2 className="text-3xl md:text-[40px] font-medium text-[#111528]">
+          WHO IT&apos;S FOR
         </h2>
-        <p className="dark:text-[#BDBFC7] text-[#5A5F73]">
-          Chainpaye by CAPITDAPPS BRIDGE LIMITED
-        </p>
       </div>
 
-      <div className="container mx-auto max-w-7xl mb-12 relative">
-        <div className="relative h-[450px] md:h-[400px] flex justify-center items-center perspective-1000">
-          {CARDS.map((card, index) => (
-            <div
-              key={card.id}
-              onClick={() => handleCardClick(index)}
-              className={clsx(
-                "absolute p-6 rounded-[32px] border transition-all duration-700 ease-in-out flex flex-col justify-start text-left",
-                getCardStyle(index)
-              )}
-            >
-              <h4 className="font-bold mb-4 text-xl md:text-2xl">
-                {card.title}
-              </h4>
-              <div className="text-sm font-medium md:text-base text-gray-[#111528] dark:text-gray-400 leading-relaxed">
-                {card.content}
+      <div className="container mx-auto max-w-7xl relative">
+        <div className="relative h-[500px] flex justify-center items-center">
+          {CARDS.map((card, index) => {
+            const isActive = index === activeIndex;
+            return (
+              <div
+                key={card.id}
+                onClick={() => handleCardClick(index)}
+                className={clsx(
+                  "absolute p-8 rounded-[40px] border transition-all duration-700 ease-in-out flex flex-col items-center text-center justify-between",
+                  card.bgColor,
+                  `${index === 1 ? "border-[#D79D00]" : index === 2 ? "border-[#F36D00]" : index === 3 ? "border-[#15A0AF]" : "border-[#15A0AF]"}`,
+                  getCardStyle(index),
+                )}
+              >
+                <div className="relative w-fit aspect-square flex items-center justify-center mb-6">
+                  <div
+                    className={clsx(
+                      "relative w-64 h-64 transition-transform duration-700",
+                      isActive ? "rotate-0 scale-100" : "scale-90 opacity-60",
+                    )}
+                  >
+                    <Image
+                      src={card.image}
+                      alt={card.title}
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                </div>
+
+                <div className="w-full">
+                  <h4
+                    className={clsx(
+                      "font-medium mb-3 text-base",
+                      card.titleColor,
+                    )}
+                  >
+                    {card.title}
+                  </h4>
+                  <p className="text-sm font-medium text-[#5A5F73] leading-snug">
+                    {card.description}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Navigation Arrows */}
-        <div className="flex justify-center gap-4 mt-2 md:mt-4 md:mb-32">
+        <div className="flex justify-center gap-4 mt-8">
           <button
             onClick={prevCard}
-            className="w-11 h-11 rounded-full bg-[#EFEFF1] dark:bg-[#4C4C4C] flex items-center justify-center hover:bg-gray-200 dark:hover:bg-white/20 transition-colors"
+            className={`${activeIndex === 0 ? "opacity-50" : ""} w-8 h-8 md:w-12 md:h-12 rounded-full bg-[#E3E3E3] flex items-center justify-center hover:bg-gray-200 transition-colors shadow-sm`}
             aria-label="Previous card"
           >
-            <ArrowLeft className="w-6 h-6 text-gray-600 dark:text-white" />
+            <ArrowLeft className="w-6 h-6 text-gray-600" />
           </button>
           <button
             onClick={nextCard}
-            className="w-11 h-11 rounded-full bg-[#EFEFF1] dark:bg-[#4C4C4C] flex items-center justify-center hover:bg-gray-200 dark:hover:bg-white/20 transition-colors"
+            className={`${activeIndex === CARDS.length - 1 ? "opacity-50" : ""} w-8 h-8 md:w-12 md:h-12 rounded-full bg-[#E3E3E3] flex items-center justify-center hover:bg-gray-200 transition-colors shadow-sm`}
             aria-label="Next card"
           >
-            <ArrowRight className="w-6 h-6 text-gray-600 dark:text-white" />
+            <ArrowRight className="w-6 h-6 text-gray-600" />
           </button>
         </div>
       </div>

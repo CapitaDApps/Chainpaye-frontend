@@ -3,7 +3,9 @@
 ## ✅ What's Done
 
 ### Frontend (Complete)
+
 All frontend changes have been implemented:
+
 - ✅ Email field added to bank transfer form
 - ✅ Email validation added
 - ✅ Verification pending screen created
@@ -11,7 +13,9 @@ All frontend changes have been implemented:
 - ✅ Success screen shows when payment confirmed
 
 ### Backend (Needs Implementation)
+
 Backend code is ready to copy/paste. See files:
+
 - `BACKEND_CODE_COMPLETE.txt` - Part 1 (services)
 - `BACKEND_CODE_PART2.txt` - Part 2 (routes, cron, config)
 
@@ -20,6 +24,7 @@ Backend code is ready to copy/paste. See files:
 ## 🚀 How It Works
 
 ### User Flow:
+
 1. User enters name, phone, **email** on bank transfer form
 2. User clicks "I've sent the money"
 3. Frontend submits to `/api/v1/transactions/:id/verify`
@@ -29,6 +34,7 @@ Backend code is ready to copy/paste. See files:
 7. **If not confirmed:** User can close page, will receive email
 
 ### Backend Flow:
+
 1. `/verify` endpoint saves sender info
 2. Starts immediate verification (15 min, every 3 seconds)
 3. Cron job continues hourly checks (after 15 min, until 24 hours)
@@ -43,11 +49,13 @@ Backend code is ready to copy/paste. See files:
 ## 📋 Backend Implementation Checklist
 
 ### Step 1: Install Dependencies
+
 ```bash
 npm install nodemailer @types/nodemailer
 ```
 
 ### Step 2: Create New Files
+
 Copy code from `BACKEND_CODE_COMPLETE.txt` and `BACKEND_CODE_PART2.txt`:
 
 - [ ] `services/verification.service.ts`
@@ -57,32 +65,38 @@ Copy code from `BACKEND_CODE_COMPLETE.txt` and `BACKEND_CODE_PART2.txt`:
 ### Step 3: Update Existing Files
 
 **models/Transaction.ts:**
+
 - [ ] Add 3 new fields: `lastVerificationCheck`, `expiresAt`, `verificationStartedAt`
 - [ ] Add 2 new indexes
 
 **routes/transactions.ts:**
+
 - [ ] Add `POST /api/v1/transactions/:id/verify` endpoint
 - [ ] Add `GET /api/v1/transactions/:id/status` endpoint
 - [ ] Add `startImmediateVerification` helper function
 - [ ] Import verification service at top
 
 **server.ts:**
+
 - [ ] Import `startVerificationCron`
 - [ ] Call `startVerificationCron()` on startup
 
 **.env:**
+
 - [ ] Add `GMAIL_USER`
 - [ ] Add `GMAIL_APP_PASSWORD`
 - [ ] Add `TORONET_ADMIN`
 - [ ] Add `TORONET_ADMIN_PWD`
 
 ### Step 4: Get Gmail App Password
+
 1. [ ] Enable 2FA on Google account
 2. [ ] Go to https://myaccount.google.com/apppasswords
 3. [ ] Generate app password for "Mail"
 4. [ ] Copy 16-character password to `.env`
 
 ### Step 5: Test
+
 - [ ] Submit payment verification request
 - [ ] Check console logs (should see "Starting immediate verification")
 - [ ] Verify checks happen every 3 seconds
@@ -118,11 +132,13 @@ Copy code from `BACKEND_CODE_COMPLETE.txt` and `BACKEND_CODE_PART2.txt`:
 ## 📧 Email Templates
 
 ### Confirmation Email:
+
 - Subject: "✅ Payment Confirmed - ChainPaye Receipt"
 - Contains: Full receipt with transaction details
 - Button: "View Full Receipt" (links to successUrl)
 
 ### Expiration Email:
+
 - Subject: "⏰ Payment Verification Expired - ChainPaye"
 - Contains: Transaction ID, amount, support contact
 
@@ -131,22 +147,26 @@ Copy code from `BACKEND_CODE_COMPLETE.txt` and `BACKEND_CODE_PART2.txt`:
 ## 🐛 Troubleshooting
 
 ### Email not sending?
+
 - Check Gmail credentials in `.env`
 - Verify 2FA is enabled
 - Regenerate App Password
 - Check console for error messages
 
 ### Immediate verification not starting?
+
 - Check `/verify` endpoint logs
 - Verify `startImmediateVerification` is called
 - Check for errors in console
 
 ### Cron job not running?
+
 - Verify `startVerificationCron()` is called in server.ts
 - Check console for "Starting verification cron job" message
 - Wait 1 hour and check logs
 
 ### Frontend not showing success?
+
 - Check `/status` endpoint is working
 - Verify polling is active (check console)
 - Check transaction state in database
@@ -195,6 +215,7 @@ frontend/
 ## 📞 Support
 
 If you encounter issues:
+
 1. Check console logs (both frontend and backend)
 2. Verify environment variables are set
 3. Test email sending separately
