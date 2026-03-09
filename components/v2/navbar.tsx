@@ -103,13 +103,6 @@ export function Navbar({ variant = "default" }: NavbarProps) {
               Businesses
             </Link>
             <Link
-              href="#use-cases"
-              className={`text-base font-medium ${isDark ? "text-white" : "text-[#111528]"}`}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Use cases
-            </Link>
-            <Link
               href="/company"
               className={`text-base font-medium ${isDark ? "text-white" : "text-[#111528]"}`}
               onClick={() => setMobileMenuOpen(false)}

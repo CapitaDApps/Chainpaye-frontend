@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowLeft, Copy, Check } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export interface BankTransferProps {
   onSent: () => void;
@@ -33,6 +33,48 @@ export function BankTransfer({
   isSubmitting,
 }: BankTransferProps) {
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [timeLeft, setTimeLeft] = useState<number | null>(null);
+
+  // Persistence Key
+  const STORAGE_KEY = `payment_expiry_${paymentData.transactionId}`;
+
+  useEffect(() => {
+    // Only run if NGN and in browser
+    if (paymentData.currency !== "NGN" || typeof window === "undefined") return;
+
+    let expiry = localStorage.getItem(STORAGE_KEY);
+    
+    if (!expiry) {
+      // Set to 30 minutes from now
+      const newExpiry = Date.now() + 30 * 60 * 1000;
+      localStorage.setItem(STORAGE_KEY, newExpiry.toString());
+      expiry = newExpiry.toString();
+    }
+
+    const expiryTime = parseInt(expiry);
+    
+    const updateTimer = () => {
+      const now = Date.now();
+      const diff = Math.max(0, expiryTime - now);
+      setTimeLeft(diff);
+      
+      if (diff === 0) {
+        clearInterval(interval);
+      }
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+
+    return () => clearInterval(interval);
+  }, [paymentData.transactionId, paymentData.currency, STORAGE_KEY]);
+
+  const formatTime = (ms: number) => {
+    const totalSeconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  };
 
   const copyToClipboard = (text: string, field: string) => {
     navigator.clipboard.writeText(text);
@@ -113,7 +155,7 @@ export function BankTransfer({
         )}
         {isNGN && (
           <div className="text-xs text-blue-500">
-            Account number expires in 30 Mins
+            Transaction expires in {timeLeft !== null ? formatTime(timeLeft) : "30:00"} Mins
           </div>
         )}
       </div>

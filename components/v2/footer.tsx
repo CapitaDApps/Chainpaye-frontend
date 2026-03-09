@@ -19,7 +19,7 @@ export function Footer() {
             </h2>
             <h5 className="text-[#5A5F73] font-medium text-[18px]">
               Contact us at{" "}
-              <span className="text-[#003DFF]">support@chainpaye.com</span>
+              <span className="text-[#003DFF]">business@chainpaye.com</span>
             </h5>
           </div>
 
@@ -81,7 +81,7 @@ export function Footer() {
               <TictokIcon />
             </a>
             <a
-              href="mailto:support@chainpaye.com"
+              href="mailto:business@chainpaye.com"
               className="hover:text-red-600 transition-colors"
             >
               <GmailIcon />
@@ -106,7 +106,7 @@ export function Footer() {
 
           <div className="flex justify-between text-base text-[#5A5F73] font-medium px-2 py-4 relative z-10 flex-col md:flex-row items-start gap-4">
             <h3>©{new Date().getFullYear()} Chainpaye</h3>
-            <h3>Chainpaye is a product of Capita Dapps Bridge Limited</h3>
+            <h3 className="text-start">Chainpaye is a product of Capita Dapps Bridge Limited</h3>
             <h3>All Rights Reserved.</h3>
           </div>
         </div>

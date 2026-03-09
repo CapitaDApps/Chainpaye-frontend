@@ -60,19 +60,19 @@ export function RealWorld() {
 
     if (diff === 0) {
       return clsx(
-        "z-30 scale-90 translate-x-0 translate-y-4 rotate-0 opacity-100",
+        "z-30 md:scale-90 scale-70 translate-x-0 translate-y-4 rotate-0 opacity-100",
         "w-[340px] md:w-[420px] h-[450px] shadow-2xl",
         shadowClass,
       );
     } else if (diff === 1) {
       return clsx(
-        "z-20 scale-80 translate-x-[40%] md:translate-x-[75%] translate-y-0 -rotate-6 opacity-80",
+        "z-20 md:scale-80 scale-60 translate-x-[40%] md:translate-x-[75%] translate-y-0 -rotate-6 opacity-80",
         "w-[340px] md:w-[400px] h-[420px] cursor-pointer hover:z-25",
         shadowClass,
       );
     } else if (diff === len - 1) {
       return clsx(
-        "z-20 scale-80 -translate-x-[40%] md:-translate-x-[75%] translate-y-0 rotate-6 opacity-80",
+        "z-20 md:scale-80 scale-60 -translate-x-[40%] md:-translate-x-[75%] translate-y-0 rotate-6 opacity-80",
         "w-[340px] md:w-[400px] h-[420px] cursor-pointer hover:z-25",
         shadowClass,
       );
@@ -90,7 +90,7 @@ export function RealWorld() {
   };
 
   return (
-    <section className="pt-24 md:pb-12 px-4 overflow-hidden bg-white">
+    <section className="my-20 md:mt-0 md:pt-24 md:pb-12 px-4 overflow-hidden bg-white">
       <div className="container mx-auto max-w-6xl text-center">
         <div className="inline-flex items-center px-4 py-1.5 rounded-full border border-[#D1D5DB] bg-white text-[#5A5F73] text-lg font-medium shadow-sm mb-6 uppercase tracking-wider">
           USE CASES
@@ -101,7 +101,7 @@ export function RealWorld() {
       </div>
 
       <div className="container mx-auto max-w-7xl relative">
-        <div className="relative h-[500px] flex justify-center items-center">
+        <div className="relative h-[400px] md:h-[500px] flex justify-center items-center">
           {CARDS.map((card, index) => {
             const isActive = index === activeIndex;
             return (
@@ -109,7 +109,7 @@ export function RealWorld() {
                 key={card.id}
                 onClick={() => handleCardClick(index)}
                 className={clsx(
-                  "absolute p-8 rounded-[40px] border transition-all duration-700 ease-in-out flex flex-col items-center text-center justify-between",
+                  "absolute p-8 rounded-[23px] border transition-all duration-700 ease-in-out flex flex-col items-center text-center justify-between",
                   card.bgColor,
                   `${index === 1 ? "border-[#D79D00]" : index === 2 ? "border-[#F36D00]" : index === 3 ? "border-[#15A0AF]" : "border-[#15A0AF]"}`,
                   getCardStyle(index),

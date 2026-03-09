@@ -8,9 +8,9 @@ import { StablecoinFeature } from "./features/stablecoin-feature";
 
 export function Features() {
   return (
-    <section className="px-4 bg-white">
+    <section className="px-4 bg-white mt-14 md:mt-0">
       <div className="container mx-auto max-w-112.5 md:max-w-7xl">
-        <div className="text-center mb-16">
+        <div className="text-center md:mb-16">
           <h2 className="text-[#111528] md:text-[40px] font-medium mb-4">
             CORE FEATURES
           </h2>

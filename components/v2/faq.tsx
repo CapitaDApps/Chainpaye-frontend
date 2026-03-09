@@ -19,7 +19,9 @@ const faqs = [
   {
     question: "What are the fees?",
     answer:
-      "1.5% capped at ₦2500 on all transactions and 100% free for Chainpaye to Chainpaye transfers.",
+      `Cross-border: 1.5% fee (capped at ₦2,500) \n 
+Crypto–Fiat: $0.75 per transaction\n
+In-app transfers: Free`,
   },
   {
     question: "Do I need a wallet?",
@@ -50,7 +52,7 @@ export function FAQ() {
           <p className="text-[#5A5F73] text-base md:text-lg font-medium">
             Got any more questions? Click{" "}
             <Link
-              href="mailto:support@chainpaye.com"
+              href="mailto:business@chainpaye.com"
               className="text-[#003DFF] underline"
             >
               here
