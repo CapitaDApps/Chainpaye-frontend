@@ -11,14 +11,15 @@ export function Footer() {
   return (
     <footer className="bg-linear-to-b from-[#FFFFFF] to-[#CCD9F8] md:pt-20 pb-8 px-4 overflow-hidden text-[#111528]">
       <div className="container mx-auto ">
-        <div className="flex flex-col lg:flex-row justify-between items-start md:gap-12 mb-5 md:pb-12 border-b border-[#E3E3E3]">
+        <div className="flex flex-col lg:flex-row justify-between items-start md:gap-12 mb-5 md:pb-12 md:border-b border-[#E3E3E3]">
           <div className="lg:w-1/2">
-            <h2 className="text-4xl md:text-[40px] font-medium mb-6 leading-tight text-[#111528]">
-              Unlock Borderless Payments <br /> With Chainpaye
+            <h2 className="text-[25px] md:text-[40px] font-medium mb-6 leading-tight text-[#111528]">
+              Unlock Borderless Payments <br className="hidden md:block" /> With
+              Chainpaye
             </h2>
             <h5 className="text-[#5A5F73] font-medium text-[18px]">
               Contact us at{" "}
-              <span className="text-[#003DFF]">business@chainpaye.com</span>
+              <span className="text-[#003DFF]">support@chainpaye.com</span>
             </h5>
           </div>
 
@@ -38,13 +39,13 @@ export function Footer() {
         {/* Middle: Links & Socials */}
         <div className="flex flex-col-reverse md:flex-row justify-between md:items-center mb-2 gap-4 md:gap-8 pt-4  md: md: ">
           <div className="flex gap-8 text-sm font-medium text-gray-[#5A5F73] flex-col md:flex-row md:border-none pt-3 md:pt-0 w-full">
-            <a href="#" className=" transition-colors">
+            <Link href="/products" className=" transition-colors">
               Products
-            </a>
+            </Link>
             <a href="/businesses" className=" transition-colors">
               Businesses
             </a>
-            <a href="#" className=" transition-colors">
+            <a href="#how-it-works" className=" transition-colors">
               How it works
             </a>
             <a href="/company" className=" transition-colors">

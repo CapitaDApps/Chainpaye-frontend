@@ -4,7 +4,7 @@ import { AboutHero } from "@/components/about/about-hero";
 import { AboutAbout } from "@/components/about/about-about";
 import { AboutTeam } from "@/components/about/about-team";
 import { AboutRoadmap } from "@/components/about/about-roadmap";
-import { AboutInvestors } from "@/components/about/about-investors";
+import { Investors } from "@/components/v2/investors";
 
 export default function CompanyPage() {
   return (
@@ -15,7 +15,7 @@ export default function CompanyPage() {
         <AboutAbout />
         <AboutTeam />
         <AboutRoadmap />
-        <AboutInvestors />
+        <Investors />
       </div>
       <Footer />
     </main>

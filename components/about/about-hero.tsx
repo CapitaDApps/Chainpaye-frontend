@@ -4,7 +4,7 @@ export function AboutHero() {
   return (
     <section className="bg-[#0B3C6D] text-white overflow-hidden pt-32 pb-24 relative min-h-[65vh] flex items-center">
       <div
-        className="absolute pointer-events-none hidden md:block"
+        className="absolute pointer-events-none"
         style={{ top: 0, bottom: 0, right: 0, width: "100%", height: "100%" }}
       >
         <Image

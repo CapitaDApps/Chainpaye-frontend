@@ -41,9 +41,7 @@ export function AnimatedApiUi() {
             : "opacity-0 scale-95 pointer-events-none"
         }`}
       >
-        <div className="text-sm font-medium text-gray-500 mb-2">
-          API Key
-        </div>
+        <div className="text-sm font-medium text-gray-500 mb-2">API Key</div>
         <div className="border border-gray-600 rounded-lg p-3 flex items-center justify-between">
           <div
             className={`font-mono text-sm text-gray-600 transition-all duration-300 ${
@@ -64,24 +62,18 @@ export function AnimatedApiUi() {
       {/* Deposit 1: Bethy */}
       <div
         className={`absolute left-4 right-4 rounded-xl p-3 flex items-center gap-3 transition-all duration-500 ${
-          globalApiStep >= 2
-            ? "opacity-100 top-4"
-            : "opacity-0 -top-full"
+          globalApiStep >= 2 ? "opacity-100 top-4" : "opacity-0 -top-full"
         }`}
       >
         <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0 text-blue-600 font-bold text-xs">
           B
         </div>
         <div className="flex-1 min-w-0">
-          <div className="text-xs text-gray-500">
-            From Bethy/Vendor
-          </div>
+          <div className="text-xs text-gray-500">From Bethy/Vendor</div>
           <div className="text-xs text-gray-400">22 April</div>
         </div>
         <div className="text-right">
-          <div className="text-sm font-bold text-gray-900">
-            +$10,000.00
-          </div>
+          <div className="text-sm font-bold text-gray-900">+$10,000.00</div>
           <div className="text-[10px] text-green-500 font-medium">
             Successful
           </div>
@@ -109,9 +101,7 @@ export function AnimatedApiUi() {
           <div className="text-xs text-gray-400">24 April</div>
         </div>
         <div className="text-right">
-          <div className="text-sm font-bold text-gray-900">
-            +£245.00
-          </div>
+          <div className="text-sm font-bold text-gray-900">+£245.00</div>
           <div className="text-[10px] text-green-500 font-medium">
             Successful
           </div>

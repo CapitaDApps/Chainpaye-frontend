@@ -38,14 +38,14 @@ const TEAM_MEMBERS = [
 
 export function AboutTeam() {
   return (
-    <section className="py-20 px-4 bg-white">
+    <section className="py-12 md:py-20 px-4 bg-white">
       <div className="container mx-auto">
         {/* Section header */}
         <div className="mb-10">
-          <div className="inline-block border border-[#D1D5DB] bg-white rounded-full px-3 py-1 text-lg font-medium text-[#5A5F73] mb-4 tracking-wide shadow-[0_8px_24px_rgba(0,0,0,0.15)]">
+          <div className="inline-block border border-[#D1D5DB] bg-white rounded-full px-3 py-1 text-lg font-medium text-[#5A5F73] mb-4 tracking-wide shadow-sm">
             Leadership Team
           </div>
-          <h2 className="text-3xl md:text-4xl font-medium text-[#111528]">
+          <h2 className="text-[25px] md:text-4xl font-medium text-[#111528]">
             Meet the people behind the work
           </h2>
         </div>

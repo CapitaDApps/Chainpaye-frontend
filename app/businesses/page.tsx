@@ -11,7 +11,7 @@ export default function BusinessesPage() {
   return (
     <div className="min-h-screen bg-[#F8F9FA] flex flex-col font-sans">
       <Navbar />
-      
+
       <main className="flex-1 pt-24 md:pt-32 pb-16">
         <BusinessHero />
         <BusinessHowItWorks />

@@ -1,4 +1,4 @@
-export default function XIcon({size = 32}: {size?: number}) {
+export default function XIcon({ size = 32 }: { size?: number }) {
   return (
     <svg
       width={size}
