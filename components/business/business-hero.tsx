@@ -1,6 +1,7 @@
 "use client";
 
 import { Phone } from "lucide-react";
+import Link from "next/link";
 import React from "react";
 
 export function BusinessHero() {
@@ -17,15 +18,15 @@ export function BusinessHero() {
             instantly in your local currency. Simple setup, no tools to learn.
           </p>
           <div className="flex justify-center md:justify-start">
-            <a
-              href="https://calendly.com/chainpaye"
+            <Link
+              href="https://calendly.com/business-chainpaye/30min"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 bg-[#003DFF] text-white px-8 py-3.5 rounded-lg font-medium transition-colors hover:bg-blue-700 w-full sm:w-auto"
             >
               <Phone className="w-5 h-5" />
               Book a call
-            </a>
+            </Link>
           </div>
         </div>
 

@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 
 const COUNTRIES = {
-  USA: { id: "usa", name: "USA", src: "/assets/usa.svg", x: "20%", y: "25%" },
+  USA: { id: "usa", name: "USA", src: "/assets/usa.svg", x: "22%", y: "30%" },
   UK: { id: "uk", name: "UK", src: "/assets/uk.svg", x: "65%", y: "20%" },
   NIGERIA: {
     id: "nigeria",
@@ -19,19 +19,59 @@ const COUNTRIES = {
     name: "Ghana",
     src: "/assets/ghana.svg",
     x: "55%",
-    y: "55%",
+    y: "65%",
   },
 };
 
+type SubStep = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+
 export function HeroAnimation() {
-  const [step, setStep] = useState(0);
+  const [linkIndex, setLinkIndex] = useState(0); // 0: USA-NG, 1: UK-GH
+  const [subStep, setSubStep] = useState<SubStep>(0);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setStep((prev) => (prev + 1) % 2);
-    }, 6000); // 6s per cycle (USA-NG, then UK-GH)
-    return () => clearInterval(timer);
+    const sequence = [
+      { step: 0, duration: 1000 }, // ALL_VISIBLE
+      { step: 1, duration: 500 },  // TARGET_BORDER
+      { step: 2, duration: 500 },  // SOURCE_BORDER
+      { step: 3, duration: 1000 }, // SHOW_LINE
+      { step: 4, duration: 2500 }, // SHOW_NOTIF + HIDE_EXTRA
+      { step: 5, duration: 500 },  // HIDE_NOTIF
+      { step: 6, duration: 800 },  // RESET (increased for smooth transition)
+    ];
+
+    let current = 0;
+    let timeoutId: NodeJS.Timeout;
+
+    const runSequence = () => {
+      const { step, duration } = sequence[current];
+      setSubStep(step as SubStep);
+      
+      timeoutId = setTimeout(() => {
+        current = (current + 1) % sequence.length;
+        if (current === 0) {
+          setLinkIndex((prev) => (prev + 1) % 2);
+        }
+        runSequence();
+      }, duration);
+    };
+
+    runSequence();
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, []);
+
+  const isUsaNg = linkIndex === 0;
+  const source = isUsaNg ? COUNTRIES.USA : COUNTRIES.UK;
+  const target = isUsaNg ? COUNTRIES.NIGERIA : COUNTRIES.GHANA;
+
+  // Animation States
+  const targetHasBorder = subStep >= 1 && subStep < 6;
+  const sourceHasBorder = subStep >= 2 && subStep < 6;
+  const lineVisible = subStep >= 3 && subStep < 6;
+  const extraHidden = subStep >= 4 && subStep < 6;
+  const notificationVisible = subStep === 4;
 
   return (
     <div className="relative w-full h-full flex items-center justify-center">
@@ -45,74 +85,59 @@ export function HeroAnimation() {
         />
       </div>
 
-      <AnimatePresence mode="wait">
-        {step === 0 ? (
-          <motion.div
-            key="usa-ng"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.8 }}
-            className="absolute inset-0 z-10"
-          >
-            {/* Country Nodes */}
-            <CountryNode country={COUNTRIES.USA} isActive={true} delay={0.2} />
-            <CountryNode country={COUNTRIES.UK} isActive={false} delay={0.4} />
-            <CountryNode
-              country={COUNTRIES.NIGERIA}
-              isActive={true}
-              delay={0.6}
-            />
-
-            {/* Link Line */}
-            <ConnectionLine
-              start={{ x: "20%", y: "25%" }}
-              end={{ x: "55%", y: "65%" }}
-              delay={1.5}
-            />
-
-            {/* Notification */}
-            <Notification
-              text="Payment Received"
-              subtext="$200 received from John Smith successfully"
-              x="30%"
-              y="65%"
-              delay={2.5}
-            />
-          </motion.div>
-        ) : (
-          <motion.div
-            key="uk-gh"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.8 }}
-            className="absolute inset-0 z-10"
-          >
-            <CountryNode country={COUNTRIES.USA} isActive={false} delay={0.2} />
-            <CountryNode country={COUNTRIES.UK} isActive={true} delay={0.4} />
-            <CountryNode
-              country={COUNTRIES.GHANA}
-              isActive={true}
-              delay={0.6}
-            />
-
-            <ConnectionLine
-              start={{ x: "65%", y: "20%" }}
-              end={{ x: "55%", y: "55%" }}
-              delay={1.5}
-            />
-
-            <Notification
-              text="Payment Successfully"
-              subtext="$50 received from Dada Kofi successfully"
-              x="43%"
-              y="8%"
-              delay={2.5}
-            />
-          </motion.div>
+      <div className="absolute inset-0 z-10">
+        {/* Connection Line (Placed behind logos) */}
+        {lineVisible && (
+          <ConnectionLine
+            key={`line-${linkIndex}`}
+            start={{ x: source.x, y: source.y }}
+            end={{ x: target.x, y: target.y }}
+            isDrawing={subStep >= 3}
+            isUsaNg={isUsaNg}
+          />
         )}
-      </AnimatePresence>
+
+        {/* Stable Country Nodes to prevent scale popping */}
+        {/* 1. USA Node */}
+        <CountryNode
+          key="usa-node"
+          country={COUNTRIES.USA}
+          isActive={source.id === "usa" ? sourceHasBorder : false}
+          isVisible={!(isUsaNg === false && extraHidden)} // Hide extra (USA) during UK-GH notif phase
+        />
+
+        {/* 2. UK Node */}
+        <CountryNode
+          key="uk-node"
+          country={COUNTRIES.UK}
+          isActive={source.id === "uk" ? sourceHasBorder : false}
+          isVisible={!(isUsaNg === true && extraHidden)} // Hide extra (UK) during USA-NG notif phase
+        />
+
+        {/* 3. Africa Destination Node (Swaps Nigeria/Ghana) */}
+        <CountryNode
+          key="africa-node"
+          country={isUsaNg ? COUNTRIES.NIGERIA : COUNTRIES.GHANA}
+          isActive={targetHasBorder}
+          isVisible={true}
+        />
+
+        {/* Notification */}
+        <AnimatePresence>
+          {notificationVisible && (
+            <Notification
+              key={`notif-${linkIndex}`}
+              text={isUsaNg ? "Payment Received" : "Payment Successfully"}
+              subtext={isUsaNg 
+                ? "$200 received from John Smith successfully"
+                : "₵500 received from Dada Kofi successfully"
+              }
+              x={isUsaNg ? "35%" : "40%"} // Close to Ghana midpoint
+              y={isUsaNg ? "65%" : "12%"} // Center of screen
+            />
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }
@@ -133,32 +158,33 @@ interface Position {
 function CountryNode({
   country,
   isActive,
-  delay,
+  isVisible,
 }: {
   country: Country;
   isActive: boolean;
-  delay: number;
+  isVisible: boolean;
 }) {
   return (
     <motion.div
       initial={{ scale: 0, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      transition={{ delay, duration: 0.5, type: "spring" }}
+      animate={{ scale: 1, opacity: isVisible ? 1 : 0 }}
+      exit={{ scale: 0, opacity: 0 }}
+      transition={{ duration: 0.5, type: "spring" }}
       className="absolute flex items-center justify-center translate-x-[-50%] translate-y-[-50%]"
       style={{ left: country.x, top: country.y }}
     >
       <div
         className={`
-        relative w-12 h-12 rounded-2xl flex items-center justify-center  transition-all duration-500
-        ${isActive ? "border-2 border-[#003DFF]" : "border border-[#E5E7EB] opacity-60"}
-      `}
+          relative w-14 h-14 rounded-[4px] flex items-center justify-center overflow-hidden transition-all duration-300
+          ${isActive ? "border-2 border-[#003DFF] shadow-[0_4px_12px_rgba(0,61,255,0.15)]" : "border border-transparent"}
+        `}
       >
         <div className="relative w-full h-full">
           <Image
             src={country.src}
             alt={country.name}
             fill
-            className="object-contain border"
+            className="object-cover"
           />
         </div>
       </div>
@@ -169,35 +195,39 @@ function CountryNode({
 function ConnectionLine({
   start,
   end,
-  delay,
+  isDrawing,
+  isUsaNg,
 }: {
   start: Position;
   end: Position;
-  delay: number;
+  isDrawing: boolean;
+  isUsaNg: boolean;
 }) {
   const sX = parseFloat(start.x);
   const sY = parseFloat(start.y);
   const eX = parseFloat(end.x);
   const eY = parseFloat(end.y);
 
-  // Offset to prevent line from entering the logo (approx 4% in 100x100 view)
-  const offset = 4;
+  // Negative offset to ensure the dotted line starts/ends INSIDE the logo container
+  // This removes any visual gaps since it's behind the opaque logo
+  const offset = -2.5;
   const dx = eX - sX;
   const dy = eY - sY;
-  const angle = Math.atan2(dy, dx);
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  
+  const startX = sX + (dx / dist) * offset;
+  const startY = sY + (dy / dist) * offset;
+  const endX = eX - (dx / dist) * offset;
+  const endY = eY - (dy / dist) * offset;
 
-  const startX = sX + Math.cos(angle) * offset;
-  const startY = sY + Math.sin(angle) * offset;
-  const endX = eX - Math.cos(angle) * offset;
-  const endY = eY - Math.sin(angle) * offset;
-
-  // Calculate control point for a better curve
-  // We want a curve that dips or arches based on the images
+  // Premium Arch Logic: Always dip downwards and push slightly outward
   const midX = (startX + endX) / 2;
   const midY = (startY + endY) / 2;
-  // Push control point away from the center to create a nice arc
-  const cpX = midX + (endY - startY) * 0.1;
-  const cpY = midY - (endX - startX) * 0.1;
+  
+  const archValueY = isUsaNg ? 12 : 8;
+  const archValueX = isUsaNg ? 4 : 8; // Dip slightly out for vertical links
+  const controlPointX = midX + archValueX;
+  const controlPointY = midY + archValueY;
 
   return (
     <svg
@@ -205,14 +235,14 @@ function ConnectionLine({
       className="absolute inset-0 w-full h-full pointer-events-none overflow-visible"
     >
       <motion.path
-        d={`M ${startX} ${startY} Q ${cpX} ${cpY}, ${endX} ${endY}`}
+        d={`M ${startX} ${startY} Q ${controlPointX} ${controlPointY}, ${endX} ${endY}`}
         fill="transparent"
         stroke="#003DFF"
         strokeWidth="0.4"
         strokeDasharray="1.5 1.5"
         initial={{ opacity: 0 }}
-        animate={{ opacity: 0.5 }}
-        transition={{ delay, duration: 0.8 }}
+        animate={{ opacity: isDrawing ? 0.8 : 0 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
       />
     </svg>
   );
@@ -223,24 +253,23 @@ function Notification({
   subtext,
   x,
   y,
-  delay,
 }: {
   text: string;
   subtext: string;
   x: string;
   y: string;
-  delay: number;
 }) {
   return (
     <motion.div
       initial={{ y: 20, opacity: 0, scale: 0.8 }}
       animate={{ y: 0, opacity: 1, scale: 1 }}
-      transition={{ delay, duration: 0.5, type: "spring" }}
+      exit={{ y: 20, opacity: 0, scale: 0.8 }}
+      transition={{ duration: 0.4, type: "spring" }}
       className="absolute z-20 translate-x-[-50%]"
       style={{ left: x, top: y }}
     >
-      <div className="bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] p-3 border border-[#F3F4F6] min-w-60 flex items-center gap-3">
-        <div className="w-10 h-10 rounded-lg bg-[#EEF2FF] flex items-center justify-center flex-shrink-0 relative">
+      <div className="bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] p-3 border border-[#F3F4F6] min-w-64 flex items-center gap-3">
+        <div className="w-10 h-10 rounded-lg bg-[#EEF2FF] flex items-center justify-center shrink-0 relative">
           <svg
             className="w-5 h-5 text-[#4F46E5]"
             viewBox="0 0 24 24"

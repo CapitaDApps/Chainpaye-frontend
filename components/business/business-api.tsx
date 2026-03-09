@@ -1,6 +1,6 @@
 "use client";
 
-import { Braces, ArrowRight } from "lucide-react";
+import { Braces, ArrowRight, Phone } from "lucide-react";
 import Link from "next/link";
 import { AnimatedApiUi } from "../animations/animated-api-ui";
 import Settings from "../settings";
@@ -40,20 +40,23 @@ export function BusinessApi() {
               </span>
             </div>
 
-            <div className="pt-4">
-              <Link
-                href="https://wa.me/message/RB4AEJEFPZE7G1"
-                className="flex w-fit items-center gap-1 text-base bg-[#003DFF] text-white px-8 py-3.5 rounded-lg font-medium transition-colors hover:bg-blue-700"
-              >
-                Get Started <ArrowRight size={18} />
-              </Link>
-            </div>
+          <div className="flex justify-center md:justify-start">
+            <Link
+              href="https://calendly.com/business-chainpaye/30min"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 bg-[#003DFF] text-white px-8 py-3.5 rounded-lg font-medium transition-colors hover:bg-blue-700 w-full sm:w-auto"
+            >
+              <Phone className="w-5 h-5" />
+              Book a call
+            </Link>
+          </div>
           </div>
 
           {/* Right Side: Animated API UI */}
           <div className="w-[500px] px-20">
-            <div className="bg-[#F5F7FA] rounded-lg h-[300px] md:h-[313px] max-w-[500px] relative overflow-hidden flex flex-col justify-center items-center p-6">
-              <div className="relative w-full max-w-md h-44 flex flex-col justify-center items-center">
+            <div className="bg-[#F9FAFB] rounded-lg h-[300px] md:h-[313px] max-w-[550px] relative overflow-hidden flex flex-col justify-center items-center p-6">
+              <div className="relative w-full h-44 flex flex-col justify-center items-center">
                 <AnimatedApiUi />
               </div>
             </div>

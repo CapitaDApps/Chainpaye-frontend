@@ -73,10 +73,10 @@ export function VerificationPending({
       <p className="text-sm text-gray-500 mt-6">
         Need help? Contact{" "}
         <a
-          href="mailto:support@chainpaye.com"
+          href="mailto:business@chainpaye.com"
           className="text-blue-600 hover:underline"
         >
-          support@chainpaye.com
+          business@chainpaye.com
         </a>
       </p>
     </div>

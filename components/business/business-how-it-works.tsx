@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export function BusinessHowItWorks() {
   return (
@@ -30,9 +31,9 @@ export function BusinessHowItWorks() {
                   </span>
                   <p className="text-base text-[#5A5F73] font-medium">
                     Click{" "}
-                    <span className="text-[#003DFF] cursor-pointer underline">
+                    <Link href="https://calendly.com/business-chainpaye/30min" target="_blank" rel="noopener noreferrer" className="text-[#003DFF] cursor-pointer underline">
                       here
-                    </span>{" "}
+                    </Link>{" "}
                     to book a call with our team.
                   </p>
                 </div>

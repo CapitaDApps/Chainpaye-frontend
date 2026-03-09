@@ -21,11 +21,11 @@ const TEAM_MEMBERS = [
     x: "https://x.com/eddybenbenjnr?s=21",
   },
   {
-    name: "Paul Kalu",
+    name: "Paul Kaka",
     role: "Chief Technical Officer (CTO)",
     image: "/assets/cto.png",
     linkedin: "https://www.linkedin.com/in/paul-joseph-kaka-765217228/",
-    x: "#",
+    x: "https://x.com/Pkaka70",
   },
   {
     name: "Blessing Idowu",

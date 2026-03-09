@@ -26,7 +26,7 @@ export function Investors() {
 
             <div className="flex flex-col sm:flex-row items-center gap-6">
               <Link
-                href="https://drive.google.com/file/d/15jTB_uedVm59f5VCY7N0Fe-s1jyH4iO_/view?usp=drivesdkview?usp=drivesdk"
+                href="https://drive.google.com/file/d/1J55IP9IlpSsA5EYiX7tEq42OXfLKslL7/view"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-white text-[#111528] px-6 py-3 rounded-lg font-medium transition-colors hover:bg-gray-100 flex items-center gap-2"
@@ -34,7 +34,7 @@ export function Investors() {
                 View Pitch Deck <ArrowUpRight className="w-4 h-4 ml-1" />
               </Link>
               <Link
-                href="mailto:investors@chainpaye.com"
+                href="mailto:Business@chainpaye.com"
                 className="text-white hover:text-gray-300 transition-colors font-medium flex items-center gap-2"
               >
                 Contact investor relations <Mail className="w-4 h-4 ml-1" />
