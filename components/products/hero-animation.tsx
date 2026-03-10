@@ -32,12 +32,12 @@ export function HeroAnimation() {
   useEffect(() => {
     const sequence = [
       { step: 0, duration: 1000 }, // ALL_VISIBLE
-      { step: 1, duration: 500 },  // TARGET_BORDER
-      { step: 2, duration: 500 },  // SOURCE_BORDER
+      { step: 1, duration: 500 }, // TARGET_BORDER
+      { step: 2, duration: 500 }, // SOURCE_BORDER
       { step: 3, duration: 1000 }, // SHOW_LINE
       { step: 4, duration: 2500 }, // SHOW_NOTIF + HIDE_EXTRA
-      { step: 5, duration: 500 },  // HIDE_NOTIF
-      { step: 6, duration: 800 },  // RESET (increased for smooth transition)
+      { step: 5, duration: 500 }, // HIDE_NOTIF
+      { step: 6, duration: 800 }, // RESET (increased for smooth transition)
     ];
 
     let current = 0;
@@ -46,7 +46,7 @@ export function HeroAnimation() {
     const runSequence = () => {
       const { step, duration } = sequence[current];
       setSubStep(step as SubStep);
-      
+
       timeoutId = setTimeout(() => {
         current = (current + 1) % sequence.length;
         if (current === 0) {
@@ -128,9 +128,10 @@ export function HeroAnimation() {
             <Notification
               key={`notif-${linkIndex}`}
               text={isUsaNg ? "Payment Received" : "Payment Successfully"}
-              subtext={isUsaNg 
-                ? "$200 received from John Smith successfully"
-                : "₵500 received from Dada Kofi successfully"
+              subtext={
+                isUsaNg
+                  ? "$200 received from John Smith successfully"
+                  : "₵500 received from Dada Kofi successfully"
               }
               x={isUsaNg ? "35%" : "40%"} // Close to Ghana midpoint
               y={isUsaNg ? "65%" : "12%"} // Center of screen
@@ -214,7 +215,7 @@ function ConnectionLine({
   const dx = eX - sX;
   const dy = eY - sY;
   const dist = Math.sqrt(dx * dx + dy * dy);
-  
+
   const startX = sX + (dx / dist) * offset;
   const startY = sY + (dy / dist) * offset;
   const endX = eX - (dx / dist) * offset;
@@ -223,7 +224,7 @@ function ConnectionLine({
   // Premium Arch Logic: Always dip downwards and push slightly outward
   const midX = (startX + endX) / 2;
   const midY = (startY + endY) / 2;
-  
+
   const archValueY = isUsaNg ? 12 : 8;
   const archValueX = isUsaNg ? 4 : 8; // Dip slightly out for vertical links
   const controlPointX = midX + archValueX;

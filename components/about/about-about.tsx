@@ -32,7 +32,7 @@ export function AboutAbout() {
                 Our Vision
               </div>
               <p className="text-[#5A5F73] text-base leading-relaxed">
-                To become the global fiat-twins for the modern Africa.
+                To become the global Neo bank for the modern Africa
               </p>
             </div>
 
@@ -41,7 +41,7 @@ export function AboutAbout() {
                 Our Mission
               </div>
               <p className="text-[#5A5F73] text-base leading-relaxed">
-                Build a friction messaging-based settlement layer
+                Build Africa’s messaging-based settlement layer.
               </p>
             </div>
           </div>

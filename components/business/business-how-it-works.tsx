@@ -31,7 +31,12 @@ export function BusinessHowItWorks() {
                   </span>
                   <p className="text-base text-[#5A5F73] font-medium">
                     Click{" "}
-                    <Link href="https://calendly.com/business-chainpaye/30min" target="_blank" rel="noopener noreferrer" className="text-[#003DFF] cursor-pointer underline">
+                    <Link
+                      href="https://calendly.com/business-chainpaye/30min"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#003DFF] cursor-pointer "
+                    >
                       here
                     </Link>{" "}
                     to book a call with our team.

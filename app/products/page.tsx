@@ -2,7 +2,10 @@ import { Navbar } from "@/components/v2/navbar";
 import { Footer } from "@/components/v2/footer";
 import { VisaCard } from "@/components/v2/visa-card";
 import { ProductHero } from "@/components/products/product-hero";
-import { ProductStablecoins } from "@/components/products/product-stablecoins";
+import {
+  ProductStablecoins,
+  ProductStablecoinsTopUp,
+} from "@/components/products/product-stablecoins";
 import { ProductGetPaid } from "@/components/products/product-get-paid";
 
 export default function ProductsPage() {
@@ -14,6 +17,7 @@ export default function ProductsPage() {
         <ProductStablecoins />
         <VisaCard />
         <ProductGetPaid />
+        <ProductStablecoinsTopUp />
       </div>
       <Footer />
     </div>

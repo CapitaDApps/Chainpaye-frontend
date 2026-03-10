@@ -11,7 +11,7 @@ export function CryptoCashout() {
       <div className="px-4 pt-16 mx-auto container md:rounded-2xl md:bg-[#E8EDFF]">
         <FadeIn className="flex flex-col md:flex-row md:max-h-[524px] items-center justify-evenly  xl:gap-24">
           <div className="w-full md:w-fit text-left">
-            <h2 className="text-[25px] xl:text-[40px] font-bold leading-tight text-[#111528] mb-6">
+            <h2 className="text-[25px] md:text-[40px] font-medium leading-tight text-[#111528] mb-6">
               <span className="font-extrabold">Cash out</span> crypto directly{" "}
               <br />
               from WhatsApp.

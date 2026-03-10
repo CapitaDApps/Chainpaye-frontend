@@ -28,7 +28,9 @@ export function Footer() {
               Join our Community to get latest News and updates about Chainpaye
             </p>
             <Link
-              href="#"
+              href="https://t.me/chainpaye"
+              target="_blank"
+              rel="noopener noreferrer"
               className="bg-[#003DFF] text-white px-8 py-3 rounded-md font-bold text-sm transition-colors whitespace-nowrap flex items-center gap-2"
             >
               Join our community →
@@ -42,44 +44,46 @@ export function Footer() {
             <Link href="/products" className=" transition-colors">
               Products
             </Link>
-            <a href="/businesses" className=" transition-colors">
+            <Link href="/businesses" className=" transition-colors">
               Businesses
-            </a>
-            <a href="#how-it-works" className=" transition-colors">
-              How it works
-            </a>
-            <a href="/company" className=" transition-colors">
+            </Link>
+            <Link href="/company" className=" transition-colors">
               Company
-            </a>
-            <a
+            </Link>
+            <Link
               href="https://windy-pocket-e02.notion.site/chainpaye-privacy-policy-2efda843c27c805bb749fdec52e22308?pvs=74"
               className=" transition-colors"
               target="_blank"
             >
               Privacy policy
-            </a>
+            </Link>
           </div>
 
           <div className="flex gap-6 text-gray-600 w-full">
-            <a
+            <Link
               href="https://www.instagram.com/chainpaye?igsh=djQxM2x4eTRmMGx0&utm_source=qr"
               target="_blank"
               rel="noopener noreferrer"
               className="transition-colors"
             >
               <InstagramIcon />
-            </a>
-            <a
+            </Link>
+            <Link
               href="https://x.com/chainpaye?s=21"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-black transition-colors"
             >
               <XIcon />
-            </a>
-            <a href="#" className="hover:text-black transition-colors">
+            </Link>
+            <Link
+              href="https://tiktok.com/@chainpaye_"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-black transition-colors"
+            >
               <TictokIcon />
-            </a>
+            </Link>
             <a
               href="mailto:business@chainpaye.com"
               className="hover:text-red-600 transition-colors"
@@ -102,11 +106,14 @@ export function Footer() {
             />
           </div>
 
-          <div className="h-24 md:h-48"></div>
+          <div className="h-24 md:h-48" />
 
           <div className="flex justify-between text-base text-[#5A5F73] font-medium px-2 py-4 relative z-10 flex-col md:flex-row items-start gap-4">
             <h3>©{new Date().getFullYear()} Chainpaye</h3>
-            <h3 className="text-start">Chainpaye is a product of Capita Dapps Bridge Limited</h3>
+            <h3 className="text-start">
+              Chainpaye is a product of <br className="md:hidden" /> Capita
+              Dapps Bridge Limited
+            </h3>
             <h3>All Rights Reserved.</h3>
           </div>
         </div>

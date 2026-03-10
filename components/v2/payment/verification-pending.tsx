@@ -74,7 +74,7 @@ export function VerificationPending({
         Need help? Contact{" "}
         <a
           href="mailto:business@chainpaye.com"
-          className="text-blue-600 hover:underline"
+          className="text-blue-600 hover:"
         >
           business@chainpaye.com
         </a>

@@ -52,7 +52,7 @@ export function ProductGetPaid() {
             {/* Middle Bubble - Furthest left */}
             <div className="absolute top-[35%] left-[5%] w-[45%] md:w-[40%] aspect-2/1">
               <Image
-                src="/assets/middle.svg"
+                src="/assets/Bubble (1).png"
                 alt="Payment link generated"
                 fill
                 className="object-contain object-left"

@@ -95,7 +95,7 @@ export function RealWorld() {
         <div className="inline-flex items-center px-4 py-1.5 rounded-full border border-[#D1D5DB] bg-white text-[#5A5F73] text-lg font-medium shadow-sm mb-6 uppercase tracking-wider">
           USE CASES
         </div>
-        <h2 className="text-3xl md:text-[40px] font-medium text-[#111528]">
+        <h2 className="text-[25px] md:text-[40px] font-medium text-[#111528]">
           WHO IT&apos;S FOR
         </h2>
       </div>

@@ -22,7 +22,7 @@ export function WhatsappFeature() {
           </div>
 
           <div className="w-full md:w-fit text-left">
-            <h2 className="text-[25px] xl:text-[40px] font-bold leading-tight text-[#111528] mb-6">
+            <h2 className="text-[25px] md:text-[40px] font-medium leading-tight text-[#111528] mb-6">
               Send and receive Money
               <br />
               across borders instantly <br /> on{" "}

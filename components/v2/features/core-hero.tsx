@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 export function CoreFeaturesHero() {
   return (
-    <div className="lg:col-span-1 bg-linear-to-b from-[#003DEF] to-[#101980] rounded-xl md:rounded-4xl p-8 relative overflow-hidden min-h-125 flex flex-col justify-center items-center shadow-lg">
+    <div className="lg:col-span-1 bg-linear-to-b from-[#003DEF] to-[#101980] rounded-xl md:rounded-4xl p-8 relative overflow-hidden min-h-125 flex-col justify-center items-center shadow-lg hidden md:flex">
       <motion.div
         initial={{ opacity: 0, y: -100 }}
         whileInView={{ opacity: 1, y: 0 }}

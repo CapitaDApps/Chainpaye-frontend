@@ -4,7 +4,7 @@ import Image from "next/image";
 
 const partners = [
   { name: "DexPay", logo: "/assets/dexpay.svg" },
-  { name: "Binance", logo: "/assets/binance.svg" },
+  { name: "BSC", logo: "/assets/BSC.svg" },
   { name: "Chase", logo: "/assets/chase.svg" },
   { name: "FCMB", logo: "/assets/fcmb.svg" },
   { name: "Base", logo: "/assets/base.svg" },

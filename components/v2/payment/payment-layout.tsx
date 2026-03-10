@@ -86,7 +86,7 @@ export function PaymentLayout({
             <span className="font-bold text-[#111528]">Chainpaye</span>
             <div className="w-px h-3 bg-gray-200 mx-1 hidden md:block" />
             <span className="text-[#5A5F73] hidden md:block">|</span>
-            <button className="hover:underline">help</button>
+            <button className="hover:">help</button>
           </div>
         </div>
       )}

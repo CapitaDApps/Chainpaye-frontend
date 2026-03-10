@@ -48,7 +48,7 @@ export function Hero() {
       </div>
 
       <div className="container relative z-10 mx-auto text-center">
-        <h1 className="mb-6 text-4xl font-semibold leading-tight tracking-tight text-[#111528]">
+        <h1 className="mb-6 text-[32px] xl:text-[50px] font-medium leading-tight tracking-tight text-[#111528]">
           Pay, Send and Receive Money <br />
           locally & globally
           {/* <span className="relative inline-flex justify-center w-[150px]">
@@ -62,9 +62,9 @@ export function Hero() {
           as simple as a chat. */}
         </h1>
 
-        <p className="mb-8 text-xl font-medium text-[#5A5F73] md:text-lg max-w-2xl mx-auto flex items-center justify-center gap-2">
-          Hold USD, GBP, EUR, CAD,BRL 🇬🇧🇺🇸🇳🇬 🇨🇦 and Stablecoins. Send, receive,
-          and spend via the app you already love: WhatsApp
+        <p className="mb-8 text-base font-medium text-[#5A5F73] md:text-lg max-w-3xl flex-wrap mx-auto items-center justify-center gap-2">
+          Send, receive, and manage multiple currencies (USD, GBP, EUR, CAD,
+          BRL, and stablecoins) all within WhatsApp 🚀
         </p>
 
         <div className="flex flex-col items-center justify-center gap-4 sm:flex-row mb-16 relative z-30">

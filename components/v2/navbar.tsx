@@ -23,11 +23,15 @@ export function Navbar({ variant = "default" }: NavbarProps) {
       <div className="container mx-auto flex h-20 items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center gap-2">
           <Image
-            src="/assets/chainpaye Logo 3.png"
+            src={
+              isDark
+                ? "/assets/chainpaye Logo 3 (1).png"
+                : "/assets/chainpaye Logo 3.png"
+            }
             alt="Chainpaye"
             width={140}
             height={40}
-            className={`h-8 w-auto object-contain ${isDark ? "brightness-0 invert" : ""}`}
+            className={`h-8 w-auto object-contain `}
             priority
           />
         </Link>
@@ -44,12 +48,6 @@ export function Navbar({ variant = "default" }: NavbarProps) {
             className={`text-sm font-medium ${isDark ? "text-white/80 hover:text-white" : "text-[#111528]/80 hover:text-[#111528]"}`}
           >
             Businesses
-          </Link>
-          <Link
-            href="#how-it-works"
-            className={`text-sm font-medium ${isDark ? "text-white/80 hover:text-white" : "text-[#111528]/80 hover:text-[#111528]"}`}
-          >
-            How it works
           </Link>
           <Link
             href="/company"

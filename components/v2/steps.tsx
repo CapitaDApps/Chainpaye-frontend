@@ -136,7 +136,7 @@ export function Steps() {
               </div>
             </div>
 
-            <div className="w-full  md:w-1/2 bg-[#F5F7FA] relative h-full md:h-[600px]  min-h-52 md:min-h-100  rounded-[36px]">
+            <div className="w-full  md:w-1/2 bg-[#F5F7FA] relative h-full md:h-[600px]  min-h-52 md:min-h-100  rounded-[36px] hidden md:block">
               <div className="absolute inset-0 flex items-end justify-center pt-8 md:px-8 pb-0">
                 <div className="relative w-full h-full">
                   <Image

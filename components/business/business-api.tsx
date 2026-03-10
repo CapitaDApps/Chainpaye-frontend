@@ -10,7 +10,7 @@ export function BusinessApi() {
   return (
     <section className="overflow-hidden">
       <div className="container mx-auto">
-        <h2 className="text-[25px] md:text-[40px] font-medium text-[#111528] mb-12 max-w-md hidden">
+        <h2 className="text-[25px] md:text-[40px] font-medium text-[#111528] mb-12 max-w-md hidden md:block">
           Get ready to scale with our payment APIs
         </h2>
 
@@ -40,17 +40,16 @@ export function BusinessApi() {
               </span>
             </div>
 
-          <div className="flex justify-center md:justify-start">
-            <Link
-              href="https://calendly.com/business-chainpaye/30min"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 bg-[#003DFF] text-white px-8 py-3.5 rounded-lg font-medium transition-colors hover:bg-blue-700 w-full sm:w-auto"
-            >
-              <Phone className="w-5 h-5" />
-              Book a call
-            </Link>
-          </div>
+            <div className="flex justify-center md:justify-start">
+              <Link
+                href="https://calendly.com/business-chainpaye/30min"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 bg-[#003DFF] text-white px-8 py-3.5 rounded-lg font-medium transition-colors hover:bg-blue-700 w-full sm:w-auto"
+              >
+                Request a Demo
+              </Link>
+            </div>
           </div>
 
           {/* Right Side: Animated API UI */}

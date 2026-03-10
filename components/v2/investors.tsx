@@ -4,9 +4,9 @@ import { ArrowUpRight, Mail } from "lucide-react";
 
 export function Investors() {
   return (
-    <section className="px-4 md:py-24 py-6">
+    <section className="px-4 md:py-24 py-6 pb-10">
       <div className="container mx-auto">
-        <div className="relative w-full h-[643px] rounded-[30px] overflow-hidden bg-[#0A1A3B] text-white py-24 px-6 md:px-16 text-center shadow-xl">
+        <div className="relative w-full h-[643px] rounded-[24px] overflow-hidden bg-[#0A1A3B] text-white py-24 px-6 md:px-16 text-center shadow-xl">
           <div className="absolute inset-0 z-0 opacity-80 mix-blend-screen">
             <Image
               src="/assets/Investor c.png"

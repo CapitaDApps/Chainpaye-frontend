@@ -43,7 +43,7 @@ export function BankTransfer({
     if (paymentData.currency !== "NGN" || typeof window === "undefined") return;
 
     let expiry = localStorage.getItem(STORAGE_KEY);
-    
+
     if (!expiry) {
       // Set to 30 minutes from now
       const newExpiry = Date.now() + 30 * 60 * 1000;
@@ -52,12 +52,12 @@ export function BankTransfer({
     }
 
     const expiryTime = parseInt(expiry);
-    
+
     const updateTimer = () => {
       const now = Date.now();
       const diff = Math.max(0, expiryTime - now);
       setTimeLeft(diff);
-      
+
       if (diff === 0) {
         clearInterval(interval);
       }
@@ -155,7 +155,8 @@ export function BankTransfer({
         )}
         {isNGN && (
           <div className="text-xs text-blue-500">
-            Transaction expires in {timeLeft !== null ? formatTime(timeLeft) : "30:00"} Mins
+            Transaction expires in{" "}
+            {timeLeft !== null ? formatTime(timeLeft) : "30:00"} Mins
           </div>
         )}
       </div>

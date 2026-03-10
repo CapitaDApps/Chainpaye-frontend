@@ -18,8 +18,7 @@ const faqs = [
   },
   {
     question: "What are the fees?",
-    answer:
-      `Cross-border: 1.5% fee (capped at ₦2,500) \n 
+    answer: `Cross-border: 1.5% fee (capped at ₦2,500) \n 
 Crypto–Fiat: $0.75 per transaction\n
 In-app transfers: Free`,
   },
@@ -43,7 +42,7 @@ export function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>();
 
   return (
-    <section className="mt-14 px-4 bg-white">
+    <section className="mt-14 px-4 bg-white pb-8 md:pb-0">
       <div className="container mx-auto max-w-6xl">
         <div className="text-center mb-16">
           <h2 className="text-[25px] md:text-[40px] font-medium text-[#111528] mb-4">
@@ -53,7 +52,7 @@ export function FAQ() {
             Got any more questions? Click{" "}
             <Link
               href="mailto:business@chainpaye.com"
-              className="text-[#003DFF] underline"
+              className="text-[#003DFF] mr-1"
             >
               here
             </Link>
