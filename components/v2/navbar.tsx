@@ -108,7 +108,7 @@ export function Navbar({ variant = "default" }: NavbarProps) {
               Company
             </Link>
             <Link
-              href="https://wa.link/m25oou"
+              href="https://wa.me/message/RB4AEJEFPZE7G1"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 rounded-lg bg-[#003DFF] px-8 py-3.5 text-base font-medium text-[#FFFFFF] transition-colors"
