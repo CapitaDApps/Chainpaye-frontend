@@ -107,33 +107,6 @@ This document outlines the advanced features implemented in the Chainpaye paymen
 - `exchange_rates` - Currency exchange rates
 - `bank_details_{currency}` - Bank account details
 
-## 🌐 Offline Support & PWA Features
-
-### Service Worker
-
-- **Location**: `public/sw.js`, `lib/utils/service-worker.ts`
-- **Features**:
-  - Offline page caching
-  - API response caching with network-first strategy
-  - Background sync for failed transactions
-  - Push notification support
-  - Automatic cache management
-
-### PWA Capabilities:
-
-- Offline payment page access
-- Background transaction retry
-- Push notifications for payment status
-- Standalone app mode detection
-- Online/offline status monitoring
-
-### Background Sync:
-
-- Failed transaction recording retry
-- Automatic retry when connection is restored
-- Local storage of failed requests
-- User notification of sync status
-
 ## 🔧 Implementation Details
 
 ### File Structure:
@@ -151,21 +124,8 @@ components/
 └── v2/payment/
     └── (regular components - lazy loading removed for build stability)
 
-public/
-└── sw.js              # Service worker for offline support
-```
-
-### Integration Points:
-
-- **Main Payment Page**: `app/payment/[id]/page.tsx`
-  - Integrates all advanced features
-  - Performance monitoring throughout payment flow
-  - Error handling and reporting
-  - Offline support and caching
-
 - **Layout**: `app/layout.tsx`
   - Global error boundary wrapper
-  - Service worker registration
 
 ## 🚀 Production Considerations
 

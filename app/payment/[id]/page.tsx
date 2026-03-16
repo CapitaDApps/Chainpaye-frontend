@@ -27,11 +27,6 @@ import {
 } from "@/lib/utils/validation";
 import { paymentCache, CACHE_KEYS } from "@/lib/utils/cache";
 import { performanceMonitor, measureAsync } from "@/lib/utils/performance";
-import {
-  registerServiceWorker,
-  setupOnlineOfflineListeners,
-  isOnline,
-} from "@/lib/utils/service-worker";
 
 interface PaymentData {
   id: string;
@@ -91,29 +86,15 @@ export default function PaymentPage() {
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>(
     [],
   );
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [, setSessionId] = useState<string>("");
-  const [isOffline, setIsOffline] = useState(false);
   const [isPolling, setIsPolling] = useState(false);
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const params = useParams();
   const paymentId = params?.id as string;
-
-  // Initialize session, performance monitoring, and service worker
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [, setSessionId] = useState<string>("");
+  // Initialize session and performance monitoring
   useEffect(() => {
     if (paymentId) {
-      // Register service worker
-      registerServiceWorker();
-
-      // Setup online/offline listeners
-      const cleanup = setupOnlineOfflineListeners(
-        () => setIsOffline(false),
-        () => setIsOffline(true),
-      );
-
-      // Check initial online status
-      setIsOffline(!isOnline());
-
       // Create or validate session
       if (!validateSession(paymentId)) {
         const newSessionId = createSession(paymentId);
@@ -125,18 +106,16 @@ export default function PaymentPage() {
         paymentId,
         userAgent: navigator.userAgent,
         timestamp: Date.now(),
-        isOnline: isOnline(),
+        isOnline: typeof navigator !== "undefined" ? navigator.onLine : true,
       });
 
       // Start performance monitoring
       performanceMonitor.startTiming("payment_page_load", { paymentId });
 
-      return cleanup;
+      return () => {
+        performanceMonitor.endTiming("payment_page_load");
+      };
     }
-
-    return () => {
-      performanceMonitor.endTiming("payment_page_load");
-    };
   }, [paymentId]);
 
   // Fetch payment data on mount - must be before early returns
@@ -647,32 +626,6 @@ export default function PaymentPage() {
 
   return (
     <PaymentLayout step={step} paymentData={paymentData}>
-      {/* Offline Indicator */}
-      {isOffline && (
-        <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <svg
-                className="h-5 w-5 text-yellow-400"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
-            <div className="ml-3">
-              <p className="text-sm">
-                You&apos;re currently offline. Some features may not work
-                properly.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
 
       {step === "sender-details" && paymentData && (
         <SenderDetails
