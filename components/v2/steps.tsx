@@ -66,7 +66,7 @@ export function Steps() {
               <div className="absolute inset-0 flex items-end justify-center pt-8 md:px-8 pb-0">
                 <div className="relative w-full h-full">
                   <Image
-                    src="/assets/sec2.png"
+                    src="/assets/updatedsec2.png"
                     alt="Create Wallet"
                     fill
                     className="object-contain"

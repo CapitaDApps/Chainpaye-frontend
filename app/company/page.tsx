@@ -2,7 +2,7 @@ import { Navbar } from "@/components/v2/navbar";
 import { Footer } from "@/components/v2/footer";
 import { AboutHero } from "@/components/about/about-hero";
 import { AboutAbout } from "@/components/about/about-about";
-import { AboutTeam } from "@/components/about/about-team";
+// import { AboutTeam } from "@/components/about/about-team";
 import { AboutRoadmap } from "@/components/about/about-roadmap";
 import { Investors } from "@/components/v2/investors";
 
@@ -13,7 +13,7 @@ export default function CompanyPage() {
       <AboutHero />
       <div className="bg-white">
         <AboutAbout />
-        <AboutTeam />
+        {/* <AboutTeam /> */}
         <AboutRoadmap />
         <Investors />
       </div>
