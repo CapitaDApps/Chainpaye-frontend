@@ -626,7 +626,6 @@ export default function PaymentPage() {
 
   return (
     <PaymentLayout step={step} paymentData={paymentData}>
-
       {step === "sender-details" && paymentData && (
         <SenderDetails
           onNext={handleSenderNext}

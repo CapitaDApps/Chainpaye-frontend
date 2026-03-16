@@ -26,7 +26,7 @@ export function Investors() {
 
             <div className="flex flex-col sm:flex-row items-center gap-6">
               <Link
-                href="https://drive.google.com/file/d/1J55IP9IlpSsA5EYiX7tEq42OXfLKslL7/view"
+                href="https://drive.google.com/file/d/1CJTJ-T5Z6RNfK5bhpyFKk8V-jOQuVpXc/view?usp=drive_link"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-white text-[#111528] px-6 py-3 rounded-lg font-medium transition-colors hover:bg-gray-100 flex items-center gap-2"
