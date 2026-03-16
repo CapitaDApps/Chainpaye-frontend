@@ -8,7 +8,7 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://chainpaye-six.vercel.app"),
+  metadataBase: new URL("https://chainpaye.com/"),
   title: "Chainpaye - Global Payments for Africa",
   description:
     "For Individuals. Send and receive money instantly via a simple WhatsApp message, just like chatting with a friend. No extra apps needed. Pay friends, family, or split bills with ChainPaye fast, secure, and easy. By CAPITDAPPS BRIDGE LIMITED",
