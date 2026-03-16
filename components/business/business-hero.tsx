@@ -17,12 +17,12 @@ export function BusinessHero() {
             Receive payments from customers worldwide and get your money
             instantly in your local currency. Simple setup, no tools to learn.
           </p>
-          <div className="flex justify-center md:justify-start">
+          <div className="flex justify-start">
             <Link
               href="https://calendly.com/business-chainpaye/30min"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 bg-[#003DFF] text-white px-8 py-3.5 rounded-lg font-medium transition-colors hover:bg-blue-700 w-full sm:w-auto"
+            className="inline-flex items-center gap-2 rounded-lg bg-[#003DFF] px-8 py-3.5 text-base font-bold text-white transition-colors shadow-lg shadow-blue-500/10"
             >
               <Phone className="w-5 h-5" />
               Book a call

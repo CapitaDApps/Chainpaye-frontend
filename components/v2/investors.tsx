@@ -34,7 +34,7 @@ export function Investors() {
                 View Pitch Deck <ArrowUpRight className="w-4 h-4 ml-1" />
               </Link>
               <Link
-                href="mailto:Business@chainpaye.com"
+                href="mailto:business@chainpaye.com"
                 className="text-white hover:text-gray-300 transition-colors font-medium flex items-center gap-2"
               >
                 Contact investor relations <Mail className="w-4 h-4 ml-1" />

@@ -190,7 +190,7 @@ export function CardSelection() {
               </div>
             ))}
 
-            <div className="pt-8 flex justify-end">
+            <div className="pt-8 flex justify-center md:justify-end">
               <button
                 onClick={() => setIsWaitlistOpen(true)}
                 className="w-fit px-20  bg-[#003DFF] text-white font-bold py-4 rounded-xl transition-all shadow-lg hover:shadow-xl active:scale-[0.99]"
