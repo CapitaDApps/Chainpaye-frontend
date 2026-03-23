@@ -7,7 +7,7 @@ const TEAM_MEMBERS = [
   {
     name: "Josiah Dennis",
     role: "Chief Executive Officer (CEO)",
-    image: "/assets/ceo.png",
+    image: "/assets/imageCeo.jpg",
     linkedin:
       "https://www.linkedin.com/in/josiah-dennis-b4b3aa233?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
     x: "https://x.com/BrainManiac_",
