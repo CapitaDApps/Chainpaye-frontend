@@ -18,7 +18,7 @@ export function Investors() {
 
           <div className="relative z-10 flex flex-col items-center">
             <h3 className="text-2xl md:text-[40px] font-medium mb-6">
-              We are raising $200K for 8% Equity
+              We are raising $500K for 5% Equity
             </h3>
             <p className="text-[#E5E7EB] text-base font-medium mb-10">
               Explore the vision, traction, and roadmap behind our company.
