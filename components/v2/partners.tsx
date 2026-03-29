@@ -3,7 +3,7 @@
 import Image from "next/image";
 
 const partners = [
-  { name: "DexPay", logo: "/assets/dexpay.svg" },
+  // { name: "DexPay", logo: "/assets/dexpay.svg" },
   { name: "BSC", logo: "/assets/BSC.svg" },
   { name: "Chase", logo: "/assets/chase.svg" },
   { name: "FCMB", logo: "/assets/fcmb.svg" },
