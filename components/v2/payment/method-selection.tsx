@@ -82,26 +82,30 @@ export function MethodSelection({
                 )}
               </span>
 
-              <div className="flex gap-1.5">
-                <Image
-                  src="/assets/visa.svg"
-                  alt="Visa"
-                  width={32}
-                  height={20}
-                  className="h-5 w-auto"
-                  onError={(e) => (e.currentTarget.style.display = "none")}
-                />
-                <div className="w-8 h-5">
-                  {/* VISA */}
-                  <Image src={visa} alt="visa card" />
+              <div className="flex gap-1.5 grayscale opacity-70">
+                <div className="w-10 h-6 relative">
+                  <Image
+                    src={visa}
+                    alt="visa card"
+                    fill
+                    className="object-contain"
+                  />
                 </div>
-                <div className="w-8 h-5">
-                  {/* MC */}
-                  <Image src={masterCard} alt="master card" />
+                <div className="w-10 h-6 relative">
+                  <Image
+                    src={masterCard}
+                    alt="master card"
+                    fill
+                    className="object-contain"
+                  />
                 </div>
-                <div className="w-8 h-5">
-                  {/* AMEX */}
-                  <Image src={americaExpress} alt="AMEX card" />
+                <div className="w-10 h-6 relative">
+                  <Image
+                    src={americaExpress}
+                    alt="AMEX card"
+                    fill
+                    className="object-contain"
+                  />
                 </div>
               </div>
             </label>
