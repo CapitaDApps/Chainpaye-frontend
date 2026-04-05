@@ -8,6 +8,8 @@ import {
   SuccessReceipt,
   Confirmation,
 } from "@/components/v2/payment/confirmation-success";
+import { MethodSelection } from "@/components/v2/payment/method-selection";
+import { PaymentProgress } from "@/components/ui/progress-indicator";
 import { useParams } from "next/navigation";
 import { PaymentSkeleton } from "@/components/ui/skeleton";
 import {
@@ -143,7 +145,7 @@ export default function PaymentPage() {
           if (cachedData) {
             console.log("Using cached payment data");
             setPaymentData(cachedData);
-            setStep("sender-details");
+            setStep("method"); // Changed from sender-details to method
             trackEvent("payment_data_cached", { paymentId });
             return;
           }
@@ -290,7 +292,7 @@ export default function PaymentPage() {
         paymentCache.set(cacheKey, data, 5 * 60 * 1000); // Cache for 5 minutes
 
         setPaymentData(data);
-        setStep("sender-details");
+        setStep("method"); // Changed from sender-details to method
 
         trackEvent("payment_data_loaded", {
           paymentId,
@@ -394,11 +396,17 @@ export default function PaymentPage() {
       }
 
       const result = await response.json();
-      console.log("Transaction status:", result);
+      console.log("Transaction status poll result:", result);
 
-      // If payment is confirmed, show success
-      if (result.data?.state === "PAID" || result.data?.state === "COMPLETED") {
-        console.log("Payment confirmed!");
+      // Check if state is successful (be robust with case and field names)
+      const state = (
+        result.data?.state ||
+        result.state ||
+        result.status
+      )?.toUpperCase();
+
+      if (state === "PAID" || state === "COMPLETED" || state === "SUCCESSFUL") {
+        console.log("Payment confirmed! State:", state);
         setIsPolling(false);
 
         // Clear the polling interval
@@ -413,10 +421,45 @@ export default function PaymentPage() {
         trackEvent("payment_confirmed_via_polling", {
           paymentId,
           transactionId: transactionRef,
+          state,
         });
       }
     } catch (error) {
       console.error("Error checking transaction status:", error);
+    }
+  };
+
+  // Handle Pay button click on Method Selection screen
+  const handlePay = () => {
+    if (!selectedMethod || !paymentData) return;
+
+    if (selectedMethod === "card") {
+      // Get the redirect URL for card payment
+      const redirectUrl =
+        paymentData.paymentInitialization?.toronetResponse?.url ||
+        paymentData.redirectUrl;
+
+      console.log("Redirecting to card payment URL:", redirectUrl);
+
+      if (redirectUrl) {
+        trackEvent("card_payment_redirect_start", {
+          paymentId,
+          redirectUrl,
+          currency: paymentData.currency,
+        });
+        // Redirect to external card payment provider
+        window.location.href = redirectUrl;
+      } else {
+        console.error("No redirect URL found for card payment");
+        setError(
+          "Card payment URL not found. Please try another method or contact support.",
+        );
+        setStep("error");
+      }
+    } else if (selectedMethod === "bank") {
+      // For bank transfer, proceed to sender details
+      setStep("sender-details");
+      trackEvent("bank_transfer_flow_start", { paymentId });
     }
   };
 
@@ -626,6 +669,24 @@ export default function PaymentPage() {
 
   return (
     <PaymentLayout step={step} paymentData={paymentData}>
+      {/* Show progress indicator for relevant steps */}
+      {["method", "sender-details", "bank-details", "verifying", "success"].includes(step) &&
+        (step === "method" || selectedMethod !== "bank") && (
+          <PaymentProgress
+            step={step === "sender-details" ? "bank-details" : step}
+          />
+        )}
+
+      {step === "method" && paymentData && (
+        <MethodSelection
+          selectedMethod={selectedMethod}
+          onSelectMethod={setSelectedMethod}
+          onPay={handlePay}
+          paymentData={paymentData}
+          availableMethods={availableMethods}
+        />
+      )}
+
       {step === "sender-details" && paymentData && (
         <SenderDetails
           onNext={handleSenderNext}
@@ -645,7 +706,7 @@ export default function PaymentPage() {
 
       {step === "bank-details" && paymentData && (
         <BankTransfer
-          onBack={() => setStep("sender-details")}
+          onBack={() => setStep("method")}
           onSent={handleBankTransferSent}
           paymentData={paymentData}
           isSubmitting={isSubmitting}
