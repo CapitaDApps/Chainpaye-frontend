@@ -3,7 +3,9 @@ import { Hero } from "@/components/v2/hero";
 import { Partners } from "@/components/v2/partners";
 import { WhatsappFeature } from "@/components/v2/whatsapp-feature";
 import { CryptoCashout } from "@/components/v2/crypto-cashout";
+import { StellarBanner } from "@/components/v2/stellar-banner";
 import { Steps } from "@/components/v2/steps";
+import { MultiNetwork } from "@/components/v2/multi-network";
 import { Features } from "@/components/v2/features";
 import { RealWorld } from "@/components/v2/real-world";
 import { FAQ } from "@/components/v2/faq";
@@ -18,7 +20,9 @@ export default function Home() {
       <Partners />
       <WhatsappFeature />
       <CryptoCashout />
+      <StellarBanner />
       <Steps />
+      <MultiNetwork />
       <Features />
       <RealWorld />
       <FAQ />
