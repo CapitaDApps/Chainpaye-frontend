@@ -1,4 +1,4 @@
-export default function WhatsappIcon({ color }: { color: string }) {
+export default function WhatsappIcon({ color }: { color?: string }) {
   const strokeColor = color || "white";
   return (
     <svg
