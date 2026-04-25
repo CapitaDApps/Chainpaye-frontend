@@ -4,7 +4,7 @@ import Image from "next/image";
 
 export function StellarBanner() {
   return (
-    <section className="relative w-full bg-[#0C172D] overflow-hidden py-16 md:py-24">
+    <section className="relative mb-16 w-full bg-[#0C172D] overflow-hidden py-16 md:py-24">
       {/* Glow effect at top */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[60%] h-1 bg-white shadow-[0_0_120px_60px_rgba(255,255,255,0.15)] opacity-60 blur-3xl rounded-full z-0"></div>
 
